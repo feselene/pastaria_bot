@@ -39,26 +39,6 @@ def capture_full_screen():
         return screenshot, monitor["left"], monitor["top"]
 
 
-def match_and_click_icon(ticket_icon, screen, offset_x=0, offset_y=0, threshold=0.85):
-    ticket_gray = cv2.cvtColor(ticket_icon, cv2.COLOR_BGR2GRAY)
-    screen_gray = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
-
-    result = cv2.matchTemplate(screen_gray, ticket_gray, cv2.TM_CCOEFF_NORMED)
-    _, max_val, _, max_loc = cv2.minMaxLoc(result)
-
-    if max_val >= threshold:
-        h, w = ticket_gray.shape
-        center_x = offset_x + max_loc[0] + w // 2
-        center_y = offset_y + max_loc[1] + h // 2
-        pyautogui.moveTo(center_x, center_y)
-        pyautogui.click()
-        print(f"✅ Clicked matching jar icon at ({center_x}, {center_y}) with confidence {max_val:.2f}")
-        return True
-    else:
-        print(f"❌ No match found for jar icon. Confidence was {max_val:.2f}")
-        return False
-
-
 def run_cook_station():
     print("🍳 Opening pot...")
     click_leftmost_plus_button()
@@ -82,12 +62,6 @@ def run_cook_station():
         cv2.imwrite(f"debug_{name}.png", region_img)
 
     pasta_icon = regions["pasta"]
-
-    print("🖥️ Capturing screen for jar match...")
-    screen, offset_x, offset_y = capture_full_screen()
-
-    print("🎯 Matching and clicking correct jar...")
-    match_and_click_icon(pasta_icon, screen, offset_x, offset_y)
 
 
 if __name__ == "__main__":
