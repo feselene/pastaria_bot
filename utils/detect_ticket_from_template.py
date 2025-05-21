@@ -3,62 +3,32 @@ import numpy as np
 import mss
 import os
 
-# === CONFIG ===
+# Use the ticket template located in assets/
+TEMPLATE_PATH = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), "../assets/ticket_full.png"
+))
+CONFIDENCE_THRESHOLD = 0.5  # Adjustable depending on screenshot fidelity
 
-TEMPLATE_PATH = "../assets/ticket_full.png"  # Full-size ticket screenshot as template
-CONFIDENCE_THRESHOLD = 0.2
-SCREENSHOT_SAVE = "../assets/matched_ticket.png"
-
-
-# === FUNCTIONS ===
-
-def capture_full_screen():
-    """Capture a screenshot of the primary monitor using mss."""
+def detect_ticket_from_template():
+    """Detect and return the cropped ticket from the full screen using template matching."""
     with mss.mss() as sct:
-        screen = np.array(sct.grab(sct.monitors[1]))  # [1] is primary monitor
-    return screen
+        screen = np.array(sct.grab(sct.monitors[1]))  # Primary monitor
 
+    screen_gray = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
+    template = cv2.imread(TEMPLATE_PATH, 0)
+    if template is None:
+        raise FileNotFoundError(f"❌ Template image not found at {TEMPLATE_PATH}")
 
-def load_template(path):
-    """Load grayscale template image from file."""
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Template '{path}' not found.")
-    template = cv2.imread(path, 0)
-    return template
+    result = cv2.matchTemplate(screen_gray, template, cv2.TM_CCOEFF_NORMED)
+    _, max_val, _, top_left = cv2.minMaxLoc(result)
 
-
-def find_ticket_on_screen(screen_bgr, template_gray):
-    """Find the best match location for the template in the screen image."""
-    screen_gray = cv2.cvtColor(screen_bgr, cv2.COLOR_BGR2GRAY)
-    res = cv2.matchTemplate(screen_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-    _, max_val, _, top_left = cv2.minMaxLoc(res)
-
-    h, w = template_gray.shape
+    h, w = template.shape
     bottom_right = (top_left[0] + w, top_left[1] + h)
 
-    return top_left, bottom_right, max_val
-
-
-def main():
-    print("📸 Capturing screen...")
-    screen = capture_full_screen()
-
-    print(f"🧩 Loading template from '{TEMPLATE_PATH}'...")
-    template = load_template(TEMPLATE_PATH)
-
-    print("🔍 Matching template...")
-    top_left, bottom_right, confidence = find_ticket_on_screen(screen, template)
-
-    if confidence >= CONFIDENCE_THRESHOLD:
-        print(f"✅ Ticket found at {top_left} with confidence {confidence:.2f}")
-        matched = screen[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
-        cv2.imwrite(SCREENSHOT_SAVE, matched)
-        print(f"💾 Cropped ticket saved to '{SCREENSHOT_SAVE}'")
+    if max_val >= CONFIDENCE_THRESHOLD:
+        cropped = screen[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+        print(f"✅ Ticket detected at {top_left} with confidence {max_val:.2f}")
+        return cropped
     else:
-        print(f"❌ Ticket not found. Confidence too low ({confidence:.2f})")
-
-
-# === RUN ===
-
-if __name__ == "__main__":
-    main()
+        print(f"❌ Ticket not found (confidence: {max_val:.2f})")
+        return None
