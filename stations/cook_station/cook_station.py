@@ -20,15 +20,15 @@ import mss
 def crop_ticket_regions(ticket_img):
     h, w = ticket_img.shape[:2]
     return {
-        "order":     ticket_img[int(0.0000*h):int(0.0795*h), :],
-        "bread":     ticket_img[int(0.0795*h):int(0.1712*h), :],
-        "topping1":  ticket_img[int(0.1712*h):int(0.2493*h), :],
-        "topping2":  ticket_img[int(0.2493*h):int(0.3301*h), :],
-        "topping3":  ticket_img[int(0.3301*h):int(0.4109*h), :],
-        "topping4":  ticket_img[int(0.4109*h):int(0.4917*h), :],
-        "sauce":     ticket_img[int(0.4917*h):int(0.5726*h), :],
-        "pasta":     ticket_img[int(0.5726*h):int(0.6534*h), :],
-        "doneness":  ticket_img[int(0.6534*h):int(0.7260*h), :]
+        "order":     ticket_img[int(0.0000*h):int(0.1094*h), :],  # 0–62
+        "bread":     ticket_img[int(0.1094*h):int(0.2575*h), :],  # 62–146
+        "topping1":  ticket_img[int(0.2575*h):int(0.3687*h), :],  # 146–209
+        "topping2":  ticket_img[int(0.3687*h):int(0.4746*h), :],  # 209–269
+        "topping3":  ticket_img[int(0.4746*h):int(0.5804*h), :],  # 269–329
+        "topping4":  ticket_img[int(0.5804*h):int(0.6862*h), :],  # 329–389
+        "sauce":     ticket_img[int(0.6862*h):int(0.7921*h), :],  # 389–449
+        "pasta":     ticket_img[int(0.7921*h):int(0.9273*h), :],  # 449–526
+        "doneness":  ticket_img[int(0.9273*h):int(1.0000*h), :]   # 526–567
     }
 
 
@@ -76,17 +76,18 @@ def run_cook_station():
     print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
 
-    pasta_icon = regions["pasta"]
+    # 🖨️ Print and save each region
+    for name, region_img in regions.items():
+        print(f"📦 Region: {name}, shape: {region_img.shape}")
+        cv2.imwrite(f"debug_{name}.png", region_img)
 
-    # 💾 Save pasta region for debug
-    cv2.imwrite("debug_pasta_icon.png", pasta_icon)
+    pasta_icon = regions["pasta"]
 
     print("🖥️ Capturing screen for jar match...")
     screen, offset_x, offset_y = capture_full_screen()
 
     print("🎯 Matching and clicking correct jar...")
     match_and_click_icon(pasta_icon, screen, offset_x, offset_y)
-
 
 
 if __name__ == "__main__":
