@@ -1,0 +1,26 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# IDEs/editors
+.idea/
+.vscode/
+
+# Mac system files
+.DS_Store
+
+# Screenshots / debug outputs (auto-generated)
+*.png
+# But keep template assets
+!assets/**/*.png
+
+# Logs
+*.log
+
+# OS artifacts
+Thumbs.db

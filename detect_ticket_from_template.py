@@ -5,9 +5,9 @@ import os
 
 # === CONFIG ===
 
-TEMPLATE_PATH = "ticket_full.png"  # Full-size ticket screenshot as template
-CONFIDENCE_THRESHOLD = 0.5
-SCREENSHOT_SAVE = "matched_ticket.png"
+TEMPLATE_PATH = "assets/ticket_full.png"  # Full-size ticket screenshot as template
+CONFIDENCE_THRESHOLD = 0.2
+SCREENSHOT_SAVE = "assets/matched_ticket.png"
 
 
 # === FUNCTIONS ===
