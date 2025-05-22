@@ -52,6 +52,7 @@ def get_filtered_bread_icon():
     print("🔍 Removing background from bread icon...")
     remove_background_and_crop(bread_img_path, bread_out_path)
     print(f"✅ Bread icon saved to: {bread_out_path}")
+    return bread_out_path
 
 def get_filtered_pasta_icon():
     print("🎟️ Detecting ticket...")
