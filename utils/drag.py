@@ -1,18 +1,16 @@
 import cv2
+import mss
 import numpy as np
 import pyautogui
-import mss
+
 from utils.get_memu_position import get_memu_bounds
+
 
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
-        monitor = {
-            "top": y,
-            "left": x,
-            "width": width,
-            "height": height
-        }
+        monitor = {"top": y, "left": x, "width": width, "height": height}
         return np.array(sct.grab(monitor))
+
 
 def drag_between_templates(start_template_path, end_template_path, threshold=0.85):
     # Load templates
@@ -53,5 +51,7 @@ def drag_between_templates(start_template_path, end_template_path, threshold=0.8
         print(f"✅ Dragged from ({start_x}, {start_y}) to ({end_x}, {end_y})")
         return True
     else:
-        print(f"❌ Drag failed. Start confidence: {max_val_start:.2f}, End confidence: {max_val_end:.2f}")
+        print(
+            f"❌ Drag failed. Start confidence: {max_val_start:.2f}, End confidence: {max_val_end:.2f}"
+        )
         return False

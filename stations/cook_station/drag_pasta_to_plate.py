@@ -18,8 +18,10 @@ from utils.drag import drag_between_templates
 # Define path to assets
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 
+
 def drag_pasta_to_plate():
     drag_between_templates(PASTA_PATH, PLATE_PATH, threshold=0.85)
+
 
 if __name__ == "__main__":
     drag_pasta_to_plate()

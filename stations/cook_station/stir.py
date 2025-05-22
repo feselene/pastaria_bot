@@ -19,8 +19,10 @@ from utils.drag import drag_between_templates
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 SPOON_TEMPLATE = os.path.join(ASSETS_DIR, "spoon.png")
 
+
 def stir():
     drag_between_templates(SPOON_PATH, JAR_PATH, threshold=0.85)
+
 
 if __name__ == "__main__":
     stir()

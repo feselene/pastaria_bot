@@ -1,15 +1,18 @@
-import cv2
-import numpy as np
-import pygetwindow as gw
-import mss
 import os
 
+import cv2
+import mss
+import numpy as np
+import pygetwindow as gw
+
+
 def get_memu_bounds():
-    windows = gw.getWindowsWithTitle('MEmu')
+    windows = gw.getWindowsWithTitle("MEmu")
     for window in windows:
         if window.visible and window.width > 0 and window.height > 0:
             return window.left, window.top, window.width, window.height
     raise RuntimeError("❌ No visible MEmu window found.")
+
 
 def get_conveyor_bounds(debug_dir="debug"):
     os.makedirs(debug_dir, exist_ok=True)

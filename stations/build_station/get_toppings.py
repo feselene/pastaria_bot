@@ -15,16 +15,11 @@ from stations.build_station.click_tomato_jar import click_tomato_jar
 from utils.parse_ticket import get_filtered_sauce_icon, get_filtered_topping_icon
 
 
-def run_build_station():
-    get_filtered_sauce_icon()
-    click_jar()
-    apply_sauce()
-    time.sleep(0.5)
+def get_filtered_toppings():
     get_filtered_topping_icon(1)
     get_filtered_topping_icon(2)
     get_filtered_topping_icon(3)
     get_filtered_topping_icon(4)
-    click_checkmark()
 
 
 def run_random():
@@ -35,4 +30,4 @@ def run_random():
 
 
 if __name__ == "__main__":
-    run_build_station()
+    get_filtered_toppings()

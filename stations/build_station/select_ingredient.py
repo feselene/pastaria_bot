@@ -1,7 +1,8 @@
-import cv2
-import numpy as np
 import os
 import sys
+
+import cv2
+import numpy as np
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -12,7 +13,9 @@ DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
 
 import pyautogui
+
 from utils.get_memu_position import get_memu_bounds
+
 
 def click_center_topping_picker():
     # Relative ratios (from previous calculation)
@@ -32,7 +35,7 @@ def click_center_topping_picker():
 
     print(f"✅ Clicked center of topping picker at ({center_x}, {center_y})")
 
+
 # Example usage
 if __name__ == "__main__":
     click_center_topping_picker()
-

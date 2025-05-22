@@ -1,5 +1,6 @@
-from rembg import remove
 from PIL import Image
+from rembg import remove
+
 
 def remove_background_and_crop(input_path: str, output_path: str) -> None:
     """
@@ -9,6 +10,7 @@ def remove_background_and_crop(input_path: str, output_path: str) -> None:
         input_path (str): Path to the input image file.
         output_path (str): Path to save the output cropped image.
     """
+
     def crop_to_content(img: Image.Image) -> Image.Image:
         """Crop to non-transparent pixels in an RGBA image."""
         if img.mode != "RGBA":
@@ -24,6 +26,7 @@ def remove_background_and_crop(input_path: str, output_path: str) -> None:
     output_cropped = crop_to_content(output_image)
     output_cropped.save(output_path)
     print(f"✅ Saved tightly cropped image to: {output_path}")
+
 
 def crop(input_path: str, output_path: str) -> None:
     """

@@ -13,8 +13,10 @@ from utils.click_button import click_button
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 CHECKMARK_TEMPLATE = os.path.join(ASSETS_DIR, "checkmark.png")
 
+
 def click_checkmark():
     click_button(CHECKMARK_TEMPLATE, threshold=0.80)
+
 
 if __name__ == "__main__":
     click_checkmark()

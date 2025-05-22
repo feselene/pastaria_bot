@@ -1,10 +1,11 @@
+import os
+import sys
+import time
+
 import cv2
+import mss
 import numpy as np
 import pyautogui
-import mss
-import sys
-import os
-import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -15,10 +16,12 @@ OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 from utils.get_memu_position import get_memu_bounds
 
+
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
         monitor = {"top": y, "left": x, "width": width, "height": height}
         return np.array(sct.grab(monitor))
+
 
 def click_best_template_match(template_path, threshold=0.6):
     # Load template in grayscale
@@ -75,18 +78,25 @@ def click_best_template_match(template_path, threshold=0.6):
 
         pyautogui.moveTo(center_x, center_y, duration=0.2)
         pyautogui.click()
-        print(f"✅ Clicked match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(
+            f"✅ Clicked match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}"
+        )
         return True
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return False
 
+
 def click_jar():
-    template_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_sauce_cropped.png"
+    template_path = (
+        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_sauce_cropped.png"
+    )
     click_best_template_match(template_path)
+
 
 def main():
     click_jar()
+
 
 if __name__ == "__main__":
     main()

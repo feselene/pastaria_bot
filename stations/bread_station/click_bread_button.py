@@ -13,8 +13,10 @@ from utils.click_button import click_button
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 BREAD_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "bread_button_template.png")
 
+
 def click_bread_button():
     click_button(BREAD_BUTTON_TEMPLATE, threshold=0.80)
+
 
 if __name__ == "__main__":
     click_bread_button()

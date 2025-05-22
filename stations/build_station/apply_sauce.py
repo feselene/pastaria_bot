@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+
 import pyautogui
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -9,6 +10,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from utils.get_memu_position import get_memu_bounds
+
 
 def apply_sauce():
     left, top, width, height = get_memu_bounds()
@@ -45,6 +47,7 @@ def apply_sauce():
     pyautogui.mouseUp()
 
     print("✅ Stirred pasta side-to-side.")
+
 
 if __name__ == "__main__":
     apply_sauce()

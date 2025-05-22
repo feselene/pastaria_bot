@@ -1,18 +1,14 @@
 import cv2
+import mss
 import numpy as np
 import pyautogui
-import mss
+
 from utils.get_memu_position import get_memu_bounds
 
 
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
-        monitor = {
-            "top": y,
-            "left": x,
-            "width": width,
-            "height": height
-        }
+        monitor = {"top": y, "left": x, "width": width, "height": height}
         return np.array(sct.grab(monitor))
 
 
@@ -40,7 +36,9 @@ def click_button(template_path, threshold=0.85):
         center_y = top + max_loc[1] + h // 2
         pyautogui.moveTo(center_x, center_y)
         pyautogui.click()
-        print(f"✅ Clicked button '{template_path}' at ({center_x}, {center_y}) with confidence {max_val:.2f}")
+        print(
+            f"✅ Clicked button '{template_path}' at ({center_x}, {center_y}) with confidence {max_val:.2f}"
+        )
         return True
     else:
         print(f"❌ Button '{template_path}' not found. Confidence: {max_val:.2f}")

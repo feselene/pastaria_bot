@@ -18,8 +18,10 @@ from utils.drag import drag_between_templates
 # Define path to assets
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 
+
 def drag_ticket_to_green():
     drag_between_templates(TICKET_PATH, GREEN_PATH, threshold=0.5)
+
 
 if __name__ == "__main__":
     drag_ticket_to_green()

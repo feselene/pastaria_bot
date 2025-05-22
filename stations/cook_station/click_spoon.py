@@ -14,8 +14,10 @@ from utils.click_button import click_button
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 SPOON_TEMPLATE = os.path.join(ASSETS_DIR, "spoon.png")
 
+
 def click_spoon():
     click_button(SPOON_TEMPLATE, threshold=0.80)
+
 
 if __name__ == "__main__":
     click_spoon()

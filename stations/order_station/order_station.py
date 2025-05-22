@@ -9,9 +9,11 @@ if ROOT_DIR not in sys.path:
 
 from stations.order_station.click_take_order import click_take_order
 
+
 def run_order_station():
     click_take_order()
     time.sleep(1)
+
 
 if __name__ == "__main__":
     run_order_station()

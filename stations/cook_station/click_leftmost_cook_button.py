@@ -1,26 +1,23 @@
+import os
+from time import sleep
+
 import cv2
+import mss
 import numpy as np
 import pyautogui
-import mss
-from utils.get_memu_position import get_memu_bounds
-from time import sleep
-import os
 
-TEMPLATE_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), "../../assets/plus_template.png"
-))
+from utils.get_memu_position import get_memu_bounds
+
+TEMPLATE_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../assets/plus_template.png")
+)
 THRESHOLD = 0.85
 
 
 def grab_emulator_region():
     left, top, width, height = get_memu_bounds()
     with mss.mss() as sct:
-        monitor = {
-            "top": top,
-            "left": left,
-            "width": width,
-            "height": height
-        }
+        monitor = {"top": top, "left": left, "width": width, "height": height}
         img = np.array(sct.grab(monitor))
     return img, left, top
 

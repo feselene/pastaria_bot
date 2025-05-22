@@ -1,13 +1,15 @@
-import cv2
-import numpy as np
-import mss
 import os
 
+import cv2
+import mss
+import numpy as np
+
 # Use the ticket template located in assets/
-TEMPLATE_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), "../assets/ticket_full.png"
-))
+TEMPLATE_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../assets/ticket_full.png")
+)
 CONFIDENCE_THRESHOLD = 0.5  # Adjustable depending on screenshot fidelity
+
 
 def detect_ticket_from_template():
     """Detect and return the cropped ticket from the full screen using template matching."""
@@ -26,7 +28,7 @@ def detect_ticket_from_template():
     bottom_right = (top_left[0] + w, top_left[1] + h)
 
     if max_val >= CONFIDENCE_THRESHOLD:
-        cropped = screen[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+        cropped = screen[top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]]
         print(f"✅ Ticket detected at {top_left} with confidence {max_val:.2f}")
         return cropped
     else:

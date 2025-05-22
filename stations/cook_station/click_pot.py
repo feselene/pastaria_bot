@@ -14,8 +14,10 @@ from utils.click_button import click_button
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 POT_TEMPLATE = os.path.join(ASSETS_DIR, "pot.png")
 
+
 def click_pot():
     click_button(POT_TEMPLATE, threshold=0.80)
+
 
 if __name__ == "__main__":
     click_pot()

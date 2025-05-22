@@ -1,10 +1,11 @@
+import os
+import sys
+import time
+
 import cv2
+import mss
 import numpy as np
 import pyautogui
-import mss
-import sys
-import os
-import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -15,10 +16,12 @@ OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 from utils.get_memu_position import get_memu_bounds
 
+
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
         monitor = {"top": y, "left": x, "width": width, "height": height}
         return np.array(sct.grab(monitor))
+
 
 def get_oven_center_coordinates(template_path, threshold=0.75):
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
@@ -38,7 +41,9 @@ def get_oven_center_coordinates(template_path, threshold=0.75):
     if max_val >= threshold:
         center_x = left + max_loc[0] + tW // 2
         center_y = top + max_loc[1] + tH // 2
-        print(f"✅ Oven center found at ({center_x}, {center_y}) with confidence {max_val:.3f}")
+        print(
+            f"✅ Oven center found at ({center_x}, {center_y}) with confidence {max_val:.3f}"
+        )
         return center_x, center_y
     else:
         print(f"❌ Oven not found. Highest confidence: {max_val:.3f}")
@@ -96,7 +101,9 @@ def get_best_template_match_center(template_path, threshold=0.75):
         center_x = left + belt_left + match_x + match_w // 2
         center_y = top + belt_top + match_y + match_h // 2
 
-        print(f"✅ Found match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(
+            f"✅ Found match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}"
+        )
         return center_x, center_y
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
@@ -158,11 +165,14 @@ def click_best_template_match(template_path, threshold=0.75):
 
         pyautogui.moveTo(center_x, center_y, duration=0.2)
         pyautogui.click()
-        print(f"✅ Clicked match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(
+            f"✅ Clicked match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}"
+        )
         return True
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return False
+
 
 def drag_from_to(x1, y1, x2, y2, duration=0.1):
     """Click and drag from (x1, y1) to (x2, y2)."""
@@ -173,8 +183,11 @@ def drag_from_to(x1, y1, x2, y2, duration=0.1):
     pyautogui.mouseUp()
     print(f"🖱️ Dragged from ({x1}, {y1}) to ({x2}, {y2})")
 
+
 def click_bread():
-    template_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
+    template_path = (
+        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
+    )
     oven_x, oven_y = get_oven_center_coordinates(OVEN_PATH)
     x, y = get_best_template_match_center(template_path)
 
@@ -184,9 +197,12 @@ def click_bread():
         drag_from_to(x, y, oven_x, oven_y)
     else:
         print("❌ Could not perform drag — one or more coordinates were not found.")
+
 
 def main():
-    template_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
+    template_path = (
+        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
+    )
     oven_x, oven_y = get_oven_center_coordinates(OVEN_PATH)
     x, y = get_best_template_match_center(template_path)
 
@@ -196,7 +212,6 @@ def main():
         drag_from_to(x, y, oven_x, oven_y)
     else:
         print("❌ Could not perform drag — one or more coordinates were not found.")
-
 
 
 if __name__ == "__main__":
