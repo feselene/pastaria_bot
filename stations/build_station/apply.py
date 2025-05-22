@@ -166,13 +166,35 @@ def apply_topping(image_path):
     select_ingredient(cropped_path)
     # apply_sauce()
 
-def select_ingredient(cropped_path, threshold=0.85, max_attempts=1):
+def compute_orb_similarity(img1, img2, distance_threshold=50):
     """
-    Scrolls through the topping picker until the cropped image is found in the center region.
+    Computes the ORB match ratio between two images.
+    """
+    orb = cv2.ORB_create()
+    kp1, des1 = orb.detectAndCompute(img1, None)
+    kp2, des2 = orb.detectAndCompute(img2, None)
+
+    if des1 is None or des2 is None or len(des1) == 0 or len(des2) == 0:
+        return 0.0
+
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    matches = bf.match(des1, des2)
+
+    if not matches:
+        return 0.0
+
+    good_matches = [m for m in matches if m.distance < distance_threshold]
+    match_ratio = len(good_matches) / len(matches)
+    return match_ratio
+
+
+def select_ingredient(cropped_path, threshold=0.2, max_attempts=1):
+    """
+    Scrolls through the topping picker until the cropped image is found using ORB feature matching.
 
     Parameters:
         cropped_path (str): Path to the template image.
-        threshold (float): Match confidence threshold.
+        threshold (float): ORB match ratio threshold.
         max_attempts (int): Max swipes before giving up.
 
     Returns:
@@ -182,21 +204,17 @@ def select_ingredient(cropped_path, threshold=0.85, max_attempts=1):
     if template is None:
         raise FileNotFoundError(f"Template not found: {cropped_path}")
 
-    tH, tW = template.shape[:2]
-
     for attempt in range(max_attempts):
         output_path = capture_center_picker_square()
         search_img = cv2.imread(output_path)
         if search_img is None:
             continue
 
-        result = cv2.matchTemplate(search_img, template, cv2.TM_CCOEFF_NORMED)
-        _, max_val, _, _ = cv2.minMaxLoc(result)
+        match_ratio = compute_orb_similarity(template, search_img)
+        print(f"🔍 Attempt {attempt + 1}: ORB Match Ratio = {match_ratio:.3f}")
 
-        print(f"🔍 Attempt {attempt + 1}: Match confidence = {max_val:.3f}")
-
-        if max_val >= threshold:
-            print("✅ Ingredient match found!")
+        if match_ratio >= threshold:
+            print("✅ Ingredient match found via ORB!")
             return True
 
         swipe_topping_picker_left()
@@ -206,6 +224,7 @@ def select_ingredient(cropped_path, threshold=0.85, max_attempts=1):
     return False
 
 def main():
+    process_topping_boxes()
     select_ingredient(r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_topping4_raw_cropped.png")
 
 if __name__ == "__main__":
