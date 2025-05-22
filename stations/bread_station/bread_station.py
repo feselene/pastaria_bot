@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -9,6 +10,9 @@ if ROOT_DIR not in sys.path:
 from click_bread_button import click_bread_button
 from utils.parse_ticket import get_filtered_bread_icon
 from get_conveyor_bounds import get_conveyor_bounds
+from drag_bread_to_oven import drag_bread_to_oven
+from drag_cooked_bread_to_plate import drag_bread_to_plate
+from drag_ticket_to_green import drag_ticket_to_green
 
 def run_bread_station():
     click_bread_button()
@@ -26,5 +30,14 @@ def run_bread_station():
     # 3. Move mouse to matched bread center
     # 4. Drag to left-side conveyor slot
 
+def run_random():
+    click_bread_button()
+    time.sleep(1)
+    drag_bread_to_oven()
+    time.sleep(25)
+    drag_bread_to_plate()
+    time.sleep(0.5)
+    drag_ticket_to_green()
+
 if __name__ == "__main__":
-    run_bread_station()
+    run_random()

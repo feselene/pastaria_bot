@@ -5,6 +5,7 @@ from operator import truediv
 
 from click_tomato_jar import click_tomato_jar
 from apply_sauce import apply_sauce
+from click_checkmark import click_checkmark
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -17,6 +18,8 @@ def run_build_station():
 def run_random():
     click_tomato_jar()
     apply_sauce()
+    time.sleep(0.5)
+    click_checkmark()
 
 if __name__ == "__main__":
     run_random()
