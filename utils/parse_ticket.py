@@ -3,7 +3,7 @@ import sys
 import cv2
 
 from utils.detect_ticket_from_template import detect_ticket_from_template
-from utils.remove_background import remove_background_and_crop
+from utils.remove_background import remove_background_and_crop, crop
 
 # Setup root imports from parse_ticket.py inside utils/
 CURRENT_DIR = os.path.dirname(__file__)  # points to pastaria_bot/utils/
@@ -78,5 +78,30 @@ def get_filtered_pasta_icon():
     print("🔍 Removing background from pasta icon...")
     remove_background_and_crop(pasta_img_path, pasta_out_path)
     print(f"✅ Pasta icon saved to: {pasta_out_path}")
+
+def get_filtered_sauce_icon():
+    print("🎟️ Detecting ticket...")
+    ticket_img = detect_ticket_from_template()
+    if ticket_img is None:
+        print("❌ Ticket detection failed.")
+        return
+
+    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    cv2.imwrite(debug_ticket_path, ticket_img)
+
+    print("✂️ Cropping ticket regions...")
+    regions = crop_ticket_regions(ticket_img)
+
+    sauce_img_bgr = regions["sauce"]
+    sauce_img_path = os.path.join(ROOT_DIR, "debug", "debug_sauce_raw.png")
+    sauce_out_path = os.path.join(ROOT_DIR, "debug", "debug_sauce_cropped.png")
+
+    os.makedirs(os.path.dirname(sauce_img_path), exist_ok=True)
+    cv2.imwrite(sauce_img_path, sauce_img_bgr)
+
+    # ✅ Remove background and crop
+    print("🔍 Removing background from sauce icon...")
+    crop(sauce_img_path, sauce_out_path)
+    print(f"✅ Sauce icon saved to: {sauce_out_path}")
 
 get_filtered_pasta_icon()

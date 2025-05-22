@@ -34,12 +34,12 @@ def main():
 
         print("🍝 Running Build Station...")
         time.sleep(1)
-        build_station.run_random()
+        build_station.run_build_station()
 
         print("🍞 Running Bread Station...")
         time.sleep(1)
         bread_station.run_bread_station()
-        time.sleep(10)
+        time.sleep(12)
 
 if __name__ == "__main__":
     main()
