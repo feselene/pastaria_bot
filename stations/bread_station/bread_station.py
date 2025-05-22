@@ -17,6 +17,7 @@ from utils.parse_ticket import get_filtered_bread_icon
 
 def run_bread_station():
     click_bread_button()
+    get_filtered_bread_icon()
     time.sleep(1)
     click_bread()
     time.sleep(25)
