@@ -3,9 +3,9 @@ import sys
 import time
 from operator import truediv
 
-from click_tomato_jar import click_tomato_jar
-from apply_sauce import apply_sauce
-from click_checkmark import click_checkmark
+from stations.build_station.click_tomato_jar import click_tomato_jar
+from stations.build_station.apply_sauce import apply_sauce
+from stations.build_station.click_checkmark import click_checkmark
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
