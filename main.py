@@ -29,7 +29,7 @@ def main():
 
         print("🔥 Running Cook Station...")
         time.sleep(1)
-        cook_station.run_random()
+        cook_station.run_cook_station()
         click_build_button()
 
         print("🍝 Running Build Station...")
@@ -38,7 +38,7 @@ def main():
 
         print("🍞 Running Bread Station...")
         time.sleep(1)
-        bread_station.run_random()
+        bread_station.run_bread_station()
         time.sleep(10)
 
 if __name__ == "__main__":
