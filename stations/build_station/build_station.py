@@ -7,23 +7,23 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 # Import station modules
-from stations.order_station import order_station
+from stations.order_station import run_order_station
 from stations.cook_station import cook_station
 from stations.build_station import build_station
 from stations.bread_station import bread_station
 
 def main():
     print("▶️ Running Order Station...")
-    order_station.run_order_station()
+    order_station.run()
 
     print("🔥 Running Cook Station...")
-    cook_station.run_cook_station()
+    cook_station.run()
 
     print("🍝 Running Build Station...")
-    build_station.run_build_station()
+    build_station.run()
 
     print("🍞 Running Bread Station...")
-    bread_station.run_bread_station()
+    bread_station.run()
 
 if __name__ == "__main__":
     main()
