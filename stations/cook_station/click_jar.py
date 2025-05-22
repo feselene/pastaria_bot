@@ -1,10 +1,12 @@
-import cv2
-import numpy as np
+import torch
+from transformers import AutoProcessor, AutoModel
+from PIL import Image
 import pyautogui
+import numpy as np
+import cv2
 import mss
-import sys
 import os
-import time
+import sys
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -13,6 +15,11 @@ if ROOT_DIR not in sys.path:
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
+# Load DINOv2 model
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = AutoModel.from_pretrained("facebook/dinov2-base").to(device).eval()
+processor = AutoProcessor.from_pretrained("facebook/dinov2-base")
+
 from utils.get_memu_position import get_memu_bounds
 
 def grab_screen_region(x, y, width, height):
@@ -20,70 +27,61 @@ def grab_screen_region(x, y, width, height):
         monitor = {"top": y, "left": x, "width": width, "height": height}
         return np.array(sct.grab(monitor))
 
-def click_best_template_match(template_path, threshold=0.6):
-    # Load template in grayscale
-    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
-    if template is None:
-        raise FileNotFoundError(f"Missing template image: {template_path}")
-    tH, tW = template.shape[:2]
+def extract_feature(pil_img):
+    inputs = processor(images=pil_img, return_tensors="pt").to(device)
+    with torch.no_grad():
+        features = model(**inputs).last_hidden_state.mean(dim=1)
+    return features.squeeze()
 
-    # Get emulator bounds
+def click_best_dino_match(template_path, threshold=0.5):
+    # Load template
+    template_img = Image.open(template_path).convert("RGB")
+    tW, tH = template_img.size
+    template_feature = extract_feature(template_img)
+
+    # Get emulator bounds and screenshot
     left, top, width, height = get_memu_bounds()
+    screen_np = grab_screen_region(left, top, width, height)
+    screen_rgb = cv2.cvtColor(screen_np, cv2.COLOR_BGRA2RGB)
 
-    # Capture emulator window
-    screenshot = grab_screen_region(left, top, width, height)
-    gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
-
-    # Define vertical brown belt region (centered)
-    belt_left = int(width * 0)
-    belt_right = int(width * 0.8)
-    belt_top = int(height * 0.25)
+    # Focus on vertical brown belt region
+    belt_left   = int(width * 0.0)
+    belt_right  = int(width * 0.8)
+    belt_top    = int(height * 0.25)
     belt_bottom = int(height * 0.8)
+    belt_crop = screen_rgb[belt_top:belt_bottom, belt_left:belt_right]
 
-    cropped = gray[belt_top:belt_bottom, belt_left:belt_right]
+    screen_h, screen_w = belt_crop.shape[:2]
+    stride = int(max(tW, tH) * 0.75)
 
-    # Save debug image
-    debug_output_path = os.path.join(ROOT_DIR, "debug", "debug_bread_search_region.png")
-    cv2.imwrite(debug_output_path, cropped)
-    print(f"📸 Saved vertical belt search region to: {debug_output_path}")
+    best_score = -1
+    best_coords = None
 
-    best_val = -1
-    best_loc = None
-    best_scale = None
-    best_template = None
+    for y in range(0, screen_h - tH, stride):
+        for x in range(0, screen_w - tW, stride):
+            region = belt_crop[y:y+tH, x:x+tW]
+            region_pil = Image.fromarray(region)
+            region_feature = extract_feature(region_pil)
 
-    # Try multiple scales (slightly larger)
-    for scale in [0.5, 0.6, 0.7, 0.8, 0.9, 1]:
-        resized_template = cv2.resize(template, (int(tW * scale), int(tH * scale)))
-        rH, rW = resized_template.shape[:2]
-        result = cv2.matchTemplate(cropped, resized_template, cv2.TM_CCOEFF_NORMED)
-        _, max_val, _, max_loc = cv2.minMaxLoc(result)
+            sim = torch.nn.functional.cosine_similarity(template_feature, region_feature, dim=0).item()
 
-        if max_val > best_val:
-            best_val = max_val
-            best_loc = max_loc
-            best_scale = scale
-            best_template = resized_template
+            if sim > best_score:
+                best_score = sim
+                best_coords = (belt_left + x + tW // 2, belt_top + y + tH // 2)
 
-    if best_val >= threshold:
-        match_x, match_y = best_loc
-        match_h, match_w = best_template.shape[:2]
-
-        # Adjust for full-screen coordinates
-        center_x = left + belt_left + match_x + match_w // 2
-        center_y = top + belt_top + match_y + match_h // 2
-
-        pyautogui.moveTo(center_x, center_y, duration=0.2)
+    if best_score >= threshold and best_coords:
+        abs_x, abs_y = left + best_coords[0], top + best_coords[1]
+        pyautogui.moveTo(abs_x, abs_y, duration=0.2)
         pyautogui.click()
-        print(f"✅ Clicked match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(f"✅ Clicked DINOv2 match at ({abs_x}, {abs_y}) with confidence {best_score:.3f}")
         return True
     else:
-        print(f"❌ No match found. Highest confidence: {best_val:.3f}")
+        print(f"❌ No match found. Best confidence: {best_score:.3f}")
         return False
 
 def click_jar():
     template_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_pasta_cropped.png"
-    click_best_template_match(template_path)
+    click_best_dino_match(template_path)
 
 def main():
     click_jar()
