@@ -23,7 +23,7 @@ def run_cook_station():
     stir()
     time.sleep(40)
     click_pot()
-    time.sleep(0.5)
+    time.sleep(20)
     drag_pasta_to_plate()
 
 def run_random():
