@@ -1,54 +1,56 @@
+import os
+import sys
 import cv2
-import numpy as np
 
-def parse_ticket(ticket_img):
+from utils.detect_ticket_from_template import detect_ticket_from_template
+from utils.remove_background import remove_background_and_crop
+
+# Setup root imports from parse_ticket.py inside utils/
+CURRENT_DIR = os.path.dirname(__file__)  # points to pastaria_bot/utils/
+ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))  # one level up to pastaria_bot/
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
+DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
+os.makedirs(DEBUG_DIR, exist_ok=True)
+
+def crop_ticket_regions(ticket_img):
     h, w = ticket_img.shape[:2]
-
-    # Section boundaries (top, bottom) based on % height
-    regions = {
-        "order":     ticket_img[int(0.0000*h):int(0.0795*h), :],
-        "bread":     ticket_img[int(0.0795*h):int(0.1712*h), :],
-        "topping1":  ticket_img[int(0.1712*h):int(0.2493*h), :],
-        "topping2":  ticket_img[int(0.2493*h):int(0.3301*h), :],
-        "topping3":  ticket_img[int(0.3301*h):int(0.4109*h), :],
-        "topping4":  ticket_img[int(0.4109*h):int(0.4917*h), :],
-        "sauce":     ticket_img[int(0.4917*h):int(0.5726*h), :],
-        "pasta":     ticket_img[int(0.5726*h):int(0.6534*h), :],
-        "doneness":  ticket_img[int(0.6534*h):int(0.7260*h), :]
+    return {
+        "order":     ticket_img[int(0.0000*h):int(0.1094*h), :],
+        "bread":     ticket_img[int(0.1094*h):int(0.2575*h), :],
+        "topping1":  ticket_img[int(0.2575*h):int(0.3687*h), :],
+        "topping2":  ticket_img[int(0.3687*h):int(0.4746*h), :],
+        "topping3":  ticket_img[int(0.4746*h):int(0.5804*h), :],
+        "topping4":  ticket_img[int(0.5804*h):int(0.6862*h), :],
+        "sauce":     ticket_img[int(0.6862*h):int(0.7921*h), :],
+        "pasta":     ticket_img[int(0.7921*h):int(0.9273*h), :],
+        "doneness":  ticket_img[int(0.9273*h):int(1.0000*h), :]
     }
 
-    # For debug: save each region to verify visually
-    for name, region in regions.items():
-        cv2.imwrite(f"debug_{name}.png", region)
+def get_filtered_pasta_icon():
+    print("🎟️ Detecting ticket...")
+    ticket_img = detect_ticket_from_template()
+    if ticket_img is None:
+        print("❌ Ticket detection failed.")
+        return
 
-    # Placeholder logic — replace with matching functions later
-    parsed = {
-        "bread": classify_section(regions["bread"], "bread"),
-        "toppings": [
-            classify_section(regions["topping1"], "topping"),
-            classify_section(regions["topping2"], "topping"),
-            classify_section(regions["topping3"], "topping"),
-            classify_section(regions["topping4"], "topping")
-        ],
-        "sauce": classify_section(regions["sauce"], "sauce"),
-        "pasta": classify_section(regions["pasta"], "pasta"),
-        "doneness": estimate_doneness(regions["doneness"])
-    }
+    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    cv2.imwrite(debug_ticket_path, ticket_img)
 
-    # Remove empty toppings
-    parsed["toppings"] = [t for t in parsed["toppings"] if t != "none"]
+    print("✂️ Cropping ticket regions...")
+    regions = crop_ticket_regions(ticket_img)
 
-    return parsed
+    pasta_img_bgr = regions["pasta"]
+    pasta_img_path = os.path.join(ROOT_DIR, "debug", "debug_pasta_raw.png")
+    pasta_out_path = os.path.join(ROOT_DIR, "debug", "debug_pasta_cropped.png")
 
+    os.makedirs(os.path.dirname(pasta_img_path), exist_ok=True)
+    cv2.imwrite(pasta_img_path, pasta_img_bgr)
 
-# === Stub Functions ===
+    # ✅ Remove background and crop
+    print("🔍 Removing background from pasta icon...")
+    remove_background_and_crop(pasta_img_path, pasta_out_path)
+    print(f"✅ Pasta icon saved to: {pasta_out_path}")
 
-def classify_section(img, category):
-    """Return placeholder based on visual section."""
-    # TODO: Replace with template or on-screen match
-    return f"{category}_placeholder"
-
-def estimate_doneness(img):
-    """Estimate doneness based on orange bar fill."""
-    # TODO: Implement pixel intensity scan
-    return "medium"
+get_filtered_pasta_icon()

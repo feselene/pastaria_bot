@@ -3,7 +3,7 @@ import numpy as np
 import pyautogui
 import mss
 from utils.get_memu_position import get_memu_bounds
-import sys
+from time import sleep
 import os
 
 TEMPLATE_PATH = os.path.abspath(os.path.join(
@@ -26,6 +26,7 @@ def grab_emulator_region():
 
 
 def click_leftmost_plus_button():
+    print("🍳 Opening pot...")
     screenshot, offset_x, offset_y = grab_emulator_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(TEMPLATE_PATH, 0)
@@ -54,6 +55,7 @@ def click_leftmost_plus_button():
     pyautogui.click()
 
     print(f"✅ Clicked leftmost plus at ({center_x}, {center_y})")
+    sleep(0.3)
     return True
 
 
