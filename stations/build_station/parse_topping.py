@@ -86,11 +86,26 @@ def center_contains_x(box_img, debug=False):
 
     return found_45 and found_135
 
-for i in range(1, 5):
-    path = os.path.join(DEBUG_DIR, f"debug_topping{i}_raw.png")
-    img = cv2.imread(path)
 
-    if center_contains_x(img):
-        print(f"❌ Topping {i}: Detected an X in center.")
-    else:
-        print(f"✅ Topping {i}: No X in center.")
+def process_topping_boxes():
+    for i in range(1, 5):
+        path = os.path.join(DEBUG_DIR, f"debug_topping{i}_raw.png")
+        img = cv2.imread(path)
+
+        if is_box_empty(img):
+            continue
+        elif center_contains_x(img):
+            apply_ingredient(path)
+        else:
+            apply_topping(path)
+
+def apply_ingredient(path):
+    select_ingredient(path)
+    return True
+
+def apply_topping(path):
+    select_ingredient(path)
+    return True
+
+def select_ingredient(path):
+    return True
