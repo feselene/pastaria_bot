@@ -19,8 +19,8 @@ from utils.click_build_button import click_build_button
 from utils.click_start_button import click_start_button
 
 def main():
-    # click_start_button()
-    # time.sleep(20)
+    click_start_button()
+    time.sleep(20)
 
     for i in range(6):
         print("▶️ Running Order Station...")
