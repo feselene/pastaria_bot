@@ -104,4 +104,33 @@ def get_filtered_sauce_icon():
     crop(sauce_img_path, sauce_out_path)
     print(f"✅ Sauce icon saved to: {sauce_out_path}")
 
-get_filtered_pasta_icon()
+def get_filtered_topping_icon(topping_number: int):
+    region_key = f"topping{topping_number}"
+    raw_filename = f"debug_topping{topping_number}_raw.png"
+    cropped_filename = f"debug_topping{topping_number}_cropped.png"
+
+    print("🎟️ Detecting ticket...")
+    ticket_img = detect_ticket_from_template()
+    if ticket_img is None:
+        print("❌ Ticket detection failed.")
+        return
+
+    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    cv2.imwrite(debug_ticket_path, ticket_img)
+
+    print("✂️ Cropping ticket regions...")
+    regions = crop_ticket_regions(ticket_img)
+
+    if region_key not in regions:
+        print(f"❌ Invalid topping number: {topping_number}")
+        return
+
+    topping_img_bgr = regions[region_key]
+    raw_path = os.path.join(ROOT_DIR, "debug", raw_filename)
+    cropped_path = os.path.join(ROOT_DIR, "debug", cropped_filename)
+
+    os.makedirs(os.path.dirname(raw_path), exist_ok=True)
+    cv2.imwrite(raw_path, topping_img_bgr)
+
+    return raw_path
+

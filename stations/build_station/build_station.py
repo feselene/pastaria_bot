@@ -12,13 +12,17 @@ from stations.build_station.click_tomato_jar import click_tomato_jar
 from stations.build_station.click_jar import click_jar
 from stations.build_station.apply_sauce import apply_sauce
 from stations.build_station.click_checkmark import click_checkmark
-from utils.parse_ticket import get_filtered_sauce_icon
+from utils.parse_ticket import get_filtered_sauce_icon, get_filtered_topping_icon
 
 def run_build_station():
     get_filtered_sauce_icon()
     click_jar()
     apply_sauce()
     time.sleep(0.5)
+    get_filtered_topping_icon(1)
+    get_filtered_topping_icon(2)
+    get_filtered_topping_icon(3)
+    get_filtered_topping_icon(4)
     click_checkmark()
 
 def run_random():
