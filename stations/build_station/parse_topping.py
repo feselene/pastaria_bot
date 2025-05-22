@@ -7,11 +7,6 @@ ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
 
-topping1 = os.path.join(DEBUG_DIR, "debug_topping1_raw.png")
-topping2 = os.path.join(DEBUG_DIR, "debug_topping2_raw.png")
-topping3 = os.path.join(DEBUG_DIR, "debug_topping3_raw.png")
-topping4 = os.path.join(DEBUG_DIR, "debug_topping4_raw.png")
-
 def is_box_empty(img, tolerance=10, match_ratio=0.6):
     """
     Determines if a UI ingredient box is empty based on uniform color coverage.
@@ -85,27 +80,3 @@ def center_contains_x(box_img, debug=False):
         cv2.destroyAllWindows()
 
     return found_45 and found_135
-
-
-def process_topping_boxes():
-    for i in range(1, 5):
-        path = os.path.join(DEBUG_DIR, f"debug_topping{i}_raw.png")
-        img = cv2.imread(path)
-
-        if is_box_empty(img):
-            continue
-        elif center_contains_x(img):
-            apply_ingredient(path)
-        else:
-            apply_topping(path)
-
-def apply_ingredient(path):
-    select_ingredient(path)
-    return True
-
-def apply_topping(path):
-    select_ingredient(path)
-    return True
-
-def select_ingredient(path):
-    return True
