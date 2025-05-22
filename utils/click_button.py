@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import pyautogui
 import mss
-from get_memu_position import get_memu_bounds
+from utils.get_memu_position import get_memu_bounds
 
 
 def grab_screen_region(x, y, width, height):
