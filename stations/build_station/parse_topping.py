@@ -15,6 +15,9 @@ os.makedirs(TOPPINGS_DIR, exist_ok=True)
 from skimage.metrics import structural_similarity as ssim
 from utils.parse_ticket import get_filtered_topping_icon
 
+from utils.remove_background import remove_background_and_crop
+from utils.detect_ticket_from_template import detect_ticket_from_template
+
 def is_box_empty(img, tolerance=10, match_ratio=0.6):
     """
     Determines if a UI ingredient box is empty based on uniform color coverage.
@@ -75,7 +78,7 @@ def center_contains_x(img):
     # Compute SSIM
     score, _ = ssim(img_gray, ref_gray, full=True)
 
-    return score > 0.9
+    return score > 0.5
 
 def process_topping_boxes():
     for i in range(1, 5):
@@ -99,10 +102,12 @@ def apply_ingredient(image_path):
     numname = "num_" + basename
     h, w = img.shape[:2]
     cropped = img[:, : int(w * 0.45)]
+
     cropped_num = img[:, int(w * 0.65) : int(w * 0.875)]
     save_path = os.path.join(TOPPINGS_DIR, basename)
     save_path_num = os.path.join(TOPPINGS_DIR, numname)
     cv2.imwrite(save_path, cropped)
+    remove_background_and_crop(save_path, save_path)
     cv2.imwrite(save_path_num, cropped_num)
 
 
@@ -119,6 +124,14 @@ def apply_sauce(image_path):
 
 
 def main():
+    print("🎟️ Detecting ticket...")
+    ticket_img = detect_ticket_from_template()
+    if ticket_img is None:
+        print("❌ Ticket detection failed.")
+        return
+
+    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    cv2.imwrite(debug_ticket_path, ticket_img)
     get_filtered_topping_icon(1)
     get_filtered_topping_icon(2)
     get_filtered_topping_icon(3)
