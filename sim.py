@@ -1,6 +1,6 @@
 import pyautogui
 import time
-from utils.get_memu_position import get_memu_bounds  # Make sure this import is valid
+from utils.get_memu_resolution import get_memu_bounds  # Make sure this import is valid
 
 def swipe_topping_picker_left():
     x_ratio = 0.422

@@ -3,7 +3,7 @@ import mss
 import numpy as np
 import pyautogui
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 
 
 def grab_screen_region(x, y, width, height):

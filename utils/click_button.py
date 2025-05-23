@@ -7,7 +7,7 @@ import re
 import os
 import sys
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Replace with your ADB path if needed
 CURRENT_DIR = os.path.dirname(__file__)
@@ -109,7 +109,7 @@ def drag_ratios(start_x_ratio=0.72, start_y_ratio=0.46,
     :param end_y_ratio: Vertical ratio of the end point (0.0 to 1.0)
     :param duration: Time in seconds for the drag (converted to milliseconds)
     """
-    from utils.get_memu_position import get_memu_bounds
+    from utils.get_memu_resolution import get_memu_bounds
     from utils.click_button import get_memu_resolution  # Assumes you have this defined
 
     memu_width, memu_height = get_memu_resolution()

@@ -16,8 +16,8 @@ OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 
-from utils.get_memu_position import get_memu_bounds
-from utils.get_memu_position import get_memu_resolution
+from utils.get_memu_resolution import get_memu_bounds
+from utils.get_memu_resolution import get_memu_resolution
 
 
 def adb_tap(x, y):

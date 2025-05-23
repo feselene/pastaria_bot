@@ -6,7 +6,7 @@ import mss
 import numpy as np
 import pyautogui
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 
 TEMPLATE_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../assets/plus_template.png")

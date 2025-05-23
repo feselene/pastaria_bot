@@ -14,7 +14,7 @@ os.makedirs(DEBUG_DIR, exist_ok=True)
 
 import pyautogui
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 
 
 def click_center_topping_picker():

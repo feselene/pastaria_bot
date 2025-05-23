@@ -22,7 +22,7 @@ os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 from utils.gemini_matcher import is_matching
 
 topping1 = os.path.join(TOPPINGS_DIR, "topping1.png")

@@ -11,7 +11,7 @@ ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_position import get_memu_resolution
+from utils.get_memu_resolution import get_memu_resolution
 from stations.build_station.click_jar import click_jar
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"

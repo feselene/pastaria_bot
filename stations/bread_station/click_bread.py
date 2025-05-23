@@ -16,7 +16,7 @@ if ROOT_DIR not in sys.path:
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 
 
 def grab_screen_region(x, y, width, height):

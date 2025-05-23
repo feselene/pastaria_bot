@@ -23,7 +23,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 model = AutoModel.from_pretrained("facebook/dinov2-base").to(device).eval()
 processor = AutoProcessor.from_pretrained("facebook/dinov2-base")
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds
 
 
 def grab_screen_region(x, y, width, height):
