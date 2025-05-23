@@ -19,10 +19,11 @@ def is_matching(imgpath1, imgpath2) -> str:
 
     response = model.generate_content(
         [
-            "Compare image A (current topping picker selection) and image B (ingredient from the order ticket).",
-            "Are they the same ingredient?",
-            "Respond in this exact format: 'yes' or 'no', followed by a numeric confidence score from 0 to 1.",
-            "Example: yes, 0.92",
+            (
+                "You are comparing two image icons: image A (from the current topping picker selection) "
+                "and image B (from the order ticket). Do they have the same icon?"
+                "Yes or no."
+            ),
             {"mime_type": "image/png", "data": image1},
             {"mime_type": "image/png", "data": image2},
         ],

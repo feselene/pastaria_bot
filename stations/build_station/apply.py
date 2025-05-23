@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-
+import re
 import cv2
 import mss
 import numpy as np
@@ -99,6 +99,14 @@ import shutil
 MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
 os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the matches directory exists
 
+def sanitize_filename_component(text):
+    """
+    Converts any string into a safe component for filenames.
+    Keeps only letters, numbers, and underscores.
+    Replaces all other characters with underscores.
+    """
+    return re.sub(r'\W+', '_', text)
+
 def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
     """
     Repeatedly swipes the topping picker left until the captured image matches the target ingredient.
@@ -112,22 +120,13 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
         current_path = capture_center_picker_square()
         match_response = is_matching(current_path, cropped_path)
 
-        # Parse answer and confidence
-        try:
-            answer, confidence = match_response.split(",")
-            answer = answer.strip()
-            confidence = float(confidence.strip())
-        except Exception:
-            answer = "unknown"
-            confidence = 0.0
+        if 'yes' in match_response:
+            print(f"✅ Match found on attempt {attempt}: {current_path}")
 
-        # ✅ Require exact 'yes' and confidence > 0.8
-        if answer == "yes" and confidence > 0.8:
-            print(f"✅ Match found on attempt {attempt}: {current_path} (confidence: {confidence:.2f})")
+            safe_match_response = sanitize_filename_component(match_response)
 
-            match_base = f"match_{attempt:02}_conf_{confidence:.2f}"
-            current_dest = os.path.join(MATCHES_DIR, f"{match_base}_current.png")
-            target_dest = os.path.join(MATCHES_DIR, f"{match_base}_target.png")
+            current_dest = os.path.join(MATCHES_DIR, f"{safe_match_response}_current.png")
+            target_dest = os.path.join(MATCHES_DIR, f"{safe_match_response}_target.png")
 
             shutil.copy(current_path, current_dest)
             shutil.copy(cropped_path, target_dest)
