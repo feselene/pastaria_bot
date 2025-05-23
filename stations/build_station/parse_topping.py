@@ -115,9 +115,6 @@ def extract_digit(image_path):
     # Increase contrast and threshold
     _, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY_INV)
 
-    # Optional: save debug view
-    cv2.imwrite("debug_thresh.png", thresh)
-
     # Tesseract config
     config = r'--psm 10 -c tessedit_char_whitelist=0123456789'
     raw_result = pytesseract.image_to_string(thresh, config=config)

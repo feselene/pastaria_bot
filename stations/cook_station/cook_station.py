@@ -9,33 +9,23 @@ if ROOT_DIR not in sys.path:
 
 from stations.cook_station.click_jar import click_jar
 from stations.cook_station.click_leftmost_cook_button import click_leftmost_plus_button
-from stations.cook_station.click_pot import click_pot
 from stations.cook_station.drag_pasta_to_plate import drag_pasta_to_plate
 from stations.cook_station.stir import stir
 from utils.parse_ticket import get_filtered_pasta_icon
-from stations.cook_station.click_boost import click_boost
+from utils.click_button import click_from_assets, click_and_hold_from_assets
 
 def run_cook_station():
     click_leftmost_plus_button()
     get_filtered_pasta_icon()
     time.sleep(1)
     click_jar()
-    click_boost()
+    time.sleep(2)
+    click_and_hold_from_assets("cook_boost.png", 19, threshold=0.8)
     stir()
-    click_boost()
-    click_pot()
+    time.sleep(2)
+    click_and_hold_from_assets("cook_boost.png", 19, threshold=0.8)
+    click_from_assets("pot.png")
     time.sleep(13)
-    drag_pasta_to_plate()
-
-
-def run_random():
-    click_leftmost_plus_button()
-    click_jar()
-    time.sleep(5)
-    stir()
-    time.sleep(5)
-    click_pot()
-    time.sleep(0.5)
     drag_pasta_to_plate()
 
 

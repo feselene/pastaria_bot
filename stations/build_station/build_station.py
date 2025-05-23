@@ -9,7 +9,6 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from stations.build_station.apply_sauce import apply_sauce
-from stations.build_station.click_checkmark import click_checkmark
 from stations.build_station.click_jar import click_jar
 from utils.parse_ticket import get_filtered_sauce_icon, get_filtered_topping_icon
 from stations.build_station.parse_topping import process_topping_boxes
