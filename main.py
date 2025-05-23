@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import subprocess
 
 from utils.click_build_button import click_build_button
 from clean import clean_files
@@ -20,8 +21,21 @@ from utils.click_build_button import click_build_button
 from utils.click_cook_button import click_cook_button
 from utils.click_start_button import click_start_button
 
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+ADB_PORT = 21503  # Default for MEmu instance 1
+
+def try_adb_connect(port=ADB_PORT):
+    target = f"127.0.0.1:{port}"
+    print(f"🔌 Attempting ADB connect to {target}...")
+    try:
+        subprocess.run([ADB_PATH, "connect", target], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"✅ ADB connected to {target}")
+    except subprocess.CalledProcessError:
+        print(f"❌ Failed to connect to MEmu via ADB on port {port}")
+        raise SystemExit("Exiting due to ADB failure.")
 
 def main():
+    try_adb_connect()
     click_start_button()
     time.sleep(20)
 
