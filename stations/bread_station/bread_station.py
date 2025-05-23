@@ -9,7 +9,7 @@ if ROOT_DIR not in sys.path:
 
 from stations.bread_station.click_bread import click_bread
 from utils.parse_ticket import get_filtered_bread_icon
-from utils.click_button import click_from_assets, click_and_hold_from_assets, drag_image_to_ratio, drag_ratios
+from utils.click_button import click_from_assets, click_and_hold_from_assets, drag_ratios
 
 def run_bread_station():
     click_from_assets(filename="bread_menu.png")
