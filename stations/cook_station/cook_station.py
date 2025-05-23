@@ -22,7 +22,7 @@ def run_cook_station():
     click_jar()
     click_boost()
     stir()
-    time.sleep(40)
+    click_boost()
     click_pot()
     time.sleep(13)
     drag_pasta_to_plate()

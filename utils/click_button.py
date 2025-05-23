@@ -2,6 +2,7 @@ import cv2
 import mss
 import numpy as np
 import pyautogui
+import time
 
 from utils.get_memu_position import get_memu_bounds
 
