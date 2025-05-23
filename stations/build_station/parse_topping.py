@@ -2,6 +2,7 @@ import os
 import sys
 import cv2
 import numpy as np
+import pytesseract
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -11,9 +12,13 @@ DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 TOPPINGS_DIR = os.path.join(ROOT_DIR, "toppings")
 os.makedirs(DEBUG_DIR, exist_ok=True)
 os.makedirs(TOPPINGS_DIR, exist_ok=True)
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 from skimage.metrics import structural_similarity as ssim
 from utils.parse_ticket import get_filtered_topping_icon
+from stations.build_station.apply import select_ingredient
+from stations.build_station.apply_sauce import apply_sauce
+from stations.build_station.click_plate import click_plate
 
 from utils.remove_background import remove_background_and_crop
 from utils.detect_ticket_from_template import detect_ticket_from_template
@@ -93,7 +98,32 @@ def process_topping_boxes():
             apply_ingredient(image_path)
         else:
             print(image_path + "is a sauce")
-            apply_sauce(image_path)
+            apply_shaker(image_path)
+
+import cv2
+
+def extract_digit(image_path):
+    image = cv2.imread(image_path)
+
+    # Resize for better OCR accuracy
+    image = cv2.resize(image, None, fx=4, fy=4, interpolation=cv2.INTER_LINEAR)
+
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Increase contrast and threshold
+    _, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY_INV)
+
+    # Optional: save debug view
+    cv2.imwrite("debug_thresh.png", thresh)
+
+    # Tesseract config
+    config = r'--psm 10 -c tessedit_char_whitelist=0123456789'
+    raw_result = pytesseract.image_to_string(thresh, config=config)
+    cleaned = ''.join(filter(str.isdigit, raw_result))
+
+    # print(f"OCR Raw: {repr(raw_result)} | Cleaned: {cleaned}")
+    return int(cleaned) if cleaned else None
 
 
 def apply_ingredient(image_path):
@@ -109,15 +139,21 @@ def apply_ingredient(image_path):
     cv2.imwrite(save_path, cropped)
     remove_background_and_crop(save_path, save_path)
     cv2.imwrite(save_path_num, cropped_num)
+    select_ingredient(save_path)
+    num = extract_digit(save_path_num)
+    for i in range(num + 1):
+        click_plate()
 
 
-def apply_sauce(image_path):
+def apply_shaker(image_path):
     img = cv2.imread(image_path)
     basename = os.path.basename(image_path)
     h, w = img.shape[:2]
     cropped = img[int(h * 0.05):int(h * 0.92), int(w * 0.38):int(w * 0.61)]
     save_path = os.path.join(TOPPINGS_DIR, basename)
     cv2.imwrite(save_path, cropped)
+    select_ingredient(save_path)
+    apply_sauce()
 
 
 def main():

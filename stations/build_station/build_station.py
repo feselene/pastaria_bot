@@ -13,7 +13,7 @@ from stations.build_station.click_checkmark import click_checkmark
 from stations.build_station.click_jar import click_jar
 from stations.build_station.click_tomato_jar import click_tomato_jar
 from utils.parse_ticket import get_filtered_sauce_icon, get_filtered_topping_icon
-
+from stations.build_station.parse_topping import process_topping_boxes
 
 def run_build_station():
     get_filtered_sauce_icon()
@@ -24,6 +24,7 @@ def run_build_station():
     get_filtered_topping_icon(2)
     get_filtered_topping_icon(3)
     get_filtered_topping_icon(4)
+    process_topping_boxes()
     click_checkmark()
 
 

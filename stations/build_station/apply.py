@@ -9,33 +9,37 @@ import pyautogui
 from PIL import Image
 from rembg import remove
 
+from dotenv import load_dotenv
+load_dotenv()
+
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
+TOPPINGS_DIR = os.path.join(ROOT_DIR, "toppings")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from stations.build_station.parse_topping import center_contains_x, is_box_empty
 from utils.get_memu_position import get_memu_bounds
+from utils.gemini_matcher import is_matching
 
-topping1 = os.path.join(DEBUG_DIR, "debug_topping1_raw.png")
-topping2 = os.path.join(DEBUG_DIR, "debug_topping2_raw.png")
-topping3 = os.path.join(DEBUG_DIR, "debug_topping3_raw.png")
-topping4 = os.path.join(DEBUG_DIR, "debug_topping4_raw.png")
+topping1 = os.path.join(TOPPINGS_DIR, "topping1.png")
+topping2 = os.path.join(TOPPINGS_DIR, "topping2.png")
+topping3 = os.path.join(TOPPINGS_DIR, "topping3.png")
+topping4 = os.path.join(TOPPINGS_DIR, "topping4.png")
 
 
 def capture_center_picker_square():
     x_ratio = 0.422
     y_ratio = 0.32
-    square_size = 200
+    square_size = 150
     half = square_size / 2
     left, top, width, height = get_memu_bounds()
     center_x = int(left + width * x_ratio)
     center_y = int(top + height * y_ratio)
 
     region = {
-        "left": center_x - half,
-        "top": center_y - half,
+        "left": int(center_x - half),
+        "top": int(center_y - half),
         "width": square_size,
         "height": square_size,
     }
@@ -43,10 +47,8 @@ def capture_center_picker_square():
     with mss.mss() as sct:
         img = np.array(sct.grab(region))
 
-    # Save the captured region
     output_path = os.path.join(DEBUG_DIR, f"topping_active.png")
     cv2.imwrite(output_path, img)
-    print(f"✅ Saved {square_size}x{square_size} picker center to {output_path}")
     return output_path
 
 
@@ -86,59 +88,40 @@ def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     return result
 
 
-def compute_orb_similarity(img1, img2, distance_threshold=50):
+def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0.5):
     """
-    Computes the ORB match ratio between two images.
+    Repeatedly swipes the topping picker left until the captured image matches the target ingredient.
+    Stops after `max_attempts` to avoid infinite loops.
+
+    :param cropped_path: Path to the target cropped ingredient image
+    :param max_attempts: Max number of swipes to attempt
+    :param delay_between_swipes: Time to wait between swipes (in seconds)
     """
-    orb = cv2.ORB_create()
-    kp1, des1 = orb.detectAndCompute(img1, None)
-    kp2, des2 = orb.detectAndCompute(img2, None)
+    for attempt in range(1, max_attempts + 1):
+        current_path = capture_center_picker_square()
+        match = is_matching(current_path, cropped_path)
 
-    if des1 is None or des2 is None or len(des1) == 0 or len(des2) == 0:
-        return 0.0
-
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    matches = bf.match(des1, des2)
-
-    if not matches:
-        return 0.0
-
-    good_matches = [m for m in matches if m.distance < distance_threshold]
-    match_ratio = len(good_matches) / len(matches)
-    return match_ratio
-
-
-def select_ingredient(cropped_path, threshold=0.2, max_attempts=1):
-    """
-    Scrolls through the topping picker until the cropped image is found using ORB feature matching.
-
-    Parameters:
-        cropped_path (str): Path to the template image.
-        threshold (float): ORB match ratio threshold.
-        max_attempts (int): Max swipes before giving up.
-
-    Returns:
-        bool: True if match found, False otherwise.
-    """
-    template = cv2.imread(cropped_path)
-    if template is None:
-        raise FileNotFoundError(f"Template not found: {cropped_path}")
-
-    for attempt in range(max_attempts):
-        output_path = capture_center_picker_square()
-        search_img = cv2.imread(output_path)
-        if search_img is None:
-            continue
-
-        match_ratio = compute_orb_similarity(template, search_img)
-        print(f"🔍 Attempt {attempt + 1}: ORB Match Ratio = {match_ratio:.3f}")
-
-        if match_ratio >= threshold:
-            print("✅ Ingredient match found via ORB!")
+        if match:
+            print(f"✅ Match found on attempt {attempt}: {current_path}")
             return True
 
+        print(f"❌ No match on attempt {attempt}, swiping...")
         swipe_topping_picker_left()
-        time.sleep(0.6)  # Give UI time to update
+        time.sleep(delay_between_swipes)
 
-    print("❌ Failed to find ingredient after max attempts.")
+    print("⚠️ Maximum attempts reached without finding a match.")
     return False
+
+def main():
+    # Choose the target topping image to search for
+    print(os.getenv("GEMINI_API_KEY"))
+    target_topping = topping4
+    success = select_ingredient(target_topping)
+
+    if success:
+        print("🎯 Ingredient successfully selected!")
+    else:
+        print("❌ Ingredient not found.")
+
+if __name__ == "__main__":
+    main()
