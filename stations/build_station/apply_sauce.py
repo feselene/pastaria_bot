@@ -3,51 +3,43 @@ import sys
 import time
 
 import pyautogui
+import subprocess
+
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_position import get_memu_bounds
+from utils.get_memu_position import get_memu_resolution
 
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 def apply_sauce():
-    left, top, width, height = get_memu_bounds()
+    memu_width, memu_height = get_memu_resolution()
+    center_x = memu_width // 2
+    center_y = int(memu_height * 0.65)
 
-    # Step 2: Estimate plate center
-    plate_center_x = left + width // 2
-    plate_center_y = top + int(height * 0.65)  # approx. 65% down
+    # Offset ratios relative to screen width
+    offset_ratios = [0.10, 0.10, 0.15, 0.15, 0.20, 0.20, 0.10, 0.10, 0.10]
 
-    # Step 3: Define drag range (e.g., 150 pixels left/right)
-    drag_distance = 150
-    drag_left_x = plate_center_x - drag_distance
-    drag_right_x = plate_center_x + drag_distance
-    drag_left_x2 = plate_center_x - 1.5 * drag_distance
-    drag_right_x2 = plate_center_x + 1.5 * drag_distance
-    drag_left_x3 = plate_center_x - 2 * drag_distance
-    drag_right_x3 = plate_center_x + 2 * drag_distance
+    for i, ratio in enumerate(offset_ratios):
+        offset = int(memu_width * ratio)
+        start_x = center_x - offset
+        end_x = center_x + offset
+        duration_ms = 200
 
-    # Step 4: Perform drag
-    pyautogui.moveTo(plate_center_x, plate_center_y, duration=0.1)
-    pyautogui.mouseDown()
-    time.sleep(0.05)
-    pyautogui.moveTo(drag_right_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_left_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_right_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_left_x2, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_right_x2, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_left_x3, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_right_x3, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_left_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_right_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_left_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_right_x, plate_center_y, duration=0.2)
-    pyautogui.moveTo(drag_left_x, plate_center_y, duration=0.2)
-    pyautogui.mouseUp()
+        if i % 2 == 0:
+            adb_swipe(start_x, center_y, end_x, center_y, duration_ms)
+        else:
+            adb_swipe(end_x, center_y, start_x, center_y, duration_ms)
 
     print("✅ Stirred pasta side-to-side.")
 
+
+def adb_swipe(x1, y1, x2, y2, duration_ms=200):
+    subprocess.run([ADB_PATH, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(duration_ms)],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == "__main__":
     apply_sauce()
