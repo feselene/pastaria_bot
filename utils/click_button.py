@@ -46,6 +46,92 @@ def click_and_hold_from_assets(filename, hold_duration=1.0, threshold=0.85):
 
     return click_and_hold(template_path, hold_duration=hold_duration, threshold=threshold)
 
+def drag(filename1, filename2, threshold=0.85, duration_ms=300):
+    """
+    Matches two asset templates and performs a drag from the center of the first
+    to the center of the second using drag_ratios (ADB only).
+
+    :param filename1: Starting image filename in assets/
+    :param filename2: Ending image filename in assets/
+    :param threshold: Template match confidence threshold
+    :param duration_ms: Duration of the drag in milliseconds
+    """
+    path1 = os.path.join(ASSETS_DIR, filename1)
+    path2 = os.path.join(ASSETS_DIR, filename2)
+
+    for path in [path1, path2]:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"❌ Asset not found: {path}")
+
+    template1 = cv2.imread(path1, 0)
+    template2 = cv2.imread(path2, 0)
+    if template1 is None or template2 is None:
+        raise FileNotFoundError("❌ One of the templates could not be read.")
+
+    w1, h1 = template1.shape[::-1]
+    w2, h2 = template2.shape[::-1]
+
+    memu_width, memu_height = get_memu_resolution()
+    screenshot = grab_screen_region(0, 0, memu_width, memu_height)
+    gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+
+    result1 = cv2.matchTemplate(gray, template1, cv2.TM_CCOEFF_NORMED)
+    _, val1, _, loc1 = cv2.minMaxLoc(result1)
+
+    result2 = cv2.matchTemplate(gray, template2, cv2.TM_CCOEFF_NORMED)
+    _, val2, _, loc2 = cv2.minMaxLoc(result2)
+
+    if val1 < threshold or val2 < threshold:
+        return
+
+    # Compute ratio-based coordinates
+    start_x_ratio = (loc1[0] + w1 / 2) / memu_width
+    start_y_ratio = (loc1[1] + h1 / 2) / memu_height
+    end_x_ratio   = (loc2[0] + w2 / 2) / memu_width
+    end_y_ratio   = (loc2[1] + h2 / 2) / memu_height
+
+    drag_ratios(
+        start_x_ratio=start_x_ratio,
+        start_y_ratio=start_y_ratio,
+        end_x_ratio=end_x_ratio,
+        end_y_ratio=end_y_ratio,
+        duration=duration_ms / 1000
+    )
+
+
+import subprocess
+
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
+
+def drag_ratios(start_x_ratio=0.72, start_y_ratio=0.46,
+                end_x_ratio=0.44, end_y_ratio=0.61, duration=0.1):
+    """
+    Drags from a start to an end position using ADB based on ratios of the emulator screen size.
+
+    :param start_x_ratio: Horizontal ratio of the start point (0.0 to 1.0)
+    :param start_y_ratio: Vertical ratio of the start point (0.0 to 1.0)
+    :param end_x_ratio: Horizontal ratio of the end point (0.0 to 1.0)
+    :param end_y_ratio: Vertical ratio of the end point (0.0 to 1.0)
+    :param duration: Time in seconds for the drag (converted to milliseconds)
+    """
+    from utils.get_memu_position import get_memu_bounds
+    from utils.click_button import get_memu_resolution  # Assumes you have this defined
+
+    memu_width, memu_height = get_memu_resolution()
+
+    start_x = int(memu_width * start_x_ratio)
+    start_y = int(memu_height * start_y_ratio)
+    end_x = int(memu_width * end_x_ratio)
+    end_y = int(memu_height * end_y_ratio)
+    duration_ms = int(duration * 1000)
+
+    subprocess.run([
+        ADB_PATH, "shell", "input", "swipe",
+        str(start_x), str(start_y), str(end_x), str(end_y), str(duration_ms)
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    print(f"📱 ADB drag from ({start_x}, {start_y}) to ({end_x}, {end_y}) over {duration_ms}ms")
+
 
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
