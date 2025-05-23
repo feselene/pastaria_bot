@@ -13,7 +13,7 @@ ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 TAKE_ORDER_TEMPLATE = os.path.join(ASSETS_DIR, "take_order_template.png")
 
 
-def click_take_order(retries=10, delay=0.5, threshold=0.85):
+def click_take_order(retries=10, delay=0.5, threshold=0.7):
     print("🛎️ Waiting for TAKE ORDER button...")
     for attempt in range(retries):
         clicked = click_button(TAKE_ORDER_TEMPLATE, threshold=threshold)
