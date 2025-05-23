@@ -9,7 +9,7 @@ import mss
 DEBUG_DIR = "debug"
 os.makedirs(DEBUG_DIR, exist_ok=True)
 
-TEMPLATE_PATH = r"C:\Users\ceo\IdeaProjects\pastaria_bot\toppings\topping4.png"
+TEMPLATE_PATH = r"C:\Users\ceo\IdeaProjects\pastaria_bot\toppings\topping3.png"
 
 def get_memu_bounds():
     import pygetwindow as gw
@@ -39,12 +39,52 @@ def capture_center_picker_square():
     cv2.imwrite(output_path, img)
     return img
 
-def compute_similarity(img1, img2):
-    img2_resized = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
+def compute_all_similarities(img1, img2):
+    img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
     gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    gray2 = cv2.cvtColor(img2_resized, cv2.COLOR_BGR2GRAY)
-    score, _ = ssim(gray1, gray2, full=True)
-    return score
+    gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+    # 1. SSIM
+    ssim_score = ssim(gray1, gray2)
+
+    # 2. MSE
+    mse_score = np.mean((gray1.astype("float") - gray2.astype("float")) ** 2)
+
+    # 3. PSNR
+    psnr_score = cv2.PSNR(gray1, gray2)
+
+    # 4. TM_CCORR_NORMED
+    tm_corr = cv2.matchTemplate(gray1, gray2, cv2.TM_CCORR_NORMED)[0][0]
+
+    # 5. TM_CCOEFF_NORMED
+    tm_coeff = cv2.matchTemplate(gray1, gray2, cv2.TM_CCOEFF_NORMED)[0][0]
+
+    # 6. Histogram Correlation
+    hist1 = cv2.calcHist([gray1], [0], None, [256], [0, 256])
+    hist2 = cv2.calcHist([gray2], [0], None, [256], [0, 256])
+    hist_score = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
+
+    # 7. ORB Feature Matching
+    orb = cv2.ORB_create()
+    kp1, des1 = orb.detectAndCompute(gray1, None)
+    kp2, des2 = orb.detectAndCompute(gray2, None)
+
+    if des1 is not None and des2 is not None:
+        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+        matches = bf.match(des1, des2)
+        orb_score = len(matches)
+    else:
+        orb_score = 0
+
+    return {
+        "SSIM": ssim_score,
+        "MSE": mse_score,
+        "PSNR": psnr_score,
+        "TM_CCORR_NORMED": tm_corr,
+        "TM_CCOEFF_NORMED": tm_coeff,
+        "Histogram Correlation": hist_score,
+        "ORB Matches": orb_score,
+    }
 
 def monitor_similarity_to_cheese(interval=1.0):
     print("🔍 Monitoring topping selector for cheese...")
@@ -55,8 +95,11 @@ def monitor_similarity_to_cheese(interval=1.0):
     try:
         while True:
             captured_img = capture_center_picker_square()
-            score = compute_similarity(captured_img, template)
-            print(f"🔁 Similarity score to cheese: {score:.3f}")
+            scores = compute_all_similarities(captured_img, template)
+
+            print("\n🔁 Similarity Metrics:")
+            for k, v in scores.items():
+                print(f"  {k:25}: {v:.4f}" if isinstance(v, float) else f"  {k:25}: {v}")
             time.sleep(interval)
     except KeyboardInterrupt:
         print("⏹️ Monitoring stopped.")

@@ -115,10 +115,7 @@ def apply_sauce(image_path):
     img = cv2.imread(image_path)
     basename = os.path.basename(image_path)
     h, w = img.shape[:2]
-    crop_width = int(w * 0.25)
-    start_x = (w - crop_width) // 2
-    end_x = start_x + crop_width
-    cropped = img[:, start_x:end_x]
+    cropped = img[int(h * 0.05):int(h * 0.92), int(w * 0.38):int(w * 0.61)]
     save_path = os.path.join(TOPPINGS_DIR, basename)
     cv2.imwrite(save_path, cropped)
 
