@@ -2,6 +2,15 @@
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+import sys
+
+CURRENT_DIR = os.path.dirname(__file__)
+ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
+
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
+from utils.capture import capture_center_picker_square
 
 import time
 import google.api_core.exceptions
@@ -73,7 +82,7 @@ def is_matching2(imgpath1, imgpath2) -> bool:
 
 def main():
     print(os.getenv("GEMINI_API_KEY"))
-    is_matching(r"C:\Users\ceo\IdeaProjects\pastaria_bot\matches\match_03_current.png", r"C:\Users\ceo\IdeaProjects\pastaria_bot\matches\match_03_target.png")
+    image_path = capture_center_picker_square()
 
 if __name__ == "__main__":
     main()
