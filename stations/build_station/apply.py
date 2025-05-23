@@ -55,19 +55,20 @@ def capture_center_picker_square():
 def swipe_topping_picker_left():
     x_ratio = 0.422
     y_ratio = 0.32
-    swipe_offset_ratio = 0.1
+    swipe_offset_ratio = 0.09
     left, top, width, height = get_memu_bounds()
     center_x = int(left + width * x_ratio)
     center_y = int(top + height * y_ratio)
     swipe_x = int(center_x - width * swipe_offset_ratio)
-    pyautogui.moveTo(center_x, center_y, duration=0.05)
+
+    pyautogui.moveTo(center_x, center_y, duration=0.01)
     pyautogui.mouseDown()
     pyautogui.moveTo(swipe_x, center_y, duration=1)
     pyautogui.mouseUp()
+
     print(
         f"⬅️ Swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
     )
-
 
 def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     if cv_image.shape[2] == 3:
@@ -88,7 +89,7 @@ def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     return result
 
 
-def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0.5):
+def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
     """
     Repeatedly swipes the topping picker left until the captured image matches the target ingredient.
     Stops after `max_attempts` to avoid infinite loops.

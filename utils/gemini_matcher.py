@@ -16,7 +16,7 @@ def is_matching(imgpath1, imgpath2) -> bool:
 
     response = model.generate_content(
         [
-            "Do these two images match? Answer one word: yes or no.",
+            "Is this the same ingredient? Answer one word: yes or no.",
             {"mime_type": "image/png", "data": image1},
             {"mime_type": "image/png", "data": image2},
         ],

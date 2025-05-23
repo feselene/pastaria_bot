@@ -3,6 +3,7 @@ import sys
 import cv2
 import numpy as np
 import pytesseract
+import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -141,8 +142,9 @@ def apply_ingredient(image_path):
     cv2.imwrite(save_path_num, cropped_num)
     select_ingredient(save_path)
     num = extract_digit(save_path_num)
-    for i in range(num + 1):
+    for i in range(num):
         click_plate()
+        time.sleep(0.2)
 
 
 def apply_shaker(image_path):

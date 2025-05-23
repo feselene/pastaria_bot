@@ -1,31 +1,30 @@
-import cv2
-import pytesseract
+import pyautogui
+import time
+from utils.get_memu_position import get_memu_bounds  # Make sure this import is valid
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+def swipe_topping_picker_left():
+    x_ratio = 0.422
+    y_ratio = 0.32
+    swipe_offset_ratio = 0.09
+    left, top, width, height = get_memu_bounds()
+    center_x = int(left + width * x_ratio)
+    center_y = int(top + height * y_ratio)
+    swipe_x = int(center_x - width * swipe_offset_ratio)
 
-def extract_digit(image_path):
-    image = cv2.imread(image_path)
+    pyautogui.moveTo(center_x, center_y, duration=0.01)
+    pyautogui.mouseDown()
+    pyautogui.moveTo(swipe_x, center_y, duration=1)
+    pyautogui.mouseUp()
 
-    # Resize for better OCR accuracy
-    image = cv2.resize(image, None, fx=4, fy=4, interpolation=cv2.INTER_LINEAR)
+    print(
+        f"⬅️ Swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
+    )
 
-    # Convert to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def main():
+    for i in range(9):
+        print(f"🔁 Swipe {i+1}/3")
+        swipe_topping_picker_left()
+        time.sleep(0.5)  # Optional delay between swipes
 
-    # Increase contrast and threshold
-    _, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY_INV)
-
-    # Optional: save debug view
-    cv2.imwrite("debug_thresh.png", thresh)
-
-    # Tesseract config
-    config = r'--psm 10 -c tessedit_char_whitelist=0123456789'
-    raw_result = pytesseract.image_to_string(thresh, config=config)
-    cleaned = ''.join(filter(str.isdigit, raw_result))
-
-    # print(f"OCR Raw: {repr(raw_result)} | Cleaned: {cleaned}")
-    return int(cleaned) if cleaned else None
-
-# Example usage
 if __name__ == "__main__":
-    print(extract_digit(r"C:\Users\ceo\IdeaProjects\pastaria_bot\toppings\num_topping3.png"))
+    main()
