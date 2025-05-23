@@ -48,55 +48,62 @@ def click_and_hold_from_assets(filename, hold_duration=1.0, threshold=0.85):
 
 def drag(filename1, filename2, threshold=0.85, duration_ms=300):
     """
-    Matches two asset templates and performs a drag from the center of the first
-    to the center of the second using drag_ratios (ADB only).
+    Performs an ADB drag from the center of filename1 to the center of filename2
+    using the same coordinate scaling logic as click_button.
 
-    :param filename1: Starting image filename in assets/
-    :param filename2: Ending image filename in assets/
-    :param threshold: Template match confidence threshold
+    :param filename1: Starting image filename in assets
+    :param filename2: Ending image filename in assets
+    :param threshold: Template match threshold
     :param duration_ms: Duration of the drag in milliseconds
+    :return: True if both templates matched and drag occurred, False otherwise
     """
-    path1 = os.path.join(ASSETS_DIR, filename1)
-    path2 = os.path.join(ASSETS_DIR, filename2)
+    f1 = os.path.join(ASSETS_DIR, filename1)
+    f2 = os.path.join(ASSETS_DIR, filename2)
 
-    for path in [path1, path2]:
+    for path in [f1, f2]:
         if not os.path.exists(path):
-            raise FileNotFoundError(f"❌ Asset not found: {path}")
+            raise FileNotFoundError(f"Missing template image: {path}")
 
-    template1 = cv2.imread(path1, 0)
-    template2 = cv2.imread(path2, 0)
+    # Load templates
+    template1 = cv2.imread(f1, 0)
+    template2 = cv2.imread(f2, 0)
     if template1 is None or template2 is None:
-        raise FileNotFoundError("❌ One of the templates could not be read.")
+        raise FileNotFoundError("One of the templates could not be read.")
 
     w1, h1 = template1.shape[::-1]
     w2, h2 = template2.shape[::-1]
 
-    memu_width, memu_height = get_memu_resolution()
-    screenshot = grab_screen_region(0, 0, memu_width, memu_height)
+    # Get MEmu screen bounds and capture
+    left, top, width, height = get_memu_bounds()
+    screenshot = grab_screen_region(left, top, width, height)
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
 
+    # Match template 1
     result1 = cv2.matchTemplate(gray, template1, cv2.TM_CCOEFF_NORMED)
     _, val1, _, loc1 = cv2.minMaxLoc(result1)
 
+    # Match template 2
     result2 = cv2.matchTemplate(gray, template2, cv2.TM_CCOEFF_NORMED)
     _, val2, _, loc2 = cv2.minMaxLoc(result2)
 
     if val1 < threshold or val2 < threshold:
-        return
+        print(f"❌ Drag failed. Match confidence too low: {val1:.2f}, {val2:.2f}")
+        return False
 
-    # Compute ratio-based coordinates
-    start_x_ratio = (loc1[0] + w1 / 2) / memu_width
-    start_y_ratio = (loc1[1] + h1 / 2) / memu_height
-    end_x_ratio   = (loc2[0] + w2 / 2) / memu_width
-    end_y_ratio   = (loc2[1] + h2 / 2) / memu_height
+    # Convert to MEmu (Android) coordinate space
+    memu_width, memu_height = get_memu_resolution()
+    start_x = int((loc1[0] + w1 // 2) * memu_width / width)
+    start_y = int((loc1[1] + h1 // 2) * memu_height / height)
+    end_x   = int((loc2[0] + w2 // 2) * memu_width / width)
+    end_y   = int((loc2[1] + h2 // 2) * memu_height / height)
 
-    drag_ratios(
-        start_x_ratio=start_x_ratio,
-        start_y_ratio=start_y_ratio,
-        end_x_ratio=end_x_ratio,
-        end_y_ratio=end_y_ratio,
-        duration=duration_ms / 1000
-    )
+    subprocess.run([
+        ADB_PATH, "shell", "input", "swipe",
+        str(start_x), str(start_y), str(end_x), str(end_y), str(duration_ms)
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    print(f"✅ ADB drag from ({start_x}, {start_y}) to ({end_x}, {end_y})")
+    return True
 
 
 import subprocess

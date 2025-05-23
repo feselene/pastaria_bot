@@ -20,7 +20,7 @@ def run_bread_station():
     click_and_hold_from_assets(filename="bread_boost.png", hold_duration=12, threshold=0.80)
     drag_ratios()
     time.sleep(0.5)
-    drag(filename1="ticket_full.png", filename2="green.png")
+    drag_ratios(0.9, 0.5, 0.2, 0.7)
 
 if __name__ == "__main__":
     run_bread_station()
