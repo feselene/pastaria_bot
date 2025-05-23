@@ -13,6 +13,7 @@ from stations.bread_station.drag_bread_to_oven import drag_bread_to_oven
 from stations.bread_station.drag_cooked_bread_to_plate import drag_bread_to_plate
 from stations.bread_station.drag_ticket_to_green import drag_ticket_to_green
 from stations.bread_station.get_conveyor_bounds import get_conveyor_bounds
+from stations.bread_station.click_boost import click_boost
 from utils.parse_ticket import get_filtered_bread_icon
 
 
@@ -21,7 +22,7 @@ def run_bread_station():
     get_filtered_bread_icon()
     time.sleep(1)
     click_bread()
-    time.sleep(25)
+    click_boost()
     drag_bread_to_plate()
     time.sleep(0.5)
     drag_ticket_to_green()

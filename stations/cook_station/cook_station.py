@@ -13,14 +13,14 @@ from stations.cook_station.click_pot import click_pot
 from stations.cook_station.drag_pasta_to_plate import drag_pasta_to_plate
 from stations.cook_station.stir import stir
 from utils.parse_ticket import get_filtered_pasta_icon
-
+from stations.cook_station.click_boost import click_boost
 
 def run_cook_station():
     click_leftmost_plus_button()
     get_filtered_pasta_icon()
     time.sleep(1)
     click_jar()
-    time.sleep(40)
+    click_boost()
     stir()
     time.sleep(40)
     click_pot()
