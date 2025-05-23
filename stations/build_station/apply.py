@@ -110,25 +110,42 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
     """
     for attempt in range(max_attempts):
         current_path = capture_center_picker_square()
-        match = is_matching(current_path, cropped_path)
+        match_response = is_matching(current_path, cropped_path)
 
-        if match:
-            print(f"✅ Match found on attempt {attempt}: {current_path}")
+        # Parse answer and confidence
+        try:
+            answer, confidence = match_response.split(",")
+            answer = answer.strip()
+            confidence = float(confidence.strip())
+        except Exception:
+            answer = "unknown"
+            confidence = 0.0
 
-            match_base = f"match_{attempt:02}"
+        # ✅ Require exact 'yes' and confidence > 0.9
+        if answer == "yes" and confidence > 0.9:
+            print(f"✅ Match found on attempt {attempt}: {current_path} (confidence: {confidence:.2f})")
+
+            match_base = f"match_{attempt:02}_conf_{confidence:.2f}"
             current_dest = os.path.join(MATCHES_DIR, f"{match_base}_current.png")
             target_dest = os.path.join(MATCHES_DIR, f"{match_base}_target.png")
+            info_dest = os.path.join(MATCHES_DIR, f"{match_base}_confidence.txt")
 
             shutil.copy(current_path, current_dest)
             shutil.copy(cropped_path, target_dest)
 
+            with open(info_dest, "w") as f:
+                f.write(f"{match_response}\n")
+
             print(f"📁 Current match saved to: {current_dest}")
             print(f"📁 Target image saved to: {target_dest}")
+            print(f"🧠 Confidence saved to: {info_dest}")
             return True
 
-        print(f"❌ No match on attempt {attempt}, swiping...")
+        print(f"❌ No match on attempt {attempt}, swiping... (response: {match_response})")
         swipe_topping_picker_left()
         time.sleep(delay_between_swipes)
+
+
 
     print("⚠️ Maximum attempts reached without finding a match.")
     return False
