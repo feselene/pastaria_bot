@@ -12,17 +12,15 @@ from utils.click_button import click_button
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 START_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "cook_button_right.png")
 
-
-def click_cook_button(retries=10, delay=0.5, threshold=0.85):
+def click_cook_button(retries=15, delay=0.5, threshold=0.85):
     print("🟢 Looking for COOK button...")
+
     for attempt in range(retries):
         if click_button(START_BUTTON_TEMPLATE, threshold=threshold):
             print("✅ COOK button clicked.")
             return True
+        print(f"⏳ Attempt {attempt+1}/{retries} failed. Retrying...")
         time.sleep(delay)
+
     print("❌ Failed to click COOK button after retries.")
     return False
-
-
-if __name__ == "__main__":
-    click_cook_button()
