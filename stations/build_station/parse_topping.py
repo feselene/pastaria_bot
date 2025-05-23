@@ -96,10 +96,14 @@ def process_topping_boxes():
 def apply_ingredient(image_path):
     img = cv2.imread(image_path)
     basename = os.path.basename(image_path)
+    numname = "num_" + basename
     h, w = img.shape[:2]
     cropped = img[:, : int(w * 0.45)]
+    cropped_num = img[:, int(w * 0.65) : int(w * 0.875)]
     save_path = os.path.join(TOPPINGS_DIR, basename)
+    save_path_num = os.path.join(TOPPINGS_DIR, numname)
     cv2.imwrite(save_path, cropped)
+    cv2.imwrite(save_path_num, cropped_num)
 
 
 def apply_sauce(image_path):
