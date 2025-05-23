@@ -12,6 +12,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from utils.get_memu_position import get_memu_resolution
+from stations.build_station.click_jar import click_jar
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
@@ -21,13 +22,15 @@ def apply_sauce():
     center_y = int(memu_height * 0.65)
 
     # Offset ratios relative to screen width
-    offset_ratios = [0.10, 0.10, 0.15, 0.15, 0.20, 0.20, 0.10, 0.10, 0.10]
+    offset_ratios = [0.02, 0.04, 0.08, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.1]
 
     for i, ratio in enumerate(offset_ratios):
+        print(f"swiping {i} with ratio {ratio}")
+        print(ratio)
         offset = int(memu_width * ratio)
         start_x = center_x - offset
         end_x = center_x + offset
-        duration_ms = 200
+        duration_ms = 250
 
         if i % 2 == 0:
             adb_swipe(start_x, center_y, end_x, center_y, duration_ms)
@@ -42,4 +45,5 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=200):
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == "__main__":
+    click_jar()
     apply_sauce()
