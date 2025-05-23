@@ -31,6 +31,22 @@ def click_from_assets(filename, threshold=0.8):
 
     return click_button(template_path, threshold=threshold)
 
+def click_and_hold_from_assets(filename, hold_duration=1.0, threshold=0.85):
+    """
+    Attempts to click and hold a button by matching the template image from the assets folder.
+
+    :param filename: Filename of the PNG in the assets folder (e.g., 'hold_button.png')
+    :param hold_duration: Time (in seconds) to hold the tap
+    :param threshold: Match confidence threshold
+    :return: True if the hold was successful, False otherwise
+    """
+    template_path = os.path.join(ASSETS_DIR, filename)
+    if not os.path.exists(template_path):
+        raise FileNotFoundError(f"❌ Asset not found: {template_path}")
+
+    return click_and_hold(template_path, hold_duration=hold_duration, threshold=threshold)
+
+
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
         monitor = {"top": y, "left": x, "width": width, "height": height}
