@@ -4,10 +4,32 @@ import numpy as np
 import subprocess
 import time
 import re
+import os
+import sys
 
 from utils.get_memu_position import get_memu_bounds
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Replace with your ADB path if needed
+CURRENT_DIR = os.path.dirname(__file__)
+ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
+ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
+
+def click_from_assets(filename, threshold=0.8):
+    """
+    Attempts to click a button by matching the template image from the assets folder.
+
+    :param filename: Filename of the PNG in the assets folder (e.g., 'skip_button_right.png')
+    :param threshold: Match confidence threshold
+    :return: True if the click was successful, False otherwise
+    """
+    template_path = os.path.join(ASSETS_DIR, filename)
+    if not os.path.exists(template_path):
+        raise FileNotFoundError(f"❌ Asset not found: {template_path}")
+
+    return click_button(template_path, threshold=threshold)
 
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:

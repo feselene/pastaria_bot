@@ -20,6 +20,7 @@ from stations.order_station import order_station
 from utils.click_build_button import click_build_button
 from utils.click_cook_button import click_cook_button
 from utils.click_start_button import click_start_button
+from utils.click_button import click_from_assets
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 ADB_PORT = 21503  # Default for MEmu instance 1
@@ -36,7 +37,7 @@ def try_adb_connect(port=ADB_PORT):
 
 def main():
     try_adb_connect()
-    click_start_button()
+    click_from_assets("start_button_template.png")
     time.sleep(20)
 
     for i in range(6):
