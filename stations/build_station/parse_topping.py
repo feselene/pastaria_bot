@@ -1,14 +1,19 @@
 import os
-
+import sys
 import cv2
 import numpy as np
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 TOPPINGS_DIR = os.path.join(ROOT_DIR, "toppings")
 os.makedirs(DEBUG_DIR, exist_ok=True)
 os.makedirs(TOPPINGS_DIR, exist_ok=True)
+
+from skimage.metrics import structural_similarity as ssim
+from utils.parse_ticket import get_filtered_topping_icon
 
 def is_box_empty(img, tolerance=10, match_ratio=0.6):
     """
@@ -36,54 +41,41 @@ def is_box_empty(img, tolerance=10, match_ratio=0.6):
     ratio = np.sum(mask) / (h * w)
     return ratio >= match_ratio
 
+def crop_x_region(img):
+    h, w = img.shape[:2]
 
-def center_contains_x(box_img, debug=False):
-    """
-    Determines if the center of the box contains an 'X' pattern using edge and line detection.
+    # Heuristic region: center 1/3rd
+    start_x = int(w * 0.39)
+    end_x = int(w * 0.6)
+    start_y = int(h * 0.08)
+    end_y = int(h * 0.88)
 
-    Parameters:
-        box_img (np.ndarray): Input image (BGR).
-        debug (bool): Whether to visualize detected lines.
+    cropped = img[start_y:end_y, start_x:end_x]
+    return cropped
 
-    Returns:
-        bool: True if an 'X' is likely present in the center, False otherwise.
-    """
-    if box_img is None:
-        return False
+def center_contains_x(img):
+    # Crop the X region from the input
+    img = crop_x_region(img)
 
-    h, w = box_img.shape[:2]
-    crop = box_img[h // 4 : h * 3 // 4, w // 4 : w * 3 // 4]  # center 50%
+    # Load reference image
+    reference_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\assets\x.png"
+    reference = cv2.imread(reference_path)
 
-    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+    if reference is None:
+        raise FileNotFoundError(f"Reference image not found at {reference_path}")
 
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, threshold=20)
-    if lines is None:
-        return False
+    # Resize input to match reference if needed
+    if img.shape[:2] != reference.shape[:2]:
+        img = cv2.resize(img, (reference.shape[1], reference.shape[0]))
 
-    angles = []
-    for rho, theta in lines[:, 0]:
-        angle = np.degrees(theta)
-        angles.append(angle)
+    # Convert to grayscale
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ref_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
 
-    # Look for one line near 45° and one near 135°
-    found_45 = any(40 <= a <= 50 for a in angles)
-    found_135 = any(130 <= a <= 140 for a in angles)
+    # Compute SSIM
+    score, _ = ssim(img_gray, ref_gray, full=True)
 
-    if debug:
-        debug_img = crop.copy()
-        for rho, theta in lines[:, 0]:
-            a, b = np.cos(theta), np.sin(theta)
-            x0, y0 = a * rho, b * rho
-            pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * (a)))
-            pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * (a)))
-            cv2.line(debug_img, pt1, pt2, (0, 255, 0), 2)
-        cv2.imshow("Detected Lines", debug_img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    return found_45 and found_135
-
+    return score > 0.9
 
 def process_topping_boxes():
     for i in range(1, 5):
@@ -91,10 +83,13 @@ def process_topping_boxes():
         img = cv2.imread(image_path)
 
         if is_box_empty(img):
+            print(image_path + "is empty")
             continue
         elif center_contains_x(img):
+            print(image_path + "contains x")
             apply_ingredient(image_path)
         else:
+            print(image_path + "is a sauce")
             apply_sauce(image_path)
 
 
@@ -120,6 +115,10 @@ def apply_sauce(image_path):
 
 
 def main():
+    get_filtered_topping_icon(1)
+    get_filtered_topping_icon(2)
+    get_filtered_topping_icon(3)
+    get_filtered_topping_icon(4)
     process_topping_boxes()
 
 
