@@ -6,6 +6,8 @@ import mss
 import numpy as np
 import pyautogui
 import torch
+from tqdm import tqdm
+
 from PIL import Image
 from transformers import AutoModel, AutoProcessor
 
@@ -58,25 +60,34 @@ def click_best_dino_match(template_path, threshold=0.5):
     screen_h, screen_w = belt_crop.shape[:2]
     stride = int(max(tW, tH) * 0.75)
 
-    best_score = -1
-    best_coords = None
+    regions = []
+    coords = []
 
-    for y in range(0, screen_h - tH, stride):
+    print("🔍 Scanning regions for DINOv2 match...")
+
+    for y in tqdm(range(0, screen_h - tH, stride), desc="Rows", leave=False):
         for x in range(0, screen_w - tW, stride):
-            region = belt_crop[y : y + tH, x : x + tW]
-            region_pil = Image.fromarray(region)
-            region_feature = extract_feature(region_pil)
+            crop = belt_crop[y : y + tH, x : x + tW]
+            regions.append(Image.fromarray(crop))
+            coords.append((belt_left + x + tW // 2, belt_top + y + tH // 2))
 
-            sim = torch.nn.functional.cosine_similarity(
-                template_feature, region_feature, dim=0
-            ).item()
+    # Batch inference
+    print(f"🧠 Running DINOv2 batch inference on {len(regions)} regions...")
+    inputs = processor(images=regions, return_tensors="pt").to(device)
+    with torch.inference_mode():
+        features = model(**inputs).last_hidden_state.mean(dim=1)  # (B, D)
 
-            if sim > best_score:
-                best_score = sim
-                best_coords = (belt_left + x + tW // 2, belt_top + y + tH // 2)
+    # Compute similarity
+    template_feature = template_feature.unsqueeze(0)  # (1, D)
+    sims = torch.nn.functional.cosine_similarity(template_feature, features, dim=1)
 
-    if best_score >= threshold and best_coords:
-        abs_x, abs_y = left + best_coords[0], top + best_coords[1]
+    best_score, best_idx = torch.max(sims, dim=0)
+    best_score = best_score.item()
+
+    if best_score >= threshold:
+        match_x, match_y = coords[best_idx]
+        abs_x = left + match_x
+        abs_y = top + match_y
         pyautogui.moveTo(abs_x, abs_y, duration=0.2)
         pyautogui.click()
         print(

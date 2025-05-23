@@ -4,8 +4,7 @@ import shutil
 # Directories to clean
 DIRS_TO_CLEAN = [
     "debug",
-    "toppings",
-    "matches"
+    "toppings"
 ]
 
 def clean_directory(dir_path):

@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 # Setup root imports
 CURRENT_DIR = os.path.dirname(__file__)  # .../stations/bread_station
@@ -13,7 +14,8 @@ from utils.click_button import click_and_hold
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 
 def click_boost():
-    click_and_hold(os.path.join(ASSETS_DIR, "cook_boost.png"), 20, threshold=0.80)
+    time.sleep(2)
+    click_and_hold(os.path.join(ASSETS_DIR, "cook_boost.png"), 19, threshold=0.80)
 
 
 if __name__ == "__main__":
