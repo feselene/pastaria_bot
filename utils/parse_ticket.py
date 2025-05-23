@@ -40,7 +40,7 @@ def get_filtered_bread_icon():
         print("❌ Ticket detection failed.")
         return
 
-    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
     print("✂️ Cropping ticket regions...")
@@ -67,7 +67,7 @@ def get_filtered_pasta_icon():
         print("❌ Ticket detection failed.")
         return
 
-    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
     print("✂️ Cropping ticket regions...")
@@ -93,15 +93,15 @@ def get_filtered_sauce_icon():
         print("❌ Ticket detection failed.")
         return
 
-    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
     print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
 
     sauce_img_bgr = regions["sauce"]
-    sauce_img_path = os.path.join(ROOT_DIR, "debug", "debug_sauce_raw.png")
-    sauce_out_path = os.path.join(ROOT_DIR, "debug", "debug_sauce_cropped.png")
+    sauce_img_path = os.path.join(ROOT_DIR, "debug", "sauce.png")
+    sauce_out_path = os.path.join(ROOT_DIR, "debug", "sauce_icon.png")
 
     os.makedirs(os.path.dirname(sauce_img_path), exist_ok=True)
     cv2.imwrite(sauce_img_path, sauce_img_bgr)
@@ -122,7 +122,7 @@ def get_filtered_topping_icon(topping_number: int):
         print("❌ Ticket detection failed.")
         return
 
-    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
     print("✂️ Cropping ticket regions...")

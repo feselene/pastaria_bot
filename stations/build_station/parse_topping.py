@@ -130,7 +130,7 @@ def main():
         print("❌ Ticket detection failed.")
         return
 
-    debug_ticket_path = os.path.join(DEBUG_DIR, "debug_ticket.png")
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
     get_filtered_topping_icon(1)
     get_filtered_topping_icon(2)

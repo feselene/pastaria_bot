@@ -35,7 +35,7 @@ def capture_center_picker_square():
     with mss.mss() as sct:
         img = np.array(sct.grab(region))
 
-    output_path = os.path.join(DEBUG_DIR, f"topping_picker_center_{square_size}x{square_size}.png")
+    output_path = os.path.join(DEBUG_DIR, f"topping_active.png")
     cv2.imwrite(output_path, img)
     return img
 

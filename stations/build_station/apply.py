@@ -44,7 +44,7 @@ def capture_center_picker_square():
         img = np.array(sct.grab(region))
 
     # Save the captured region
-    output_path = os.path.join(DEBUG_DIR, f"topping_picker_center_{square_size}x{square_size}.png")
+    output_path = os.path.join(DEBUG_DIR, f"topping_active.png")
     cv2.imwrite(output_path, img)
     print(f"✅ Saved {square_size}x{square_size} picker center to {output_path}")
     return output_path

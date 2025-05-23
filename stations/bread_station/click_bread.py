@@ -73,7 +73,7 @@ def get_best_template_match_center(template_path, threshold=0.75):
     cropped = gray[belt_top:belt_bottom, belt_left:belt_right]
 
     # Save debug image
-    debug_output_path = os.path.join(ROOT_DIR, "debug", "debug_bread_search_region.png")
+    debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
     cv2.imwrite(debug_output_path, cropped)
     print(f"📸 Saved vertical belt search region to: {debug_output_path}")
 
@@ -133,7 +133,7 @@ def click_best_template_match(template_path, threshold=0.75):
     cropped = gray[belt_top:belt_bottom, belt_left:belt_right]
 
     # Save debug image
-    debug_output_path = os.path.join(ROOT_DIR, "debug", "debug_bread_search_region.png")
+    debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
     cv2.imwrite(debug_output_path, cropped)
     print(f"📸 Saved vertical belt search region to: {debug_output_path}")
 
