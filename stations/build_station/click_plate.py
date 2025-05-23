@@ -47,7 +47,7 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
 def swipe_to_middle():
     swipe_blended_upward_away_from_oclock(6, oclock_weight=0)
 
-def swipe_blended_upward_away_from_oclock(n, distance_ratio=0.25, duration_ms=300, up_weight=0.7, oclock_weight=0.75):
+def swipe_blended_upward_away_from_oclock(n, distance_ratio=0.25, duration_ms=300, up_weight=0.6, oclock_weight=0.75):
     """
     Adds a raw upward vector and a raw reversed o'clock vector, scaled by respective weights.
     Final swipe vector magnitude is directly proportional to the combined vector length.
@@ -85,10 +85,41 @@ def swipe_blended_upward_away_from_oclock(n, distance_ratio=0.25, duration_ms=30
 
     print(f"🧭 Raw swipe: {up_weight}×UP + {oclock_weight}×opp({n}) → ({center_x}, {center_y}) → ({end_x}, {end_y})")
     adb_swipe(center_x, center_y, end_x, end_y, duration_ms)
-    time.sleep(1)
+    time.sleep(0.5)
 
+def place_in_positions(positions):
+    for pos in positions:
+        swipe_blended_upward_away_from_oclock(pos)
+
+def place_topping(num):
+    match num:
+        case 1:
+            swipe_to_middle()
+        case 2:
+            place_in_positions([2, 8])
+        case 3:
+            place_in_positions([2, 6, 10])
+        case 4:
+            place_in_positions([2, 4, 8, 10])
+        case 5:
+            swipe_to_middle()
+            place_in_positions([3, 6, 9, 12])
+        case 6:
+            place_in_positions([2, 4, 6, 8, 10, 12])
+        case 7:
+            swipe_to_middle()
+            place_in_positions([2, 4, 6, 8, 10, 12])
+        case 8:
+            place_in_positions([1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12])
+        case 9:
+            swipe_to_middle()
+            place_in_positions([1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12])
+        case _:
+            print(f"Unsupported topping count: {num}")
 
 
 if __name__ == "__main__":
-    swipe_to_middle()
+    place_topping(6)
+
+
 
