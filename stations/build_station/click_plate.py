@@ -44,6 +44,9 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
     subprocess.run([ADB_PATH, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(duration_ms)],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+def swipe_to_middle():
+    swipe_blended_upward_away_from_oclock(6, oclock_weight=0)
+
 def swipe_blended_upward_away_from_oclock(n, distance_ratio=0.25, duration_ms=300, up_weight=0.7, oclock_weight=0.75):
     """
     Adds a raw upward vector and a raw reversed o'clock vector, scaled by respective weights.
@@ -87,7 +90,5 @@ def swipe_blended_upward_away_from_oclock(n, distance_ratio=0.25, duration_ms=30
 
 
 if __name__ == "__main__":
-    swipe_blended_upward_away_from_oclock(3)
-    swipe_blended_upward_away_from_oclock(6)
-    swipe_blended_upward_away_from_oclock(9)
+    swipe_to_middle()
 
