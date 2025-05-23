@@ -19,7 +19,7 @@ def is_matching(imgpath1, imgpath2) -> bool:
 
     response = model.generate_content(
         [
-            "Is the ingredient in image2 selected in image1? Answer one word: yes or no. ",
+            "Visually compare image A and image B. Are they the same ingredient? Respond only with yes or no.",
             {"mime_type": "image/png", "data": image1},
             {"mime_type": "image/png", "data": image2},
         ],
@@ -35,7 +35,7 @@ def is_matching2(imgpath1, imgpath2) -> bool:
 
     response = model.generate_content(
         [
-            "Yes or No. Is image2 centered in image1?",
+            "Visually compare image A and image B. Are they the same ingredient? Respond only with yes or no. ",
             {"mime_type": "image/png", "data": image1},
             {"mime_type": "image/png", "data": image2},
         ],
@@ -48,7 +48,7 @@ def is_matching2(imgpath1, imgpath2) -> bool:
 
 def main():
     print(os.getenv("GEMINI_API_KEY"))
-    print(is_matching2(r"C:\Users\ceo\IdeaProjects\pastaria_bot\matches\match_00_current.png", r"C:\Users\ceo\IdeaProjects\pastaria_bot\matches\match_00_target.png"))
+    is_matching2(r"C:\Users\ceo\IdeaProjects\pastaria_bot\matches\match_08_current.png", r"C:\Users\ceo\IdeaProjects\pastaria_bot\matches\match_02_current.png")
 
 if __name__ == "__main__":
     main()

@@ -25,6 +25,7 @@ def run_build_station():
     get_filtered_topping_icon(3)
     get_filtered_topping_icon(4)
     process_topping_boxes()
+    time.sleep(5)
     click_checkmark()
 
 
