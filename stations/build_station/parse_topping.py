@@ -95,7 +95,7 @@ def process_topping_boxes():
             print(image_path + "is empty")
             continue
         elif center_contains_x(img):
-            print(image_path + "contains x")
+            print(image_path + "is an ingredient")
             apply_ingredient(image_path)
         else:
             print(image_path + "is a sauce")
@@ -133,7 +133,6 @@ def apply_ingredient(image_path):
     numname = "num_" + basename
     h, w = img.shape[:2]
     cropped = img[:, : int(w * 0.45)]
-
     cropped_num = img[:, int(w * 0.65) : int(w * 0.875)]
     save_path = os.path.join(TOPPINGS_DIR, basename)
     save_path_num = os.path.join(TOPPINGS_DIR, numname)

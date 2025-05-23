@@ -16,6 +16,9 @@ CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 TOPPINGS_DIR = os.path.join(ROOT_DIR, "toppings")
+MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
+os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
+
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
@@ -89,21 +92,38 @@ def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     return result
 
 
+import os
+import time
+import shutil
+
+MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
+os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the matches directory exists
+
 def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
     """
     Repeatedly swipes the topping picker left until the captured image matches the target ingredient.
-    Stops after `max_attempts` to avoid infinite loops.
+    Saves both the matched image and the target image to MATCHES_DIR.
 
     :param cropped_path: Path to the target cropped ingredient image
     :param max_attempts: Max number of swipes to attempt
     :param delay_between_swipes: Time to wait between swipes (in seconds)
     """
-    for attempt in range(1, max_attempts + 1):
+    for attempt in range(max_attempts):
         current_path = capture_center_picker_square()
         match = is_matching(current_path, cropped_path)
 
         if match:
             print(f"✅ Match found on attempt {attempt}: {current_path}")
+
+            match_base = f"match_{attempt:02}"
+            current_dest = os.path.join(MATCHES_DIR, f"{match_base}_current.png")
+            target_dest = os.path.join(MATCHES_DIR, f"{match_base}_target.png")
+
+            shutil.copy(current_path, current_dest)
+            shutil.copy(cropped_path, target_dest)
+
+            print(f"📁 Current match saved to: {current_dest}")
+            print(f"📁 Target image saved to: {target_dest}")
             return True
 
         print(f"❌ No match on attempt {attempt}, swiping...")
@@ -112,6 +132,7 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
 
     print("⚠️ Maximum attempts reached without finding a match.")
     return False
+
 
 def main():
     # Choose the target topping image to search for

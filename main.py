@@ -3,6 +3,7 @@ import sys
 import time
 
 from utils.click_build_button import click_build_button
+from clean import clean_files
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "./"))
@@ -25,6 +26,7 @@ def main():
     time.sleep(20)
 
     for i in range(6):
+        clean_files()
         print("▶️ Running Order Station...")
         order_station.run_order_station()
         click_cook_button()

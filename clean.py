@@ -4,7 +4,8 @@ import shutil
 # Directories to clean
 DIRS_TO_CLEAN = [
     "debug",
-    "toppings"
+    "toppings",
+    "matches"
 ]
 
 def clean_directory(dir_path):
@@ -21,6 +22,10 @@ def clean_directory(dir_path):
             print(f"🧹 Deleted: {file_path}")
         except Exception as e:
             print(f"⚠️ Failed to delete {file_path}: {e}")
+
+def clean_files():
+    for dir_path in DIRS_TO_CLEAN:
+        clean_directory(dir_path)
 
 def main():
     for dir_path in DIRS_TO_CLEAN:
