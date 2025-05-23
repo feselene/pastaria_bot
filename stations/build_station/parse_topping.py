@@ -92,13 +92,13 @@ def process_topping_boxes():
         img = cv2.imread(image_path)
 
         if is_box_empty(img):
-            print(image_path + "is empty")
+            print(image_path + " is an empty box.")
             continue
         elif center_contains_x(img):
-            print(image_path + "is an ingredient")
+            print(image_path + " is an ingredient.")
             apply_ingredient(image_path)
         else:
-            print(image_path + "is a sauce")
+            print(image_path + " is a sauce.")
             apply_shaker(image_path)
 
 import cv2
@@ -154,6 +154,7 @@ def apply_shaker(image_path):
     save_path = os.path.join(TOPPINGS_DIR, basename)
     cv2.imwrite(save_path, cropped)
     select_ingredient(save_path)
+    time.sleep(0.5)
     apply_sauce()
 
 

@@ -14,12 +14,16 @@ from utils.get_memu_position import get_memu_bounds
 
 def click_plate():
     left, top, width, height = get_memu_bounds()
-    x = left + width // 2
-    y = top + int(height * 2 / 3)
+    start_x = left + width // 2
+    start_y = top + int(height * 2 / 3)
+    end_y = start_y - int(height * 0.2)  # drag up
 
-    print(f"🖱️ Clicking inside MEMU at ({x}, {y})...")
-    pyautogui.moveTo(x, y, duration=0.2)
-    pyautogui.click()
+    print(f"🖱️ Dragging inside MEMU from ({start_x}, {start_y}) to ({start_x}, {end_y})...")
+    pyautogui.moveTo(start_x, start_y, duration=0.2)
+    pyautogui.mouseDown()
+    pyautogui.moveTo(start_x, end_y, duration=0.3)
+    pyautogui.mouseUp()
+
 
 
 if __name__ == "__main__":

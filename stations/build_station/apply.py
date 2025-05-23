@@ -99,13 +99,14 @@ import shutil
 MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
 os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the matches directory exists
 
-def sanitize_filename_component(text):
+def sanitize_filename_component(text, max_length=50):
     """
-    Converts any string into a safe component for filenames.
+    Cleans and truncates a string to make it safe for use in filenames.
     Keeps only letters, numbers, and underscores.
-    Replaces all other characters with underscores.
     """
-    return re.sub(r'\W+', '_', text)
+    safe = re.sub(r'\W+', '_', text)
+    return safe[:max_length]
+
 
 def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
     """
