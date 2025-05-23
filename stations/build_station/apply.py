@@ -121,24 +121,19 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
             answer = "unknown"
             confidence = 0.0
 
-        # ✅ Require exact 'yes' and confidence > 0.9
-        if answer == "yes" and confidence > 0.9:
+        # ✅ Require exact 'yes' and confidence > 0.8
+        if answer == "yes" and confidence > 0.8:
             print(f"✅ Match found on attempt {attempt}: {current_path} (confidence: {confidence:.2f})")
 
             match_base = f"match_{attempt:02}_conf_{confidence:.2f}"
             current_dest = os.path.join(MATCHES_DIR, f"{match_base}_current.png")
             target_dest = os.path.join(MATCHES_DIR, f"{match_base}_target.png")
-            info_dest = os.path.join(MATCHES_DIR, f"{match_base}_confidence.txt")
 
             shutil.copy(current_path, current_dest)
             shutil.copy(cropped_path, target_dest)
 
-            with open(info_dest, "w") as f:
-                f.write(f"{match_response}\n")
-
             print(f"📁 Current match saved to: {current_dest}")
             print(f"📁 Target image saved to: {target_dest}")
-            print(f"🧠 Confidence saved to: {info_dest}")
             return True
 
         print(f"❌ No match on attempt {attempt}, swiping... (response: {match_response})")
