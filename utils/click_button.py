@@ -152,7 +152,7 @@ def adb_touch_and_hold(x, y, hold_duration=1.0):
     subprocess.run([ADB_PATH, "shell", "input", "swipe", str(x), str(y), str(x), str(y), str(ms)],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def click_button(template_path, threshold=0.85):
+def click_button(template_path, threshold=0.7):
     template = cv2.imread(template_path, 0)
     if template is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")

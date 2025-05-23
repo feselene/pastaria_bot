@@ -13,7 +13,7 @@ ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 START_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "build_button_right.png")
 
 
-def click_build_button(retries=10, delay=0.5, threshold=0.85):
+def click_build_button(retries=10, delay=0.5, threshold=0.7):
     print("🟢 Looking for COOK button...")
     for attempt in range(retries):
         if click_button(START_BUTTON_TEMPLATE, threshold=threshold):
