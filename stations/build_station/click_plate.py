@@ -7,6 +7,8 @@ import time
 # Add root to sys.path so we can import project utilities
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
+DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
+FLAG_PATH = os.path.join(DEBUG_DIR, "flag.txt")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
@@ -130,21 +132,60 @@ def place_in_positions(positions):
         swipe_blended_upward_away_from_oclock(pos)
 
 
+def set_flag():
+    """
+    Creates a flag file (flag.txt) in DEBUG_DIR.
+    """
+    os.makedirs(DEBUG_DIR, exist_ok=True)
+    with open(FLAG_PATH, "w") as f:
+        f.write("1")
+    print(f"🚩 Flag set at: {FLAG_PATH}")
+
+
+def check_flag():
+    """
+    Checks if the flag file exists in DEBUG_DIR.
+
+    Returns:
+        bool: True if flag.txt exists, False otherwise.
+    """
+    exists = os.path.isfile(FLAG_PATH)
+    print(f"✅ Flag exists: {exists}" if exists else "❌ Flag not found.")
+    return exists
+
+
 def place_topping(num):
     match num:
         case 1:
             swipe_to_middle()
         case 2:
-            place_in_positions([2, 8])
+            if not check_flag():
+                place_in_positions([2, 8])
+                set_flag()
+            else:
+                place_in_positions(4, 10)
+
         case 3:
-            place_in_positions([2, 6, 10])
+            if not check_flag():
+                place_in_positions([2, 6, 10])
+                set_flag()
+            else:
+                place_in_positions(4, 8, 12)
         case 4:
-            place_in_positions([2, 4, 8, 10])
+            if not check_flag():
+                place_in_positions([2, 4, 8, 10])
+                set_flag()
+            else:
+                place_in_positions([3, 6, 9, 12])
         case 5:
             swipe_to_middle()
             place_in_positions([3, 6, 9, 12])
         case 6:
-            place_in_positions([2, 4, 6, 8, 10, 12])
+            if not check_flag():
+                place_in_positions([2, 4, 6, 8, 10, 12])
+                set_flag()
+            else:
+                place_in_positions([1, 3, 5, 7, 9, 11])
         case 7:
             swipe_to_middle()
             place_in_positions([2, 4, 6, 8, 10, 12])
