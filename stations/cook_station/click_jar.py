@@ -23,6 +23,7 @@ model = AutoModel.from_pretrained("facebook/dinov2-base").to(device).eval()
 processor = AutoProcessor.from_pretrained("facebook/dinov2-base")
 
 from utils.get_memu_resolution import get_memu_bounds
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 
 def grab_screen_region(x, y, width, height):
@@ -36,6 +37,13 @@ def extract_feature(pil_img):
     with torch.no_grad():
         features = model(**inputs).last_hidden_state.mean(dim=1)
     return features.squeeze()
+
+
+# ... (keep all imports and constants as-is) ...
+
+def adb_tap(x, y):
+    cmd = f'"{ADB_PATH}" shell input tap {int(x)} {int(y)}'
+    os.system(cmd)
 
 
 def click_best_dino_match(template_path, threshold=0.5):
@@ -87,10 +95,9 @@ def click_best_dino_match(template_path, threshold=0.5):
         match_x, match_y = coords[best_idx]
         abs_x = left + match_x
         abs_y = top + match_y
-        pyautogui.moveTo(abs_x, abs_y, duration=0.2)
-        pyautogui.click()
+        adb_tap(abs_x, abs_y)
         print(
-            f"✅ Clicked DINOv2 match at ({abs_x}, {abs_y}) with confidence {best_score:.3f}"
+            f"✅ Tapped DINOv2 match at ({abs_x}, {abs_y}) with confidence {best_score:.3f}"
         )
         return True
     else:

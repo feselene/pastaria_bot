@@ -73,7 +73,7 @@ def main():
             time.sleep(12)
 
         click_from_assets("skip_button_right.png")
-        time.sleep(1)
+        time.sleep(5)
         click_from_assets("skip_button_left.png")
         time.sleep(1)
 

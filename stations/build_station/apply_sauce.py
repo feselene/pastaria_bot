@@ -1,9 +1,7 @@
 import os
 import subprocess
 import sys
-import time
 
-import pyautogui
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
