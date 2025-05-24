@@ -61,6 +61,7 @@ def main():
             print("🔥 Running Cook Station...")
             time.sleep(1)
             cook_station.run_cook_station()
+            time.sleep(1)
             click_build_button()
 
             print("🍝 Running Build Station...")
