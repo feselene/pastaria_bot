@@ -2,14 +2,14 @@ import os
 import re
 import sys
 import time
-
+import shutil
 import cv2
 import mss
 import numpy as np
-import pyautogui
 from dotenv import load_dotenv
 from PIL import Image
 from rembg import remove
+import subprocess
 
 load_dotenv()
 
@@ -24,13 +24,15 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from utils.gemini_matcher import is_matching
-from utils.get_memu_resolution import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
-topping1 = os.path.join(TOPPINGS_DIR, "topping1.png")
-topping2 = os.path.join(TOPPINGS_DIR, "topping2.png")
-topping3 = os.path.join(TOPPINGS_DIR, "topping3.png")
-topping4 = os.path.join(TOPPINGS_DIR, "topping4.png")
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 
+def adb_swipe(x1, y1, x2, y2, duration_ms=300):
+    subprocess.run([
+        ADB_PATH, "shell", "input", "swipe",
+        str(x1), str(y1), str(x2), str(y2), str(duration_ms)
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def capture_center_picker_square():
     x_ratio = 0.422
@@ -55,25 +57,20 @@ def capture_center_picker_square():
     cv2.imwrite(output_path, img)
     return output_path
 
-
 def swipe_topping_picker_left():
     x_ratio = 0.422
     y_ratio = 0.32
-    swipe_offset_ratio = 0.09
+    swipe_offset_ratio = 0.0678
     left, top, width, height = get_memu_bounds()
-    center_x = int(left + width * x_ratio)
-    center_y = int(top + height * y_ratio)
-    swipe_x = int(center_x - width * swipe_offset_ratio)
+    memu_width, memu_height = get_memu_resolution()
 
-    pyautogui.moveTo(center_x, center_y, duration=0.01)
-    pyautogui.mouseDown()
-    pyautogui.moveTo(swipe_x, center_y, duration=1)
-    pyautogui.mouseUp()
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x - memu_width * swipe_offset_ratio)
 
-    print(
-        f"⬅️ Swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
-    )
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=300)
 
+    print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
 
 def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     if cv_image.shape[2] == 3:
@@ -93,33 +90,11 @@ def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     result = cv2.cvtColor(np.array(cropped), cv2.COLOR_RGBA2BGRA)
     return result
 
-
-import os
-import shutil
-import time
-
-MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
-os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the matches directory exists
-
-
 def sanitize_filename_component(text, max_length=50):
-    """
-    Cleans and truncates a string to make it safe for use in filenames.
-    Keeps only letters, numbers, and underscores.
-    """
     safe = re.sub(r"\W+", "_", text)
     return safe[:max_length]
 
-
 def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
-    """
-    Repeatedly swipes the topping picker left until the captured image matches the target ingredient.
-    Saves both the matched image and the target image to MATCHES_DIR.
-
-    :param cropped_path: Path to the target cropped ingredient image
-    :param max_attempts: Max number of swipes to attempt
-    :param delay_between_swipes: Time to wait between swipes (in seconds)
-    """
     for attempt in range(max_attempts):
         current_path = capture_center_picker_square()
         match_response = is_matching(current_path, cropped_path)
@@ -150,18 +125,15 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
     print("⚠️ Maximum attempts reached without finding a match.")
     return False
 
-
 def main():
-    # Choose the target topping image to search for
     print(os.getenv("GEMINI_API_KEY"))
-    target_topping = topping4
+    target_topping = os.path.join(TOPPINGS_DIR, "topping4.png")
     success = select_ingredient(target_topping)
 
     if success:
         print("🎯 Ingredient successfully selected!")
     else:
         print("❌ Ingredient not found.")
-
 
 if __name__ == "__main__":
     main()

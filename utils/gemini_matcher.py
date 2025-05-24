@@ -65,7 +65,7 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
         "You are comparing two small food icons:\n"
         "Image A is from the topping picker.\n"
         "Image B is from the order ticket.\n\n"
-        "Do they represent the same ingredient or topping? Answer only 'yes' or 'no'."
+        "Do they use the same asset icon? Answer only 'yes' or 'no'."
     )
 
     request_content = [
