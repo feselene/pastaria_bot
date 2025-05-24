@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 from utils.get_memu_resolution import get_memu_bounds, grab_screen_region
 
@@ -9,7 +8,6 @@ def button_visible(template_path, threshold=0.6):
     if template is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")
 
-    w, h = template.shape[::-1]
     left, top, width, height = get_memu_bounds()
     screenshot = grab_screen_region(left, top, width, height)
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)

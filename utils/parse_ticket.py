@@ -8,11 +8,10 @@ from PIL import Image
 from utils.detect_ticket_from_template import detect_ticket_from_template
 from utils.remove_background import crop, remove_background_and_crop
 
-# Setup root imports from parse_ticket.py inside utils/
-CURRENT_DIR = os.path.dirname(__file__)  # points to pastaria_bot/utils/
+CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(
     os.path.join(CURRENT_DIR, "..")
-)  # one level up to pastaria_bot/
+)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
