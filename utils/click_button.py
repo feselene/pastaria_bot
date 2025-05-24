@@ -198,6 +198,20 @@ def adb_tap(x, y):
         stderr=subprocess.DEVNULL,
     )
 
+def adb_tap_ratio(x_ratio, y_ratio):
+    """
+    Performs an ADB tap at a location defined by screen ratios.
+
+    :param x_ratio: Horizontal position as a ratio of screen width (0.0 to 1.0)
+    :param y_ratio: Vertical position as a ratio of screen height (0.0 to 1.0)
+    """
+    memu_width, memu_height = get_memu_resolution()
+    x = int(x_ratio * memu_width)
+    y = int(y_ratio * memu_height)
+    adb_tap(x, y)
+    print(f"🖱️ ADB tapped at ratio ({x_ratio:.2f}, {y_ratio:.2f}) → absolute ({x}, {y})")
+
+
 
 def adb_touch_and_hold(x, y, hold_duration=1.0):
     ms = int(hold_duration * 1000)

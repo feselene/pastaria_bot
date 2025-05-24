@@ -5,17 +5,21 @@ import cv2
 import mss
 import numpy as np
 import sys
+import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-TEMPLATE_PATH = os.path.join(ROOT_DIR, "assets", "plus_template.png")
+TEMPLATE_PATH = os.path.join(ROOT_DIR, "assets", "ticket_full.png")
 
-THRESHOLD = 0.85
+THRESHOLD = 0.5
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
+
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+from utils.click_button import adb_tap_ratio
+
 
 def adb_tap(x, y):
     os.system(f'"{ADB_PATH}" shell input tap {x} {y}')
@@ -28,9 +32,12 @@ def grab_emulator_region():
         img = np.array(sct.grab(monitor))
     return img, left, top, width, height
 
+def click_tickets():
+    adb_tap_ratio(0.5, 0.1)
 
-def click_leftmost_plus_button():
-    print("🍳 Opening pot...")
+def click_leftmost_ticket():
+    click_tickets()
+    time.sleep(1)
     screenshot, offset_x, offset_y, width, height = grab_emulator_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(TEMPLATE_PATH, 0)
@@ -69,4 +76,4 @@ def click_leftmost_plus_button():
 
 # Run this when called directly
 if __name__ == "__main__":
-    click_leftmost_plus_button()
+    click_leftmost_ticket()

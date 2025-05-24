@@ -2,6 +2,8 @@ import os
 import sys
 import time
 
+from stations.cook_station.click_leftmost_ticket import click_leftmost_ticket
+
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
@@ -37,6 +39,7 @@ def cook_green():
 
 
 def run_cook_station():
+    click_leftmost_ticket()
     click_leftmost_plus_button()
     get_filtered_pasta_icon()
     get_filtered_pasta_icon2()
