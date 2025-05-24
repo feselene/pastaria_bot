@@ -76,3 +76,17 @@ def drag_between_templates(start_template_path, end_template_path, threshold=0.8
             f"❌ Drag failed. Start confidence: {max_val_start:.2f}, End confidence: {max_val_end:.2f}"
         )
         return False
+
+def half_swipe():
+    x_ratio = 0.422
+    y_ratio = 0.32
+    swipe_offset_ratio = 0.076
+    memu_width, memu_height = get_memu_resolution()
+
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x - memu_width * swipe_offset_ratio)
+
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=500)
+
+    print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")

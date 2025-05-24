@@ -23,7 +23,7 @@ os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.gemini_matcher import is_matching
+from utils.gemini_matcher import is_matching, recenter
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
@@ -115,11 +115,11 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
             print(f"📁 Current match saved to: {current_dest}")
             print(f"📁 Target image saved to: {target_dest}")
             return True
-
-        print(
-            f"❌ No match on attempt {attempt}, swiping... (response: {match_response})"
-        )
-        swipe_topping_picker_left()
+        else:
+            print(
+                f"❌ No match on attempt {attempt}, swiping... (response: {match_response})"
+            )
+            swipe_topping_picker_left()
         time.sleep(delay_between_swipes)
 
     print("⚠️ Maximum attempts reached without finding a match.")

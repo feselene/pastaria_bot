@@ -16,6 +16,7 @@ import time
 import google.api_core.exceptions
 
 from utils.capture import capture_center_picker_square
+from utils.drag import half_swipe
 
 load_dotenv()
 
@@ -29,43 +30,15 @@ def encode_image(path):
         return f.read()
 
 
-import hashlib
-import json
-
-CACHE_PATH = os.path.join(ROOT_DIR, "toppings", "match_cache.json")
-os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
-
-# Load cache
-if os.path.exists(CACHE_PATH):
-    with open(CACHE_PATH, "r") as f:
-        match_cache = json.load(f)
-else:
-    match_cache = {}
-
-
-def hash_pair(img1_path, img2_path):
-    def file_hash(path):
-        with open(path, "rb") as f:
-            return hashlib.sha256(f.read()).hexdigest()
-
-    h1 = file_hash(img1_path)
-    h2 = file_hash(img2_path)
-    return f"{min(h1, h2)}_{max(h1, h2)}"
-
-
 def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
-    key = hash_pair(imgpath1, imgpath2)
-    if key in match_cache:
-        return match_cache[key]
-
     image1 = encode_image(imgpath1)
     image2 = encode_image(imgpath2)
 
     prompt = (
-        "You are comparing two small food icons:\n"
-        "Image A is from the topping picker.\n"
-        "Image B is from the order ticket.\n\n"
-        "Do they use the same asset icon? Answer only 'yes' or 'no'."
+        "You are comparing two food ingredient icons from a cooking game.\n"
+        "Icons may include ingredients like mushroom, light brown chicken strip, circle meatball, dark brown sausage, pink ham, red C icon, M icon, cheese icon, lemon icon.\n"
+        "Do these two icons represent the same ingredient from that list?\n"
+        "Answer yes or no."
     )
 
     request_content = [
@@ -79,9 +52,6 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
             response = model.generate_content(request_content, stream=False)
             answer = response.text.strip().lower()
             print(f"Gemini response: {answer}")
-            match_cache[key] = answer
-            with open(CACHE_PATH, "w") as f:
-                json.dump(match_cache, f, indent=2)
             return answer
 
         except google.api_core.exceptions.ResourceExhausted as e:
@@ -98,6 +68,44 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
 
     print("❌ Failed to get a valid response after retries.")
     return "no"
+
+
+def recenter(image_path, max_retries=3):
+    """
+    Asks Gemini if the topping in image_path is centered in the picker UI.
+    If not, performs a half swipe to try to center it.
+    """
+    prompt = (
+        "This image is from a horizontal ingredient picker in a cooking game.\n"
+        "The currently selected topping should appear centered and slightly lower than the others.\n"
+        "Is the topping in the center of this image correctly centered in the picker?\n"
+        "Answer only 'yes' or 'no'."
+    )
+
+    image = encode_image(image_path)
+
+    for attempt in range(max_retries):
+        try:
+            response = model.generate_content([
+                prompt,
+                {"mime_type": "image/png", "data": image}
+            ], stream=False)
+
+            answer = response.text.strip().lower()
+            print(f"📍 Gemini recenter check: {answer}")
+
+            if answer == "yes":
+                return True
+            else:
+                print("↔️ Not centered — nudging with half swipe...")
+                half_swipe()
+                time.sleep(0.4)
+        except Exception as e:
+            print(f"❌ Recenter Gemini error: {e}")
+            break
+
+    return False
+
 
 
 def is_matching2(imgpath1, imgpath2) -> bool:
