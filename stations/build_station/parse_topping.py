@@ -20,7 +20,7 @@ from skimage.metrics import structural_similarity as ssim
 
 from stations.build_station.apply import select_ingredient
 from stations.build_station.apply_sauce import apply_shaker
-from stations.build_station.click_plate import click_plate, place_topping
+from stations.build_station.click_plate import place_topping
 from utils.detect_ticket_from_template import detect_ticket_from_template
 from utils.parse_ticket import get_filtered_topping_icon
 from utils.remove_background import remove_background_and_crop
@@ -159,7 +159,7 @@ def apply_shaker(image_path):
     cv2.imwrite(save_path, cropped)
     select_ingredient(save_path)
     time.sleep(0.5)
-    apply_sauce2()
+    apply_shaker()
 
 
 def main():

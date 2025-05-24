@@ -37,17 +37,6 @@ def adb_swipe(x1, y1, x2, y2, duration_ms):
     )
 
 
-def click_plate():
-    # Use emulator resolution (not window bounds)
-    memu_width, memu_height = get_memu_resolution()
-    start_x = memu_width // 2
-    start_y = int(memu_height * 2 / 3)
-    end_y = start_y - int(memu_height * 0.3)
-
-    print(f"📱 ADB swipe from ({start_x}, {start_y}) to ({start_x}, {end_y})")
-    adb_swipe(start_x, start_y, start_x, end_y, 300)
-
-
 def adb_swipe(x1, y1, x2, y2, duration_ms=300):
     subprocess.run(
         [
