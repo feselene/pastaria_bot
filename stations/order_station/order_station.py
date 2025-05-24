@@ -18,7 +18,7 @@ def run_order_station():
 
     while button_visible(TEMPLATE_DIR):
         click_take_order()
-        time.sleep(12)
+        time.sleep(10)
 
 
 if __name__ == "__main__":
