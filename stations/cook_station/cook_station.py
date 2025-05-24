@@ -32,10 +32,10 @@ def cook_orange():
 
 def cook_green():
     time.sleep(2)
-    click_and_hold_from_assets("cook_boost.png", 4, threshold=0.8)
+    click_and_hold_from_assets("cook_boost.png", 9, threshold=0.8)
     stir()
     time.sleep(2)
-    click_and_hold_from_assets("cook_boost.png", 19, threshold=0.8)
+    click_and_hold_from_assets("cook_boost.png", 9, threshold=0.8)
 
 
 def run_cook_station():
