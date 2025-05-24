@@ -61,7 +61,7 @@ def is_mostly_black(image_path, threshold=0.8, tolerance=10):
     matches = np.all(diff <= tolerance, axis=1)
 
     match_ratio = np.sum(matches) / len(pixels)
-    return match_ratio > threshold, match_ratio
+    return match_ratio > threshold
 
 def is_mostly_black_or_gray(image_path, threshold=0.2):
     """
@@ -266,21 +266,22 @@ def sanitize_filename_component(text, max_length=50):
     safe = re.sub(r"\W+", "_", text)
     return safe[:max_length]
 
-def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=2):
+def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0):
     for attempt in range(max_attempts):
         current_path, small_square_path = capture_center_picker_square()
 
+        if is_mostly_black_or_gray(small_square_path):
+            print("calling half_swipe_left because image is mostly_black or grey")
+            half_swipe_left()
+            current_path, small_square_path = capture_center_picker_square()
+
         if is_mostly_black(small_square_path):
-            time.sleep(2)
             print("calling third_swipe_left because image is mostly_black")
-            time.sleep(2)
             third_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
 
         if is_mostly_black_or_gray(small_square_path):
-            time.sleep(2)
             print("calling half_swipe_left because image is mostly_black or grey")
-            time.sleep(2)
             half_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
 
