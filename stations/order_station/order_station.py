@@ -15,6 +15,8 @@ from utils.button_visible import button_visible
 def run_order_station():
     while not button_visible(TEMPLATE_DIR):
         time.sleep(1)
+        if button_visible(os.path.join(ASSETS_DIR, "closed.png")):
+            return
 
     while button_visible(TEMPLATE_DIR):
         click_take_order()
