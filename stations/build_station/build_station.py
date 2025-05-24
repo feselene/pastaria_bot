@@ -11,7 +11,7 @@ if ROOT_DIR not in sys.path:
 from stations.build_station.apply_sauce import apply_sauce
 from stations.build_station.click_jar import click_jar
 from stations.build_station.parse_topping import process_topping_boxes
-from utils.click_button import click_from_assets
+from utils.click_button import click_ratios
 from utils.parse_ticket import get_filtered_sauce_icon, get_filtered_topping_icon
 
 
@@ -26,7 +26,8 @@ def run_build_station():
     get_filtered_topping_icon(4)
     process_topping_boxes()
     time.sleep(5)
-    click_from_assets("checkmark.png")
+    # Click checkmark
+    click_ratios(0.727, 0.782)
 
 
 if __name__ == "__main__":
