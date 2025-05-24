@@ -20,7 +20,7 @@ from stations.cook_station import cook_station
 # Import station modules
 from stations.order_station import order_station
 from utils.click_build_button import click_build_button
-from utils.click_button import click_from_assets
+from utils.click_button import click_from_assets, click_ratios
 from utils.button_visible import button_visible
 from utils.click_cook_button import click_cook_button
 
@@ -45,11 +45,13 @@ def try_adb_connect(port=ADB_PORT):
 def main():
     try_adb_connect()
     while True:
-        click_from_assets("play.png")
+        # Click play button.
+        click_ratios(0.5, 0.6)
         time.sleep(1)
-        click_from_assets("select.png")
+        # Select save slot.
+        click_ratios(0.5, 0.6)
         time.sleep(1)
-        click_from_assets("start_button_template.png")
+        click_ratios(0.9, 0.9)
         time.sleep(1)
 
         for i in range(7):

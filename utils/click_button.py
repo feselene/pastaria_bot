@@ -1,8 +1,8 @@
 import os
 import re
-import subprocess
 import sys
-import time
+import io
+from PIL import Image
 
 import cv2
 import mss
@@ -199,6 +199,43 @@ def adb_touch_and_hold(x, y, hold_duration=1.0):
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
+
+def click_ratios(x_ratio, y_ratio):
+    """
+    ADB taps the screen at a given (x_ratio, y_ratio).
+
+    :param x_ratio: Horizontal position as a ratio (0.0 to 1.0)
+    :param y_ratio: Vertical position as a ratio (0.0 to 1.0)
+    :return: True always (for consistent return behavior with other click_* functions)
+    """
+    memu_width, memu_height = get_memu_resolution()
+    x = int(x_ratio * memu_width)
+    y = int(y_ratio * memu_height)
+    adb_tap(x, y)
+    print(f"✅ ADB tapped at ratio ({x_ratio:.3f}, {y_ratio:.3f}) → absolute ({x}, {y})")
+    return True
+
+def print_pixel_color_ratio(x_ratio, y_ratio):
+    """
+    Captures a full screen image via ADB and prints the color at a given screen ratio.
+
+    :param x_ratio: Horizontal position as a ratio (0.0 to 1.0)
+    :param y_ratio: Vertical position as a ratio (0.0 to 1.0)
+    """
+    try:
+        memu_width, memu_height = get_memu_resolution()
+        x = int(x_ratio * memu_width)
+        y = int(y_ratio * memu_height)
+
+        result = subprocess.check_output([ADB_PATH, "exec-out", "screencap", "-p"])
+        image = Image.open(io.BytesIO(result)).convert("RGB")
+
+        r, g, b = image.getpixel((x, y))
+        print(f"🎨 Pixel at ratio ({x_ratio:.3f}, {y_ratio:.3f}) → ({x}, {y}): "
+              f"RGB = ({r}, {g}, {b}) | BGR = ({b}, {g}, {r})")
+
+    except Exception as e:
+        print(f"❌ Failed to get pixel color: {e}")
 
 
 def click_button(template_path, threshold=0.7):
