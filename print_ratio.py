@@ -3,7 +3,7 @@ import pygetwindow as gw
 import time
 import os
 import sys
-from utils.click_button import click_ratios, print_pixel_color_ratio
+from utils.click_button import click_ratios, print_pixel_color_ratio, drag_ratios
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = CURRENT_DIR
@@ -54,5 +54,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # print_pointer_ratio_in_memu()
-    print_pixel_color_ratio(0.5, 0.5)
+    print_pointer_ratio_in_memu()
+    # drag_ratios(0.3, 0.8, 0.1, 0.5)
+    # print_pixel_color_ratio(0.5, 0.5)

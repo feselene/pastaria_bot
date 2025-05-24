@@ -151,6 +151,23 @@ def drag_ratios(
     )
 
 
+def click_and_hold_ratios(x_ratio, y_ratio, hold_duration=1.0):
+    """
+    Performs an ADB touch-and-hold at a screen position defined by ratios.
+
+    :param x_ratio: Horizontal position as a ratio (0.0 to 1.0)
+    :param y_ratio: Vertical position as a ratio (0.0 to 1.0)
+    :param hold_duration: Duration in seconds to hold the touch
+    :return: True always (for consistency with other click_* functions)
+    """
+    memu_width, memu_height = get_memu_resolution()
+    x = int(x_ratio * memu_width)
+    y = int(y_ratio * memu_height)
+    adb_touch_and_hold(x, y, hold_duration)
+    print(f"⏱️ ADB held at ratio ({x_ratio:.3f}, {y_ratio:.3f}) → ({x}, {y}) for {hold_duration:.2f}s")
+    return True
+
+
 def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
         monitor = {"top": y, "left": x, "width": width, "height": height}
