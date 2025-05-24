@@ -120,7 +120,7 @@ def drag_ratios(
     start_y_ratio=0.46,
     end_x_ratio=0.44,
     end_y_ratio=0.61,
-    duration=0.1,
+    duration=0.5,
 ):
     memu_width, memu_height = get_memu_resolution()
 

@@ -18,7 +18,7 @@ from utils.parse_ticket import get_filtered_bread_icon
 def drag_bread_to_oven():
     click_from_assets(filename="bread_menu.png")
     get_filtered_bread_icon()
-    time.sleep(1)
+    time.sleep(1.5)
     click_bread()
 
 def submit_bread_and_ticket():

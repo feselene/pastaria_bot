@@ -62,9 +62,9 @@ def main():
             click_build_button()
             time.sleep(1)
             click_from_assets("bread_button_right.png")
-            time.sleep(1)
+            time.sleep(2)
             drag_bread_to_oven()
-            time.sleep(1)
+            time.sleep(2)
             click_from_assets("build_button_left.png")
 
             print("🍝 Running Build Station...")

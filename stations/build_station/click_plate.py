@@ -163,14 +163,14 @@ def place_topping(num):
                 place_in_positions([2, 8])
                 set_flag()
             else:
-                place_in_positions(4, 10)
+                place_in_positions([4, 10])
 
         case 3:
             if not check_flag():
                 place_in_positions([2, 6, 10])
                 set_flag()
             else:
-                place_in_positions(4, 8, 12)
+                place_in_positions([4, 8, 12])
         case 4:
             if not check_flag():
                 place_in_positions([2, 4, 8, 10])
