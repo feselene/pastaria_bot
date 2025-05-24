@@ -7,11 +7,10 @@ ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from stations.cook_station.click_jar import click_jar
 from stations.cook_station.click_leftmost_cook_button import click_leftmost_plus_button
 from stations.cook_station.drag_pasta_to_plate import drag_pasta_to_plate
 from stations.cook_station.stir import stir
-from utils.click_button import click_and_hold_from_assets, click_from_assets
+from utils.click_button import click_and_hold_from_assets, click_from_assets, click_button
 from utils.parse_ticket import get_filtered_pasta_icon, get_filtered_pasta_icon2, is_bar_orange
 
 
@@ -42,7 +41,7 @@ def run_cook_station():
     get_filtered_pasta_icon()
     get_filtered_pasta_icon2()
     time.sleep(1)
-    click_jar()
+    click_button(os.path.join(ROOT_DIR, "debug", "pasta_logo.png"))
     cook()
     click_from_assets("pot.png")
     time.sleep(13)
