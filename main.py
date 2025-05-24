@@ -8,6 +8,7 @@ from utils.click_build_button import click_build_button
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "./"))
+ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
@@ -20,6 +21,7 @@ from stations.cook_station import cook_station
 from stations.order_station import order_station
 from utils.click_build_button import click_build_button
 from utils.click_button import click_from_assets
+from utils.button_visible import button_visible
 from utils.click_cook_button import click_cook_button
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
@@ -48,13 +50,15 @@ def main():
         click_from_assets("select.png")
         time.sleep(1)
         click_from_assets("start_button_template.png")
+        time.sleep(1)
 
         for i in range(6):
             clean_files()
             print("▶️ Running Order Station...")
             order_station.run_order_station()
+            if button_visible(os.path.join(ASSETS_DIR, "skip_button_left.png"), threshold=0.8):
+                return
             click_cook_button()
-
             print("🔥 Running Cook Station...")
             time.sleep(1)
             cook_station.run_cook_station()
@@ -72,7 +76,7 @@ def main():
             build_station.run_build_station()
 
             print("🍞 Running Bread Station...")
-            time.sleep(1)
+            time.sleep(3)
             submit_bread_and_ticket()
             time.sleep(12)
 
