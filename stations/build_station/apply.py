@@ -35,73 +35,34 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         str(x1), str(y1), str(x2), str(y2), str(duration_ms)
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def is_mostly_black_or_gray(image_path, threshold=200, ratio_threshold=0.80):
+def is_mostly_black_or_gray(image_path, threshold=0.3):
     """
-    Check if an image consists of at least `ratio_threshold` portion of black or gray pixels.
+    Checks if more than `threshold` of the image is exactly #989898.
 
     Args:
         image_path (str): Path to the image file.
-        threshold (int): Max grayscale value to consider a pixel black or gray (default: 200).
-        ratio_threshold (float): Minimum ratio of black/gray pixels required (default: 0.80).
+        threshold (float): Proportion threshold to exceed (default is 0.3 for 30%).
 
     Returns:
-        bool: True if the image is mostly black or gray, False otherwise.
-        float: The actual black/gray pixel ratio.
-        int: Minimum grayscale value.
-        int: Maximum grayscale value.
+        bool: True if the proportion exceeds the threshold, False otherwise.
+        float: The actual proportion of #989898 pixels.
     """
     image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if image is None:
+        raise ValueError(f"Could not load image from: {image_path}")
 
-    min_gray = np.min(gray)
-    max_gray = np.max(gray)
+    # Convert to RGB
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    black_or_gray_mask = (gray <= threshold)
-    black_or_gray_ratio = np.sum(black_or_gray_mask) / (gray.shape[0] * gray.shape[1])
+    # Flatten the image and compare
+    pixels = image_rgb.reshape(-1, 3)
+    target_color = np.array([152, 152, 152])
 
-    print(f"Grayscale Range: min={min_gray}, max={max_gray}")
-    print(f"Black/Gray Ratio: {black_or_gray_ratio:.2%}")
+    matches = np.all(pixels == target_color, axis=1)
+    match_ratio = np.sum(matches) / pixels.shape[0]
 
-    if black_or_gray_ratio >= ratio_threshold:
-        print("✅ At least 80% of the image is black or gray.")
-        return True, black_or_gray_ratio, min_gray, max_gray
-    else:
-        print("❌ Less than 80% of the image is black or gray.")
-        return False, black_or_gray_ratio, min_gray, max_gray
+    return match_ratio > threshold, match_ratio
 
-def is_mostly_black_or_gray(image_path, threshold=200, ratio_threshold=0.80):
-    """
-    Check if an image consists of at least `ratio_threshold` portion of black or gray pixels.
-
-    Args:
-        image_path (str): Path to the image file.
-        threshold (int): Max grayscale value to consider a pixel black or gray (default: 200).
-        ratio_threshold (float): Minimum ratio of black/gray pixels required (default: 0.80).
-
-    Returns:
-        bool: True if the image is mostly black or gray, False otherwise.
-        float: The actual black/gray pixel ratio.
-        int: Minimum grayscale value.
-        int: Maximum grayscale value.
-    """
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    min_gray = np.min(gray)
-    max_gray = np.max(gray)
-
-    black_or_gray_mask = (gray <= threshold)
-    black_or_gray_ratio = np.sum(black_or_gray_mask) / (gray.shape[0] * gray.shape[1])
-
-    print(f"Grayscale Range: min={min_gray}, max={max_gray}")
-    print(f"Black/Gray Ratio: {black_or_gray_ratio:.2%}")
-
-    if black_or_gray_ratio >= ratio_threshold:
-        print("✅ At least 80% of the image is black or gray.")
-        return True, black_or_gray_ratio, min_gray, max_gray
-    else:
-        print("❌ Less than 80% of the image is black or gray.")
-        return False, black_or_gray_ratio, min_gray, max_gray
 
 def capture_center_picker_square():
     x_ratio = 0.422
@@ -126,7 +87,7 @@ def capture_center_picker_square():
     square_top = int(center_y - half_sq)
 
     small_square_left = int(center_x - half_small_sq)
-    small_square_top = int(center_y - half_small_sq)
+    small_square_top = int(center_y - half_small_sq) - 25  # Shift upward by 25 pixels
 
     region = {
         "left": box_left,
@@ -182,7 +143,6 @@ def capture_center_picker_square():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     overlay_path = os.path.join(DEBUG_DIR, f"{timestamp}_picker_overlay.png")
     cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
-    small_square_path = os.path.join(DEBUG_DIR, "small_square.png")
     square_path = os.path.join(DEBUG_DIR, f"{timestamp}_cropped_square.png")
     small_square_path = os.path.join(DEBUG_DIR, f"{timestamp}_small_square.png")
 
@@ -196,6 +156,7 @@ def capture_center_picker_square():
     print(f"📸 Small square crop saved to: {small_square_path}")
 
     return cropped_path, small_square_path
+
 
 def half_swipe():
     x_ratio = 0.422
@@ -250,7 +211,11 @@ def sanitize_filename_component(text, max_length=50):
 def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=2):
     for attempt in range(max_attempts):
         current_path, small_square_path = capture_center_picker_square()
+
         if is_mostly_black_or_gray(small_square_path):
+            time.sleep(2)
+            print("calling half_swipe because image is mostly_black or grey")
+            time.sleep(2)
             half_swipe()
             current_path, small_square_path = capture_center_picker_square()
 
