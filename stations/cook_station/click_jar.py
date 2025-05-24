@@ -6,9 +6,8 @@ import mss
 import numpy as np
 import pyautogui
 import torch
-from tqdm import tqdm
-
 from PIL import Image
+from tqdm import tqdm
 from transformers import AutoModel, AutoProcessor
 
 CURRENT_DIR = os.path.dirname(__file__)

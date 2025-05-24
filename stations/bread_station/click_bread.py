@@ -1,11 +1,9 @@
 import os
 import sys
-import time
 
 import cv2
 import mss
 import numpy as np
-import pyautogui
 
 from utils.click_button import drag_ratios
 
@@ -23,8 +21,6 @@ def grab_screen_region(x, y, width, height):
     with mss.mss() as sct:
         monitor = {"top": y, "left": x, "width": width, "height": height}
         return np.array(sct.grab(monitor))
-
-
 
 
 def get_best_template_match_center(template_path, threshold=0.75):
@@ -94,7 +90,9 @@ def get_bread_ratios():
 
     :return: (x_ratio, y_ratio) if match is found, otherwise (None, None)
     """
-    template_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
+    template_path = (
+        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
+    )
     match_x, match_y = get_best_template_match_center(template_path)
 
     if match_x is None or match_y is None:
@@ -107,7 +105,6 @@ def get_bread_ratios():
 
     print(f"📐 Bread matched at ratios: x={x_ratio:.3f}, y={y_ratio:.3f}")
     return x_ratio, y_ratio
-
 
 
 def click_bread():

@@ -1,20 +1,20 @@
 import os
+import subprocess
 import sys
 import time
 
 import pyautogui
-import subprocess
-
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_resolution import get_memu_resolution
 from stations.build_station.click_jar import click_jar
+from utils.get_memu_resolution import get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+
 
 def apply_sauce():
     memu_width, memu_height = get_memu_resolution()
@@ -41,8 +41,22 @@ def apply_sauce():
 
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=200):
-    subprocess.run([ADB_PATH, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(duration_ms)],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(
+        [
+            ADB_PATH,
+            "shell",
+            "input",
+            "swipe",
+            str(x1),
+            str(y1),
+            str(x2),
+            str(y2),
+            str(duration_ms),
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
 
 if __name__ == "__main__":
     click_jar()

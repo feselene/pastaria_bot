@@ -1,9 +1,10 @@
 import os
 import sys
+import time
+
 import cv2
 import numpy as np
 import pytesseract
-import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -16,13 +17,14 @@ os.makedirs(TOPPINGS_DIR, exist_ok=True)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 from skimage.metrics import structural_similarity as ssim
-from utils.parse_ticket import get_filtered_topping_icon
+
 from stations.build_station.apply import select_ingredient
 from stations.build_station.apply_sauce import apply_sauce
 from stations.build_station.click_plate import click_plate, place_topping
-
-from utils.remove_background import remove_background_and_crop
 from utils.detect_ticket_from_template import detect_ticket_from_template
+from utils.parse_ticket import get_filtered_topping_icon
+from utils.remove_background import remove_background_and_crop
+
 
 def is_box_empty(img, tolerance=10, match_ratio=0.6):
     """
@@ -50,6 +52,7 @@ def is_box_empty(img, tolerance=10, match_ratio=0.6):
     ratio = np.sum(mask) / (h * w)
     return ratio >= match_ratio
 
+
 def crop_x_region(img):
     h, w = img.shape[:2]
 
@@ -61,6 +64,7 @@ def crop_x_region(img):
 
     cropped = img[start_y:end_y, start_x:end_x]
     return cropped
+
 
 def center_contains_x(img):
     # Crop the X region from the input
@@ -86,6 +90,7 @@ def center_contains_x(img):
 
     return score > 0.5
 
+
 def process_topping_boxes():
     for i in range(1, 5):
         image_path = os.path.join(DEBUG_DIR, f"topping{i}.png")
@@ -101,7 +106,9 @@ def process_topping_boxes():
             print(image_path + " is a sauce.")
             apply_shaker(image_path)
 
+
 import cv2
+
 
 def extract_digit(image_path):
     image = cv2.imread(image_path)
@@ -116,9 +123,9 @@ def extract_digit(image_path):
     _, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY_INV)
 
     # Tesseract config
-    config = r'--psm 10 -c tessedit_char_whitelist=0123456789'
+    config = r"--psm 10 -c tessedit_char_whitelist=0123456789"
     raw_result = pytesseract.image_to_string(thresh, config=config)
-    cleaned = ''.join(filter(str.isdigit, raw_result))
+    cleaned = "".join(filter(str.isdigit, raw_result))
 
     # print(f"OCR Raw: {repr(raw_result)} | Cleaned: {cleaned}")
     return int(cleaned) if cleaned else None
@@ -145,7 +152,7 @@ def apply_shaker(image_path):
     img = cv2.imread(image_path)
     basename = os.path.basename(image_path)
     h, w = img.shape[:2]
-    cropped = img[int(h * 0.05):int(h * 0.92), int(w * 0.38):int(w * 0.61)]
+    cropped = img[int(h * 0.05) : int(h * 0.92), int(w * 0.38) : int(w * 0.61)]
     save_path = os.path.join(TOPPINGS_DIR, basename)
     cv2.imwrite(save_path, cropped)
     select_ingredient(save_path)

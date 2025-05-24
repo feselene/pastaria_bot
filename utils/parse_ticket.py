@@ -1,7 +1,8 @@
 import os
 import sys
-import numpy as np
+
 import cv2
+import numpy as np
 
 from utils.detect_ticket_from_template import detect_ticket_from_template
 from utils.remove_background import crop, remove_background_and_crop
@@ -16,6 +17,7 @@ if ROOT_DIR not in sys.path:
 
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
+
 
 def is_bar_orange(threshold=0.1):
     print("🎟️ Detecting ticket...")
@@ -43,6 +45,7 @@ def is_bar_orange(threshold=0.1):
 
     print(f"🍊 Orange pixel ratio: {orange_ratio:.2f}")
     return orange_ratio >= threshold
+
 
 def crop_ticket_regions(ticket_img):
     h, w = ticket_img.shape[:2]

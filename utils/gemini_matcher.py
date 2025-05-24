@@ -1,8 +1,9 @@
 # gemini_matcher.py
 import os
+import sys
+
 import google.generativeai as genai
 from dotenv import load_dotenv
-import sys
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
@@ -10,10 +11,11 @@ ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.capture import capture_center_picker_square
-
 import time
+
 import google.api_core.exceptions
+
+from utils.capture import capture_center_picker_square
 
 load_dotenv()
 
@@ -21,9 +23,11 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+
 def encode_image(path):
     with open(path, "rb") as f:
         return f.read()
+
 
 import hashlib
 import json
@@ -38,13 +42,16 @@ if os.path.exists(CACHE_PATH):
 else:
     match_cache = {}
 
+
 def hash_pair(img1_path, img2_path):
     def file_hash(path):
         with open(path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()
+
     h1 = file_hash(img1_path)
     h2 = file_hash(img2_path)
     return f"{min(h1, h2)}_{max(h1, h2)}"
+
 
 def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
     key = hash_pair(imgpath1, imgpath2)
@@ -78,9 +85,11 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
             return answer
 
         except google.api_core.exceptions.ResourceExhausted as e:
-            retry_delay = getattr(e, 'retry_delay', None)
+            retry_delay = getattr(e, "retry_delay", None)
             wait_seconds = retry_delay.seconds if retry_delay else 15
-            print(f"⏳ Gemini rate limit hit (429). Waiting {wait_seconds}s... (attempt {attempt+1}/{max_retries})")
+            print(
+                f"⏳ Gemini rate limit hit (429). Waiting {wait_seconds}s... (attempt {attempt+1}/{max_retries})"
+            )
             time.sleep(wait_seconds)
 
         except Exception as e:
@@ -111,6 +120,7 @@ def is_matching2(imgpath1, imgpath2) -> bool:
 def main():
     print(os.getenv("GEMINI_API_KEY"))
     image_path = capture_center_picker_square()
+
 
 if __name__ == "__main__":
     main()

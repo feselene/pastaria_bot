@@ -1,15 +1,16 @@
 import os
+import re
 import sys
 import time
-import re
+
 import cv2
 import mss
 import numpy as np
 import pyautogui
+from dotenv import load_dotenv
 from PIL import Image
 from rembg import remove
 
-from dotenv import load_dotenv
 load_dotenv()
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -22,8 +23,8 @@ os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_resolution import get_memu_bounds
 from utils.gemini_matcher import is_matching
+from utils.get_memu_resolution import get_memu_bounds
 
 topping1 = os.path.join(TOPPINGS_DIR, "topping1.png")
 topping2 = os.path.join(TOPPINGS_DIR, "topping2.png")
@@ -73,6 +74,7 @@ def swipe_topping_picker_left():
         f"⬅️ Swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
     )
 
+
 def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     if cv_image.shape[2] == 3:
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGBA)
@@ -93,18 +95,19 @@ def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
 
 
 import os
-import time
 import shutil
+import time
 
 MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
 os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the matches directory exists
+
 
 def sanitize_filename_component(text, max_length=50):
     """
     Cleans and truncates a string to make it safe for use in filenames.
     Keeps only letters, numbers, and underscores.
     """
-    safe = re.sub(r'\W+', '_', text)
+    safe = re.sub(r"\W+", "_", text)
     return safe[:max_length]
 
 
@@ -121,12 +124,14 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
         current_path = capture_center_picker_square()
         match_response = is_matching(current_path, cropped_path)
 
-        if 'yes' in match_response:
+        if "yes" in match_response:
             print(f"✅ Match found on attempt {attempt}: {current_path}")
 
             safe_match_response = sanitize_filename_component(match_response)
 
-            current_dest = os.path.join(MATCHES_DIR, f"{safe_match_response}_current.png")
+            current_dest = os.path.join(
+                MATCHES_DIR, f"{safe_match_response}_current.png"
+            )
             target_dest = os.path.join(MATCHES_DIR, f"{safe_match_response}_target.png")
 
             shutil.copy(current_path, current_dest)
@@ -136,11 +141,11 @@ def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.1):
             print(f"📁 Target image saved to: {target_dest}")
             return True
 
-        print(f"❌ No match on attempt {attempt}, swiping... (response: {match_response})")
+        print(
+            f"❌ No match on attempt {attempt}, swiping... (response: {match_response})"
+        )
         swipe_topping_picker_left()
         time.sleep(delay_between_swipes)
-
-
 
     print("⚠️ Maximum attempts reached without finding a match.")
     return False
@@ -156,6 +161,7 @@ def main():
         print("🎯 Ingredient successfully selected!")
     else:
         print("❌ Ingredient not found.")
+
 
 if __name__ == "__main__":
     main()

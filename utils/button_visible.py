@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
+
 from utils.get_memu_resolution import get_memu_bounds, grab_screen_region
+
 
 def button_visible(template_path, threshold=0.85):
     template = cv2.imread(template_path, 0)

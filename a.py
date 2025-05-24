@@ -1,7 +1,8 @@
 import os
 import sys
-import numpy as np
+
 import cv2
+import numpy as np
 
 # Setup root imports from parse_ticket.py inside utils/
 CURRENT_DIR = os.path.dirname(__file__)  # points to pastaria_bot/utils/
@@ -17,6 +18,7 @@ os.makedirs(DEBUG_DIR, exist_ok=True)
 from utils.detect_ticket_from_template import detect_ticket_from_template
 from utils.parse_ticket import crop_ticket_regions
 from utils.remove_background import crop, remove_background_and_crop
+
 
 def is_bar_orange(threshold=0.2):
     print("🎟️ Detecting ticket...")
@@ -45,8 +47,10 @@ def is_bar_orange(threshold=0.2):
     print(f"🍊 Orange pixel ratio: {orange_ratio:.2f}")
     return orange_ratio >= threshold
 
+
 def main():
     is_bar_orange()
+
 
 if __name__ == "__main__":
     main()

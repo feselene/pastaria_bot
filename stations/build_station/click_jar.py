@@ -1,10 +1,11 @@
 import os
+import subprocess
 import sys
 import time
+
 import cv2
 import mss
 import numpy as np
-import subprocess
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -16,13 +17,15 @@ OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 
-from utils.get_memu_resolution import get_memu_bounds
-from utils.get_memu_resolution import get_memu_resolution
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 
 def adb_tap(x, y):
-    subprocess.run([ADB_PATH, "shell", "input", "tap", str(x), str(y)],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(
+        [ADB_PATH, "shell", "input", "tap", str(x), str(y)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
 
 def grab_screen_region(x, y, width, height):
@@ -78,7 +81,9 @@ def click_best_template_match(template_path, threshold=0.6):
         screen_y = (match_y + match_h // 2 + belt_top) * memu_height // height
 
         adb_tap(screen_x, screen_y)
-        print(f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(
+            f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}"
+        )
         return True
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")

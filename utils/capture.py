@@ -1,15 +1,16 @@
 import os
+import re
 import sys
 import time
-import re
+
 import cv2
 import mss
 import numpy as np
 import pyautogui
+from dotenv import load_dotenv
 from PIL import Image
 from rembg import remove
 
-from dotenv import load_dotenv
 load_dotenv()
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -23,6 +24,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from utils.get_memu_resolution import get_memu_bounds
+
 
 def capture_center_picker_square():
     x_ratio = 0.422

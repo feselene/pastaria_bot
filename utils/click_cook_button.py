@@ -12,6 +12,7 @@ from utils.click_button import click_button
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 START_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "cook_button_right.png")
 
+
 def click_cook_button(retries=15, delay=0.5, threshold=0.7):
     print("🟢 Looking for COOK button...")
 

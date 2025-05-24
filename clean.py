@@ -2,10 +2,8 @@ import os
 import shutil
 
 # Directories to clean
-DIRS_TO_CLEAN = [
-    "debug",
-    "toppings"
-]
+DIRS_TO_CLEAN = ["debug", "toppings"]
+
 
 def clean_directory(dir_path):
     if not os.path.exists(dir_path):
@@ -22,13 +20,16 @@ def clean_directory(dir_path):
         except Exception as e:
             print(f"⚠️ Failed to delete {file_path}: {e}")
 
+
 def clean_files():
     for dir_path in DIRS_TO_CLEAN:
         clean_directory(dir_path)
 
+
 def main():
     for dir_path in DIRS_TO_CLEAN:
         clean_directory(dir_path)
+
 
 if __name__ == "__main__":
     main()
