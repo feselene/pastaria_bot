@@ -19,7 +19,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 from skimage.metrics import structural_similarity as ssim
 
 from stations.build_station.apply import select_ingredient
-from stations.build_station.apply_sauce import apply_shaker
+from stations.build_station.apply_sauce import use_shaker
 from stations.build_station.click_plate import place_topping
 from utils.detect_ticket_from_template import detect_ticket_from_template
 from utils.parse_ticket import get_filtered_topping_icon
@@ -159,7 +159,7 @@ def apply_shaker(image_path):
     cv2.imwrite(save_path, cropped)
     select_ingredient(save_path)
     time.sleep(0.5)
-    apply_shaker()
+    use_shaker()
 
 
 def main():

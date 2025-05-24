@@ -34,7 +34,7 @@ def apply_sauce():
             adb_swipe(end_x, center_y, start_x, center_y, duration_ms)
 
 
-def apply_shaker():
+def use_shaker():
     memu_width, memu_height = get_memu_resolution()
     center_x = memu_width // 2
     center_y = int(memu_height * 0.65)

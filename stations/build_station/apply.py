@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 import sys
@@ -34,15 +35,51 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         str(x1), str(y1), str(x2), str(y2), str(duration_ms)
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-import datetime
+def is_mostly_black_or_gray(image_path, threshold=200, ratio_threshold=0.80):
+    """
+    Check if an image consists of at least `ratio_threshold` portion of black or gray pixels.
+
+    Args:
+        image_path (str): Path to the image file.
+        threshold (int): Max grayscale value to consider a pixel black or gray (default: 200).
+        ratio_threshold (float): Minimum ratio of black/gray pixels required (default: 0.80).
+
+    Returns:
+        bool: True if the image is mostly black or gray, False otherwise.
+        float: The actual black/gray pixel ratio.
+        int: Minimum grayscale value.
+        int: Maximum grayscale value.
+    """
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    min_gray = np.min(gray)
+    max_gray = np.max(gray)
+
+    black_or_gray_mask = (gray <= threshold)
+    black_or_gray_ratio = np.sum(black_or_gray_mask) / (gray.shape[0] * gray.shape[1])
+
+    print(f"Grayscale Range: min={min_gray}, max={max_gray}")
+    print(f"Black/Gray Ratio: {black_or_gray_ratio:.2%}")
+
+    if black_or_gray_ratio >= ratio_threshold:
+        print("✅ At least 80% of the image is black or gray.")
+        return True, black_or_gray_ratio, min_gray, max_gray
+    else:
+        print("❌ Less than 80% of the image is black or gray.")
+        return False, black_or_gray_ratio, min_gray, max_gray
 
 def capture_center_picker_square():
     x_ratio = 0.422
     y_ratio = 0.32
     width_px = 360
     height_px = 180
+    square_size = 180
+    small_square_size = 90
     half_w = width_px / 2
     half_h = height_px / 2
+    half_sq = square_size / 2
+    half_small_sq = small_square_size / 2
 
     left, top, width, height = get_memu_bounds()
     center_x = int(left + width * x_ratio)
@@ -51,6 +88,12 @@ def capture_center_picker_square():
     box_left = int(center_x - half_w)
     box_top = int(center_y - half_h)
 
+    square_left = int(center_x - half_sq)
+    square_top = int(center_y - half_sq)
+
+    small_square_left = int(center_x - half_small_sq)
+    small_square_top = int(center_y - half_small_sq)
+
     region = {
         "left": box_left,
         "top": box_top,
@@ -58,11 +101,27 @@ def capture_center_picker_square():
         "height": height_px,
     }
 
+    square_region = {
+        "left": square_left,
+        "top": square_top,
+        "width": square_size,
+        "height": square_size,
+    }
+
+    small_square_region = {
+        "left": small_square_left,
+        "top": small_square_top,
+        "width": small_square_size,
+        "height": small_square_size,
+    }
+
     with mss.mss() as sct:
         full_screen = np.array(sct.grab({"left": left, "top": top, "width": width, "height": height}))
         cropped = np.array(sct.grab(region))
+        cropped_square = np.array(sct.grab(square_region))
+        cropped_small_square = np.array(sct.grab(small_square_region))
 
-    # Draw blue rectangle on the full screen screenshot
+    # Draw rectangles on full screen screenshot
     cv2.rectangle(
         full_screen,
         (box_left - left, box_top - top),
@@ -70,19 +129,38 @@ def capture_center_picker_square():
         (255, 0, 0),
         2
     )
+    cv2.rectangle(
+        full_screen,
+        (square_left - left, square_top - top),
+        (square_left - left + square_size, square_top - top + square_size),
+        (0, 255, 0),
+        2
+    )
+    cv2.rectangle(
+        full_screen,
+        (small_square_left - left, small_square_top - top),
+        (small_square_left - left + small_square_size, small_square_top - top + small_square_size),
+        (0, 0, 255),
+        2
+    )
 
-    # Save annotated debug screenshot
+    # Save screenshots
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     overlay_path = os.path.join(DEBUG_DIR, f"{timestamp}_picker_overlay.png")
+    cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
+    square_path = os.path.join(DEBUG_DIR, f"{timestamp}_cropped_square.png")
+    small_square_path = os.path.join(DEBUG_DIR, f"{timestamp}_small_square.png")
+
     cv2.imwrite(overlay_path, full_screen)
     print(f"📸 Overlay with capture box saved to: {overlay_path}")
 
-    # Save and return cropped region
-    cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
     cv2.imwrite(cropped_path, cropped)
+    cv2.imwrite(square_path, cropped_square)
+    cv2.imwrite(small_square_path, cropped_small_square)
+    print(f"📸 Square crop saved to: {square_path}")
+    print(f"📸 Small square crop saved to: {small_square_path}")
+
     return cropped_path
-
-
 
 
 def swipe_topping_picker_left():
