@@ -15,12 +15,19 @@ from utils.click_button import (
 )
 from utils.parse_ticket import get_filtered_bread_icon
 
-
-def run_bread_station():
+def drag_bread_to_oven():
     click_from_assets(filename="bread_menu.png")
     get_filtered_bread_icon()
     time.sleep(1)
     click_bread()
+
+def submit_bread_and_ticket():
+    drag_ratios()
+    time.sleep(0.5)
+    drag_ratios(0.9, 0.5, 0.2, 0.7)
+
+def run_bread_station():
+    drag_bread_to_oven()
     click_and_hold_from_assets(
         filename="bread_boost.png", hold_duration=12, threshold=0.80
     )

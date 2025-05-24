@@ -12,6 +12,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from stations.bread_station import bread_station
+from stations.bread_station.bread_station import drag_bread_to_oven, submit_bread_and_ticket
 from stations.build_station import build_station
 from stations.cook_station import cook_station
 
@@ -20,7 +21,6 @@ from stations.order_station import order_station
 from utils.click_build_button import click_build_button
 from utils.click_button import click_from_assets
 from utils.click_cook_button import click_cook_button
-from utils.click_start_button import click_start_button
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 ADB_PORT = 21503  # Default for MEmu instance 1
@@ -63,6 +63,11 @@ def main():
             cook_station.run_cook_station()
             time.sleep(1)
             click_build_button()
+            time.sleep(1)
+            click_from_assets("bread_button_right.png")
+            drag_bread_to_oven()
+            time.sleep(1)
+            click_from_assets("build_button_left.png")
 
             print("🍝 Running Build Station...")
             time.sleep(1)
@@ -70,7 +75,7 @@ def main():
 
             print("🍞 Running Bread Station...")
             time.sleep(1)
-            bread_station.run_bread_station()
+            submit_bread_and_ticket()
             time.sleep(12)
 
         click_from_assets("skip_button_right.png")
