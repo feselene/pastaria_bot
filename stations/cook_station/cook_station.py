@@ -33,7 +33,7 @@ def cook_green():
     click_and_hold_from_assets("cook_boost.png", 9, threshold=0.8)
     stir()
     time.sleep(2)
-    click_and_hold_from_assets("cook_boost.png", 9, threshold=0.8)
+    click_and_hold_from_assets("cook_boost.png", 8, threshold=0.8)
 
 
 def run_cook_station():
@@ -43,6 +43,7 @@ def run_cook_station():
     time.sleep(1)
     click_button(os.path.join(ROOT_DIR, "debug", "pasta_logo.png"))
     cook()
+    time.sleep(2)
     click_from_assets("pot.png")
     time.sleep(13)
     drag_pasta_to_plate()
