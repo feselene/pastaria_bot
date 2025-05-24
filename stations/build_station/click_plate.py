@@ -83,7 +83,7 @@ def swipe_to_middle():
 
 
 def swipe_blended_upward_away_from_oclock(
-    n, distance_ratio=0.25, duration_ms=300, up_weight=0.6, oclock_weight=0.75
+    n, distance_ratio=0.25, duration_ms=300, up_weight=0.6, oclock_weight=0.6
 ):
     """
     Adds a raw upward vector and a raw reversed o'clock vector, scaled by respective weights.
