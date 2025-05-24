@@ -35,7 +35,35 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         str(x1), str(y1), str(x2), str(y2), str(duration_ms)
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def is_mostly_black_or_gray(image_path, threshold=0.3):
+def is_mostly_black(image_path, threshold=0.8, tolerance=10):
+    """
+    Checks if more than `threshold` of the image is visually black,
+    defined as within `tolerance` of #0e0e0e.
+
+    Args:
+        image_path (str): Path to the image file.
+        threshold (float): Fraction of near-black pixels required to return True.
+        tolerance (int): Max per-channel distance from [14, 14, 14] to count as black.
+
+    Returns:
+        bool: True if black pixel ratio exceeds threshold.
+        float: Actual black pixel ratio.
+    """
+    image = cv2.imread(image_path)
+    if image is None:
+        raise ValueError(f"Could not load image from: {image_path}")
+
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    pixels = image_rgb.reshape(-1, 3)
+
+    target_black = np.array([14, 14, 14])
+    diff = np.abs(pixels - target_black)
+    matches = np.all(diff <= tolerance, axis=1)
+
+    match_ratio = np.sum(matches) / len(pixels)
+    return match_ratio > threshold, match_ratio
+
+def is_mostly_black_or_gray(image_path, threshold=0.2):
     """
     Checks if more than `threshold` of the image is exactly #989898.
 
@@ -61,7 +89,7 @@ def is_mostly_black_or_gray(image_path, threshold=0.3):
     matches = np.all(pixels == target_color, axis=1)
     match_ratio = np.sum(matches) / pixels.shape[0]
 
-    return match_ratio > threshold, match_ratio
+    return match_ratio > threshold
 
 
 def capture_center_picker_square():
@@ -172,6 +200,36 @@ def half_swipe():
 
     print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
 
+def third_swipe_left():
+    x_ratio = 0.422
+    y_ratio = 0.32
+    swipe_offset_ratio = 0.1809 / 3
+    memu_width, memu_height = get_memu_resolution()
+
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x + memu_width * swipe_offset_ratio)  # Swiping right
+
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
+
+    print(f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+
+
+def half_swipe_left():
+    x_ratio = 0.422
+    y_ratio = 0.32
+    swipe_offset_ratio = 0.1809 / 2
+    memu_width, memu_height = get_memu_resolution()
+
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x + memu_width * swipe_offset_ratio)  # Swiping right
+
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
+
+    print(f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+
+
 def swipe_topping_picker_left():
     x_ratio = 0.422
     y_ratio = 0.32
@@ -212,11 +270,18 @@ def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=2):
     for attempt in range(max_attempts):
         current_path, small_square_path = capture_center_picker_square()
 
+        if is_mostly_black(small_square_path):
+            time.sleep(2)
+            print("calling third_swipe_left because image is mostly_black")
+            time.sleep(2)
+            third_swipe_left()
+            current_path, small_square_path = capture_center_picker_square()
+
         if is_mostly_black_or_gray(small_square_path):
             time.sleep(2)
-            print("calling half_swipe because image is mostly_black or grey")
+            print("calling half_swipe_left because image is mostly_black or grey")
             time.sleep(2)
-            half_swipe()
+            half_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
 
         match_response = is_matching(current_path, cropped_path)
