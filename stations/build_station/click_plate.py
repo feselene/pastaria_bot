@@ -119,10 +119,6 @@ def swipe_blended_upward_away_from_oclock(
     distance_scale = memu_width * distance_ratio
     end_x = int(center_x + vx * distance_scale)
     end_y = int(center_y + vy * distance_scale)
-
-    print(
-        f"🧭 Raw swipe: {up_weight}×UP + {oclock_weight}×opp({n}) → ({center_x}, {center_y}) → ({end_x}, {end_y})"
-    )
     adb_swipe(center_x, center_y, end_x, end_y, duration_ms)
     time.sleep(0.5)
 

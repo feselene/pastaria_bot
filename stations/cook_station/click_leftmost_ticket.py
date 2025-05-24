@@ -18,7 +18,7 @@ ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
-from utils.click_button import adb_tap_ratio
+from utils.click_button import click_ratios
 
 
 def adb_tap(x, y):
@@ -33,7 +33,7 @@ def grab_emulator_region():
     return img, left, top, width, height
 
 def click_tickets():
-    adb_tap_ratio(0.5, 0.1)
+    click_ratios(0.5, 0.1)
 
 def click_leftmost_ticket():
     click_tickets()
