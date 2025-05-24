@@ -4,27 +4,21 @@ import os
 import cv2
 import sys
 import subprocess
-import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = CURRENT_DIR
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 TOPPINGS_DIR = os.path.join(ROOT_DIR, "toppings")
 MATCHES_DIR = os.path.join(ROOT_DIR, "matches")
-os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
+os.makedirs(MATCHES_DIR, exist_ok=True)
 
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.gemini_matcher import is_matching, recenter
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+from stations.build_station.apply import half_swipe
 
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
-
-from utils.gemini_matcher import is_matching, recenter
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=300):
     subprocess.run([
@@ -80,4 +74,5 @@ def adb_tap(x, y):
 
 
 if __name__ == "__main__":
-    adb_tap(2725, 549)
+    for i in range(10):
+        half_swipe()

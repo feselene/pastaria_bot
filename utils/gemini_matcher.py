@@ -17,9 +17,6 @@ import time
 
 import google.api_core.exceptions
 
-from utils.capture import capture_center_picker_square
-from utils.drag import half_swipe
-
 load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -88,42 +85,6 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
 
 
 
-def recenter(image_path, max_retries=3):
-    """
-    Asks Gemini if the topping in image_path is centered in the picker UI.
-    If not, performs a half swipe to try to center it.
-    """
-    prompt = (
-        "This image is from a horizontal ingredient picker in a cooking game.\n"
-        "The currently selected topping should appear centered and slightly lower than the others.\n"
-        "Is the topping in the center of this image correctly centered in the picker?\n"
-        "Answer only 'yes' or 'no'."
-    )
-
-    image = encode_image(image_path)
-
-    for attempt in range(max_retries):
-        try:
-            response = model.generate_content([
-                prompt,
-                {"mime_type": "image/png", "data": image}
-            ], stream=False)
-
-            answer = response.text.strip().lower()
-            print(f"📍 Gemini recenter check: {answer}")
-
-            if answer == "yes":
-                return True
-            else:
-                print("↔️ Not centered — nudging with half swipe...")
-                half_swipe()
-                time.sleep(0.4)
-        except Exception as e:
-            print(f"❌ Recenter Gemini error: {e}")
-            break
-
-    return False
-
 
 
 def is_matching2(imgpath1, imgpath2) -> bool:
@@ -145,7 +106,6 @@ def is_matching2(imgpath1, imgpath2) -> bool:
 
 def main():
     print(os.getenv("GEMINI_API_KEY"))
-    image_path = capture_center_picker_square()
 
 
 if __name__ == "__main__":

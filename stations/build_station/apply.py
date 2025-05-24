@@ -24,7 +24,7 @@ os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.gemini_matcher import is_matching, recenter
+from utils.gemini_matcher import is_matching
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
@@ -34,6 +34,40 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         ADB_PATH, "shell", "input", "swipe",
         str(x1), str(y1), str(x2), str(y2), str(duration_ms)
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def is_mostly_black_or_gray(image_path, threshold=200, ratio_threshold=0.80):
+    """
+    Check if an image consists of at least `ratio_threshold` portion of black or gray pixels.
+
+    Args:
+        image_path (str): Path to the image file.
+        threshold (int): Max grayscale value to consider a pixel black or gray (default: 200).
+        ratio_threshold (float): Minimum ratio of black/gray pixels required (default: 0.80).
+
+    Returns:
+        bool: True if the image is mostly black or gray, False otherwise.
+        float: The actual black/gray pixel ratio.
+        int: Minimum grayscale value.
+        int: Maximum grayscale value.
+    """
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    min_gray = np.min(gray)
+    max_gray = np.max(gray)
+
+    black_or_gray_mask = (gray <= threshold)
+    black_or_gray_ratio = np.sum(black_or_gray_mask) / (gray.shape[0] * gray.shape[1])
+
+    print(f"Grayscale Range: min={min_gray}, max={max_gray}")
+    print(f"Black/Gray Ratio: {black_or_gray_ratio:.2%}")
+
+    if black_or_gray_ratio >= ratio_threshold:
+        print("✅ At least 80% of the image is black or gray.")
+        return True, black_or_gray_ratio, min_gray, max_gray
+    else:
+        print("❌ Less than 80% of the image is black or gray.")
+        return False, black_or_gray_ratio, min_gray, max_gray
 
 def is_mostly_black_or_gray(image_path, threshold=200, ratio_threshold=0.80):
     """
@@ -148,6 +182,7 @@ def capture_center_picker_square():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     overlay_path = os.path.join(DEBUG_DIR, f"{timestamp}_picker_overlay.png")
     cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
+    small_square_path = os.path.join(DEBUG_DIR, "small_square.png")
     square_path = os.path.join(DEBUG_DIR, f"{timestamp}_cropped_square.png")
     small_square_path = os.path.join(DEBUG_DIR, f"{timestamp}_small_square.png")
 
@@ -160,14 +195,26 @@ def capture_center_picker_square():
     print(f"📸 Square crop saved to: {square_path}")
     print(f"📸 Small square crop saved to: {small_square_path}")
 
-    return cropped_path
+    return cropped_path, small_square_path
 
+def half_swipe():
+    x_ratio = 0.422
+    y_ratio = 0.32
+    swipe_offset_ratio = 0.1809 / 2
+    memu_width, memu_height = get_memu_resolution()
+
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x - memu_width * swipe_offset_ratio)
+
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
+
+    print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
 
 def swipe_topping_picker_left():
     x_ratio = 0.422
     y_ratio = 0.32
     swipe_offset_ratio = 0.1809
-    left, top, width, height = get_memu_bounds()
     memu_width, memu_height = get_memu_resolution()
 
     center_x = int(memu_width * x_ratio)
@@ -202,7 +249,11 @@ def sanitize_filename_component(text, max_length=50):
 
 def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=2):
     for attempt in range(max_attempts):
-        current_path = capture_center_picker_square()
+        current_path, small_square_path = capture_center_picker_square()
+        if is_mostly_black_or_gray(small_square_path):
+            half_swipe()
+            current_path, small_square_path = capture_center_picker_square()
+
         match_response = is_matching(current_path, cropped_path)
 
         if "yes" in match_response:
