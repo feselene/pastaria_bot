@@ -35,7 +35,7 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         str(x1), str(y1), str(x2), str(y2), str(duration_ms)
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def is_mostly_black(image_path, threshold=0.8, tolerance=10):
+def is_mostly_black(image_path, threshold=0.65, tolerance=10):
     """
     Checks if more than `threshold` of the image is visually black,
     defined as within `tolerance` of #0e0e0e.
