@@ -13,19 +13,12 @@ from stations.order_station.click_take_order import click_take_order
 from utils.button_visible import button_visible
 
 def run_order_station():
-    print("⏳ Waiting for button to become visible...")
     while not button_visible(TEMPLATE_DIR):
         time.sleep(1)
 
-    print("✅ Button is visible. Starting order loop.")
-
-    # While button remains visible, keep clicking and waiting
     while button_visible(TEMPLATE_DIR):
         click_take_order()
-        print("🖱️ Clicked 'Take Order'. Waiting 15s...")
-        time.sleep(10)
-
-    print("🛑 Button no longer visible. Stopping.")
+        time.sleep(12)
 
 
 if __name__ == "__main__":

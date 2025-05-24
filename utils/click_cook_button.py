@@ -7,21 +7,22 @@ ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.click_button import click_button
+from utils.click_button import click_button, click_from_assets
+from utils.button_visible import button_visible
 
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
-START_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "cook_button_right.png")
+COOK_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "cook_button_right.png")
 
 
-def click_cook_button(retries=15, delay=1, threshold=0.7):
-    print("🟢 Looking for COOK button...")
+def click_cook_button():
+    while not button_visible(COOK_BUTTON_TEMPLATE):
+        time.sleep(1)
 
-    for attempt in range(retries):
-        if click_button(START_BUTTON_TEMPLATE, threshold=threshold):
-            print("✅ COOK button clicked.")
-            return True
-        print(f"⏳ Attempt {attempt+1}/{retries} failed. Retrying...")
-        time.sleep(delay)
+    click_from_assets("cook_button_right.png")
 
-    print("❌ Failed to click COOK button after retries.")
-    return False
+def main():
+    click_cook_button()
+
+
+if __name__ == "__main__":
+    main()

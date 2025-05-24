@@ -28,7 +28,6 @@ ADB_PORT = 21503  # Default for MEmu instance 1
 
 def try_adb_connect(port=ADB_PORT):
     target = f"127.0.0.1:{port}"
-    print(f"🔌 Attempting ADB connect to {target}...")
     try:
         subprocess.run(
             [ADB_PATH, "connect", target],
@@ -36,7 +35,6 @@ def try_adb_connect(port=ADB_PORT):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        print(f"✅ ADB connected to {target}")
     except subprocess.CalledProcessError:
         print(f"❌ Failed to connect to MEmu via ADB on port {port}")
         raise SystemExit("Exiting due to ADB failure.")
@@ -50,7 +48,6 @@ def main():
         click_from_assets("select.png")
         time.sleep(1)
         click_from_assets("start_button_template.png")
-        time.sleep(20)
 
         for i in range(6):
             clean_files()
@@ -65,6 +62,7 @@ def main():
             click_build_button()
             time.sleep(1)
             click_from_assets("bread_button_right.png")
+            time.sleep(1)
             drag_bread_to_oven()
             time.sleep(1)
             click_from_assets("build_button_left.png")

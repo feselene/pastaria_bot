@@ -20,15 +20,7 @@ if ROOT_DIR not in sys.path:
 
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 
-
-def click_from_assets(filename, threshold=0.8):
-    """
-    Attempts to click a button by matching the template image from the assets folder.
-
-    :param filename: Filename of the PNG in the assets folder (e.g., 'skip_button_right.png')
-    :param threshold: Match confidence threshold
-    :return: True if the click was successful, False otherwise
-    """
+def click_from_assets(filename, threshold=0.6):
     template_path = os.path.join(ASSETS_DIR, filename)
     if not os.path.exists(template_path):
         raise FileNotFoundError(f"❌ Asset not found: {template_path}")
@@ -131,18 +123,6 @@ def drag_ratios(
     end_y_ratio=0.61,
     duration=0.1,
 ):
-    """
-    Drags from a start to an end position using ADB based on ratios of the emulator screen size.
-
-    :param start_x_ratio: Horizontal ratio of the start point (0.0 to 1.0)
-    :param start_y_ratio: Vertical ratio of the start point (0.0 to 1.0)
-    :param end_x_ratio: Horizontal ratio of the end point (0.0 to 1.0)
-    :param end_y_ratio: Vertical ratio of the end point (0.0 to 1.0)
-    :param duration: Time in seconds for the drag (converted to milliseconds)
-    """
-    from utils.click_button import get_memu_resolution  # Assumes you have this defined
-    from utils.get_memu_resolution import get_memu_bounds
-
     memu_width, memu_height = get_memu_resolution()
 
     start_x = int(memu_width * start_x_ratio)
@@ -242,9 +222,6 @@ def click_button(template_path, threshold=0.7):
         screen_y = int((max_loc[1] + h // 2) * memu_height / height)
 
         adb_tap(screen_x, screen_y)
-        print(
-            f"✅ ADB tapped '{template_path}' at ({screen_x}, {screen_y}) with confidence {max_val:.2f}"
-        )
         return True
     else:
         print(f"❌ Button '{template_path}' not found. Confidence: {max_val:.2f}")

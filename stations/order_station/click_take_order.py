@@ -14,11 +14,9 @@ TAKE_ORDER_TEMPLATE = os.path.join(ASSETS_DIR, "take_order_template.png")
 
 
 def click_take_order(retries=10, delay=0.5, threshold=0.7):
-    print("🛎️ Waiting for TAKE ORDER button...")
     for attempt in range(retries):
         clicked = click_button(TAKE_ORDER_TEMPLATE, threshold=threshold)
         if clicked:
-            print("✅ TAKE ORDER button clicked.")
             return True
         time.sleep(delay)
     print("❌ Failed to click TAKE ORDER after retries.")

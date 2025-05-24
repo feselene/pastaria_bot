@@ -61,8 +61,6 @@ def click_leftmost_plus_button():
     tap_y = int((abs_y - offset_y) * memu_height / height)
 
     adb_tap(tap_x, tap_y)
-
-    print(f"✅ ADB tapped leftmost plus at ({tap_x}, {tap_y})")
     sleep(0.3)
     return True
 

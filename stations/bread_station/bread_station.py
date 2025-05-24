@@ -37,4 +37,4 @@ def run_bread_station():
 
 
 if __name__ == "__main__":
-    run_bread_station()
+    drag_bread_to_oven()
