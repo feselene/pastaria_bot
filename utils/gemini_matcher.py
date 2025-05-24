@@ -4,9 +4,11 @@ import sys
 
 import google.generativeai as genai
 from dotenv import load_dotenv
+import shutil
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
+DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
@@ -30,6 +32,8 @@ def encode_image(path):
         return f.read()
 
 
+import datetime
+
 def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
     image1 = encode_image(imgpath1)
     image2 = encode_image(imgpath2)
@@ -47,12 +51,25 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
         {"mime_type": "image/png", "data": image2},
     ]
 
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
     for attempt in range(max_retries):
         try:
             response = model.generate_content(request_content, stream=False)
-            answer = response.text.strip().lower()
+            answer = response.text.strip()
+
+            # Save debug outputs with timestamp at the front
+            img_a_debug = os.path.join(DEBUG_DIR, f"{timestamp}_compared_a.png")
+            img_b_debug = os.path.join(DEBUG_DIR, f"{timestamp}_compared_b.png")
+            explanation_debug = os.path.join(DEBUG_DIR, f"{timestamp}_comparison.txt")
+
+            shutil.copy(imgpath1, img_a_debug)
+            shutil.copy(imgpath2, img_b_debug)
+            with open(explanation_debug, "w", encoding="utf-8") as f:
+                f.write(answer)
+
             print(f"Gemini response: {answer}")
-            return answer
+            return answer.lower()
 
         except google.api_core.exceptions.ResourceExhausted as e:
             retry_delay = getattr(e, "retry_delay", None)
@@ -68,6 +85,7 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
 
     print("❌ Failed to get a valid response after retries.")
     return "no"
+
 
 
 def recenter(image_path, max_retries=3):

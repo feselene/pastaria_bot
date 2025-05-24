@@ -44,6 +44,10 @@ def try_adb_connect(port=ADB_PORT):
 
 def main():
     try_adb_connect()
+    click_from_assets("play.png")
+    time.sleep(1)
+    click_from_assets("select.png")
+    time.sleep(1)
     click_from_assets("start_button_template.png")
     time.sleep(20)
 

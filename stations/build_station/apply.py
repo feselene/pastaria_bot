@@ -35,27 +35,32 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def capture_center_picker_square():
-    x_ratio = 0.422
+    x_ratio = 0.45
     y_ratio = 0.32
-    square_size = 150
-    half = square_size / 2
+    width_px = 360
+    height_px = 180
+    half_w = width_px / 2
+    half_h = height_px / 2
+
     left, top, width, height = get_memu_bounds()
     center_x = int(left + width * x_ratio)
     center_y = int(top + height * y_ratio)
 
     region = {
-        "left": int(center_x - half),
-        "top": int(center_y - half),
-        "width": square_size,
-        "height": square_size,
+        "left": int(center_x - half_w),
+        "top": int(center_y - half_h),
+        "width": width_px,
+        "height": height_px,
     }
 
     with mss.mss() as sct:
         img = np.array(sct.grab(region))
 
-    output_path = os.path.join(DEBUG_DIR, f"topping_active.png")
+    output_path = os.path.join(DEBUG_DIR, "topping_active.png")
     cv2.imwrite(output_path, img)
     return output_path
+
+
 
 def swipe_topping_picker_left():
     x_ratio = 0.422
@@ -94,7 +99,7 @@ def sanitize_filename_component(text, max_length=50):
     safe = re.sub(r"\W+", "_", text)
     return safe[:max_length]
 
-def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=2):
+def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=2):
     for attempt in range(max_attempts):
         current_path = capture_center_picker_square()
         match_response = is_matching(current_path, cropped_path)
