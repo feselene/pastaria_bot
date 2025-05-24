@@ -34,6 +34,8 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         str(x1), str(y1), str(x2), str(y2), str(duration_ms)
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+import datetime
+
 def capture_center_picker_square():
     x_ratio = 0.45
     y_ratio = 0.32
@@ -46,19 +48,40 @@ def capture_center_picker_square():
     center_x = int(left + width * x_ratio)
     center_y = int(top + height * y_ratio)
 
+    box_left = int(center_x - half_w)
+    box_top = int(center_y - half_h)
+
     region = {
-        "left": int(center_x - half_w),
-        "top": int(center_y - half_h),
+        "left": box_left,
+        "top": box_top,
         "width": width_px,
         "height": height_px,
     }
 
     with mss.mss() as sct:
-        img = np.array(sct.grab(region))
+        full_screen = np.array(sct.grab({"left": left, "top": top, "width": width, "height": height}))
+        cropped = np.array(sct.grab(region))
 
-    output_path = os.path.join(DEBUG_DIR, "topping_active.png")
-    cv2.imwrite(output_path, img)
-    return output_path
+    # Draw blue rectangle on the full screen screenshot
+    cv2.rectangle(
+        full_screen,
+        (box_left - left, box_top - top),
+        (box_left - left + width_px, box_top - top + height_px),
+        (255, 0, 0),
+        2
+    )
+
+    # Save annotated debug screenshot
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    overlay_path = os.path.join(DEBUG_DIR, f"{timestamp}_picker_overlay.png")
+    cv2.imwrite(overlay_path, full_screen)
+    print(f"📸 Overlay with capture box saved to: {overlay_path}")
+
+    # Save and return cropped region
+    cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
+    cv2.imwrite(cropped_path, cropped)
+    return cropped_path
+
 
 
 
