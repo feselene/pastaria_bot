@@ -52,7 +52,7 @@ def main():
         click_from_assets("start_button_template.png")
         time.sleep(1)
 
-        for i in range(6):
+        for i in range(7):
             clean_files()
             print("▶️ Running Order Station...")
             order_station.run_order_station()
