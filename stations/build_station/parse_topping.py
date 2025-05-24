@@ -92,7 +92,7 @@ def center_contains_x(img):
 
 
 def process_topping_boxes():
-    for i in range(1, 5):
+    for i in range(4, 0, -1):
         image_path = os.path.join(DEBUG_DIR, f"topping{i}.png")
         img = cv2.imread(image_path)
 
@@ -101,9 +101,11 @@ def process_topping_boxes():
             continue
         elif center_contains_x(img):
             print(image_path + " is an ingredient.")
+            time.sleep(2)
             apply_ingredient(image_path)
         else:
             print(image_path + " is a sauce.")
+            time.sleep(2)
             apply_shaker(image_path)
 
 

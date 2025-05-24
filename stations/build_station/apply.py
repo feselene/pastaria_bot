@@ -94,7 +94,7 @@ def sanitize_filename_component(text, max_length=50):
     safe = re.sub(r"\W+", "_", text)
     return safe[:max_length]
 
-def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=0.5):
+def select_ingredient(cropped_path, max_attempts=30, delay_between_swipes=2):
     for attempt in range(max_attempts):
         current_path = capture_center_picker_square()
         match_response = is_matching(current_path, cropped_path)
