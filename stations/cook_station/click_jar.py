@@ -4,7 +4,7 @@ import sys
 import cv2
 import mss
 import numpy as np
-import pyautogui
+import subprocess
 import torch
 from PIL import Image
 from tqdm import tqdm
@@ -42,9 +42,11 @@ def extract_feature(pil_img):
 # ... (keep all imports and constants as-is) ...
 
 def adb_tap(x, y):
-    cmd = f'"{ADB_PATH}" shell input tap {int(x)} {int(y)}'
-    os.system(cmd)
-
+    subprocess.run(
+        [ADB_PATH, "shell", "input", "tap", str(x), str(y)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
 def click_best_dino_match(template_path, threshold=0.5):
     # Load template
@@ -95,14 +97,23 @@ def click_best_dino_match(template_path, threshold=0.5):
         match_x, match_y = coords[best_idx]
         abs_x = left + match_x
         abs_y = top + match_y
-        adb_tap(abs_x, abs_y)
+
+        # Convert absolute screen position to emulator-relative screen tap position
+        from utils.get_memu_resolution import get_memu_resolution
+        memu_width, memu_height = get_memu_resolution()
+        tap_x = int((abs_x - left) * memu_width / width)
+        tap_y = int((abs_y - top) * memu_height / height)
+
+        adb_tap(tap_x, tap_y)
+
         print(
-            f"✅ Tapped DINOv2 match at ({abs_x}, {abs_y}) with confidence {best_score:.3f}"
+            f"✅ Tapped DINOv2 match at ({tap_x}, {tap_y}) with confidence {best_score:.3f}"
         )
         return True
     else:
         print(f"❌ No match found. Best confidence: {best_score:.3f}")
         return False
+
 
 
 def click_jar():

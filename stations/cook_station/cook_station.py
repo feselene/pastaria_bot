@@ -47,6 +47,7 @@ def run_cook_station():
     click_from_assets("pot.png")
     time.sleep(13)
     drag_pasta_to_plate()
+    time.sleep(1)
 
 
 if __name__ == "__main__":

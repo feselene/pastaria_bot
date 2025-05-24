@@ -71,7 +71,13 @@ def swipe_topping_picker_left():
 
     print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
 
+def adb_tap(x, y):
+    subprocess.run(
+        [ADB_PATH, "shell", "input", "tap", str(x), str(y)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
 if __name__ == "__main__":
-    for i in range(10):
-        swipe_topping_picker_left()
-        time.sleep(2);
+    adb_tap(2725, 549)
