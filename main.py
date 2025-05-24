@@ -76,6 +76,7 @@ def main():
             submit_bread_and_ticket()
             time.sleep(12)
 
+        time.sleep(10)
         click_from_assets("skip_button_right.png")
         time.sleep(5)
         click_from_assets("skip_button_left.png")
