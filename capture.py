@@ -5,6 +5,8 @@ import cv2
 import sys
 import subprocess
 
+from utils.click_button import click_from_assets
+
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = CURRENT_DIR
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
@@ -74,5 +76,4 @@ def adb_tap(x, y):
 
 
 if __name__ == "__main__":
-    for i in range(10):
-        half_swipe()
+    click_from_assets("arrow.png")

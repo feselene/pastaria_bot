@@ -2,13 +2,12 @@ import os
 import sys
 import time
 
-from stations.cook_station.click_leftmost_ticket import click_leftmost_ticket
-
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
+from stations.cook_station.click_leftmost_ticket import click_leftmost_ticket
 from stations.cook_station.click_leftmost_cook_button import click_leftmost_plus_button
 from stations.cook_station.drag_pasta_to_plate import drag_pasta_to_plate
 from stations.cook_station.stir import stir
