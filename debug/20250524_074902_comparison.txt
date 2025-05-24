@@ -1,3 +1,0 @@
-No.
-
-The first image shows a stylized "M" icon within a box,  part of a larger set of icons.  The second image shows a close-up of that same stylized "M" icon.  While they are the same *icon*,  they are presented differently and at different scales. The question asks if they are the *same icon*, and they are.
