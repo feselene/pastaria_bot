@@ -37,7 +37,7 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
 import datetime
 
 def capture_center_picker_square():
-    x_ratio = 0.45
+    x_ratio = 0.422
     y_ratio = 0.32
     width_px = 360
     height_px = 180
@@ -88,7 +88,7 @@ def capture_center_picker_square():
 def swipe_topping_picker_left():
     x_ratio = 0.422
     y_ratio = 0.32
-    swipe_offset_ratio = 0.0678
+    swipe_offset_ratio = 0.1809
     left, top, width, height = get_memu_bounds()
     memu_width, memu_height = get_memu_resolution()
 
@@ -96,7 +96,7 @@ def swipe_topping_picker_left():
     center_y = int(memu_height * y_ratio)
     swipe_x = int(center_x - memu_width * swipe_offset_ratio)
 
-    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=300)
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
     print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
 

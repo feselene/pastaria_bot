@@ -3,6 +3,8 @@ import mss
 import os
 import cv2
 import sys
+import subprocess
+import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = CURRENT_DIR
@@ -18,6 +20,17 @@ from utils.gemini_matcher import is_matching, recenter
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
+
+from utils.gemini_matcher import is_matching, recenter
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
+
+def adb_swipe(x1, y1, x2, y2, duration_ms=300):
+    subprocess.run([
+        ADB_PATH, "shell", "input", "swipe",
+        str(x1), str(y1), str(x2), str(y2), str(duration_ms)
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def capture_center_picker_square():
     x_ratio = 0.415
@@ -43,5 +56,22 @@ def capture_center_picker_square():
     cv2.imwrite(output_path, img)
     return output_path
 
+def swipe_topping_picker_left():
+    x_ratio = 0.40
+    y_ratio = 0.32
+    swipe_offset_ratio = 0.1809
+    left, top, width, height = get_memu_bounds()
+    memu_width, memu_height = get_memu_resolution()
+
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x - memu_width * swipe_offset_ratio)
+
+    adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
+
+    print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+
 if __name__ == "__main__":
-    capture_center_picker_square()
+    for i in range(10):
+        swipe_topping_picker_left()
+        time.sleep(2);

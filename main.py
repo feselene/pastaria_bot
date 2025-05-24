@@ -44,32 +44,38 @@ def try_adb_connect(port=ADB_PORT):
 
 def main():
     try_adb_connect()
-    click_from_assets("play.png")
-    time.sleep(1)
-    click_from_assets("select.png")
-    time.sleep(1)
-    click_from_assets("start_button_template.png")
-    time.sleep(20)
-
-    for i in range(6):
-        clean_files()
-        print("▶️ Running Order Station...")
-        order_station.run_order_station()
-        click_cook_button()
-
-        print("🔥 Running Cook Station...")
+    while True:
+        click_from_assets("play.png")
         time.sleep(1)
-        cook_station.run_cook_station()
-        click_build_button()
-
-        print("🍝 Running Build Station...")
+        click_from_assets("select.png")
         time.sleep(1)
-        build_station.run_build_station()
+        click_from_assets("start_button_template.png")
+        time.sleep(20)
 
-        print("🍞 Running Bread Station...")
+        for i in range(6):
+            clean_files()
+            print("▶️ Running Order Station...")
+            order_station.run_order_station()
+            click_cook_button()
+
+            print("🔥 Running Cook Station...")
+            time.sleep(1)
+            cook_station.run_cook_station()
+            click_build_button()
+
+            print("🍝 Running Build Station...")
+            time.sleep(1)
+            build_station.run_build_station()
+
+            print("🍞 Running Bread Station...")
+            time.sleep(1)
+            bread_station.run_bread_station()
+            time.sleep(12)
+
+        click_from_assets("skip_button_right.png")
         time.sleep(1)
-        bread_station.run_bread_station()
-        time.sleep(12)
+        click_from_assets("skip_button_left.png")
+        time.sleep(1)
 
 
 if __name__ == "__main__":
