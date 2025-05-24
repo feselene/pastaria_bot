@@ -1,6 +1,6 @@
 import os
 import sys
-
+import numpy as np
 import cv2
 
 from utils.detect_ticket_from_template import detect_ticket_from_template
@@ -17,6 +17,32 @@ if ROOT_DIR not in sys.path:
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
 
+def is_bar_orange(threshold=0.1):
+    print("🎟️ Detecting ticket...")
+    ticket_img = detect_ticket_from_template()
+    if ticket_img is None:
+        print("❌ Ticket detection failed.")
+        return
+
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
+    cv2.imwrite(debug_ticket_path, ticket_img)
+
+    print("✂️ Cropping ticket regions...")
+    regions = crop_ticket_regions(ticket_img)
+    img = regions["doneness"]
+
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    # Define orange hue range
+    lower_orange = np.array([10, 100, 100])
+    upper_orange = np.array([25, 255, 255])
+
+    # Mask and ratio
+    mask = cv2.inRange(hsv, lower_orange, upper_orange)
+    orange_ratio = np.sum(mask > 0) / (img.shape[0] * img.shape[1])
+
+    print(f"🍊 Orange pixel ratio: {orange_ratio:.2f}")
+    return orange_ratio >= threshold
 
 def crop_ticket_regions(ticket_img):
     h, w = ticket_img.shape[:2]

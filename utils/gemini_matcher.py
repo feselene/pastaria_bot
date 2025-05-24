@@ -25,7 +25,32 @@ def encode_image(path):
     with open(path, "rb") as f:
         return f.read()
 
+import hashlib
+import json
+
+CACHE_PATH = os.path.join(ROOT_DIR, "toppings", "match_cache.json")
+os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
+
+# Load cache
+if os.path.exists(CACHE_PATH):
+    with open(CACHE_PATH, "r") as f:
+        match_cache = json.load(f)
+else:
+    match_cache = {}
+
+def hash_pair(img1_path, img2_path):
+    def file_hash(path):
+        with open(path, "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()
+    h1 = file_hash(img1_path)
+    h2 = file_hash(img2_path)
+    return f"{min(h1, h2)}_{max(h1, h2)}"
+
 def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
+    key = hash_pair(imgpath1, imgpath2)
+    if key in match_cache:
+        return match_cache[key]
+
     image1 = encode_image(imgpath1)
     image2 = encode_image(imgpath2)
 
@@ -47,6 +72,9 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
             response = model.generate_content(request_content, stream=False)
             answer = response.text.strip().lower()
             print(f"Gemini response: {answer}")
+            match_cache[key] = answer
+            with open(CACHE_PATH, "w") as f:
+                json.dump(match_cache, f, indent=2)
             return answer
 
         except google.api_core.exceptions.ResourceExhausted as e:
