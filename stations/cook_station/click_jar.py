@@ -118,7 +118,7 @@ def click_best_dino_match(template_path, threshold=0.5):
 
 def click_jar():
     template_path = (
-        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_pasta_cropped.png"
+        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\pasta.png"
     )
     click_best_dino_match(template_path)
 

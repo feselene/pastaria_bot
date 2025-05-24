@@ -3,6 +3,7 @@ import sys
 
 import cv2
 import numpy as np
+from PIL import Image
 
 from utils.detect_ticket_from_template import detect_ticket_from_template
 from utils.remove_background import crop, remove_background_and_crop
@@ -104,7 +105,7 @@ def get_filtered_pasta_icon():
 
     pasta_img_bgr = regions["pasta"]
     pasta_img_path = os.path.join(ROOT_DIR, "debug", "debug_pasta_raw.png")
-    pasta_out_path = os.path.join(ROOT_DIR, "debug", "debug_pasta_cropped.png")
+    pasta_out_path = os.path.join(ROOT_DIR, "debug", "pasta.png")
 
     os.makedirs(os.path.dirname(pasta_img_path), exist_ok=True)
     cv2.imwrite(pasta_img_path, pasta_img_bgr)
@@ -113,6 +114,30 @@ def get_filtered_pasta_icon():
     print("🔍 Removing background from pasta icon...")
     remove_background_and_crop(pasta_img_path, pasta_out_path)
     print(f"✅ Pasta icon saved to: {pasta_out_path}")
+
+def get_filtered_pasta_icon2():
+    pasta_out_path = os.path.join(ROOT_DIR, "debug", "pasta.png")
+    circle_path = os.path.join(ROOT_DIR, "assets", "circle.png")
+    output_path = os.path.join(ROOT_DIR, "debug", "pasta_logo.png")
+
+    # Open images
+    pasta_img = Image.open(pasta_out_path).convert("RGBA")
+    circle_img = Image.open(circle_path).convert("RGBA")
+
+    # Resize pasta image by 0.75
+    new_size = (int(pasta_img.width * 0.75), int(pasta_img.height * 0.75))
+    pasta_img_resized = pasta_img.resize(new_size, Image.Resampling.LANCZOS)
+
+    # Calculate position to center the pasta on the circle
+    x_offset = (circle_img.width - pasta_img_resized.width) // 2
+    y_offset = (circle_img.height - pasta_img_resized.height) // 2
+
+    # Paste resized pasta onto the circle
+    result_img = circle_img.copy()
+    result_img.paste(pasta_img_resized, (x_offset, y_offset), pasta_img_resized)
+
+    # Save result
+    result_img.save(output_path)
 
 
 def get_filtered_sauce_icon():

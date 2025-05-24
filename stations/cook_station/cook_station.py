@@ -12,7 +12,7 @@ from stations.cook_station.click_leftmost_cook_button import click_leftmost_plus
 from stations.cook_station.drag_pasta_to_plate import drag_pasta_to_plate
 from stations.cook_station.stir import stir
 from utils.click_button import click_and_hold_from_assets, click_from_assets
-from utils.parse_ticket import get_filtered_pasta_icon, is_bar_orange
+from utils.parse_ticket import get_filtered_pasta_icon, get_filtered_pasta_icon2, is_bar_orange
 
 
 def cook():
@@ -40,6 +40,7 @@ def cook_green():
 def run_cook_station():
     click_leftmost_plus_button()
     get_filtered_pasta_icon()
+    get_filtered_pasta_icon2()
     time.sleep(1)
     click_jar()
     cook()

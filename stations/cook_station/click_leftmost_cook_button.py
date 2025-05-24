@@ -4,14 +4,18 @@ from time import sleep
 import cv2
 import mss
 import numpy as np
-import pyautogui
 
-from utils.get_memu_resolution import get_memu_bounds
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 TEMPLATE_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../assets/plus_template.png")
 )
 THRESHOLD = 0.85
+ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+
+
+def adb_tap(x, y):
+    os.system(f'"{ADB_PATH}" shell input tap {x} {y}')
 
 
 def grab_emulator_region():
@@ -19,12 +23,12 @@ def grab_emulator_region():
     with mss.mss() as sct:
         monitor = {"top": top, "left": left, "width": width, "height": height}
         img = np.array(sct.grab(monitor))
-    return img, left, top
+    return img, left, top, width, height
 
 
 def click_leftmost_plus_button():
     print("🍳 Opening pot...")
-    screenshot, offset_x, offset_y = grab_emulator_region()
+    screenshot, offset_x, offset_y, width, height = grab_emulator_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(TEMPLATE_PATH, 0)
 
@@ -45,13 +49,17 @@ def click_leftmost_plus_button():
     match_points.sort(key=lambda pt: pt[0])
     best_match = match_points[0]
 
-    center_x = offset_x + best_match[0] + w // 2
-    center_y = offset_y + best_match[1] + h // 2
+    abs_x = offset_x + best_match[0] + w // 2
+    abs_y = offset_y + best_match[1] + h // 2
 
-    pyautogui.moveTo(center_x, center_y)
-    pyautogui.click()
+    # Convert to emulator screen coordinates
+    memu_width, memu_height = get_memu_resolution()
+    tap_x = int((abs_x - offset_x) * memu_width / width)
+    tap_y = int((abs_y - offset_y) * memu_height / height)
 
-    print(f"✅ Clicked leftmost plus at ({center_x}, {center_y})")
+    adb_tap(tap_x, tap_y)
+
+    print(f"✅ ADB tapped leftmost plus at ({tap_x}, {tap_y})")
     sleep(0.3)
     return True
 
