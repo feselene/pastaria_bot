@@ -30,7 +30,6 @@ def grab_emulator_region():
 
 
 def click_leftmost_plus_button():
-    print("🍳 Opening pot...")
     screenshot, offset_x, offset_y, width, height = grab_emulator_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(TEMPLATE_PATH, 0)

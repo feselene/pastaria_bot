@@ -25,7 +25,6 @@ def remove_background_and_crop(input_path: str, output_path: str) -> None:
     output_image = remove(input_image)
     output_cropped = crop_to_content(output_image)
     output_cropped.save(output_path)
-    print(f"✅ Saved tightly cropped image to: {output_path}")
 
 
 def crop(input_path: str, output_path: str) -> None:

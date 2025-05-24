@@ -48,7 +48,6 @@ def get_best_template_match_center(template_path, threshold=0.75):
     # Save debug image
     debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
     cv2.imwrite(debug_output_path, cropped)
-    print(f"📸 Saved vertical belt search region to: {debug_output_path}")
 
     best_val = -1
     best_loc = None
@@ -103,7 +102,6 @@ def get_bread_ratios():
     x_ratio = (match_x - memu_left) / memu_width
     y_ratio = (match_y - memu_top) / memu_height
 
-    print(f"📐 Bread matched at ratios: x={x_ratio:.3f}, y={y_ratio:.3f}")
     return x_ratio, y_ratio
 
 

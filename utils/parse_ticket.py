@@ -20,7 +20,6 @@ os.makedirs(DEBUG_DIR, exist_ok=True)
 
 
 def is_bar_orange(threshold=0.1):
-    print("🎟️ Detecting ticket...")
     ticket_img = detect_ticket_from_template()
     if ticket_img is None:
         print("❌ Ticket detection failed.")
@@ -29,7 +28,6 @@ def is_bar_orange(threshold=0.1):
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
-    print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
     img = regions["doneness"]
 
@@ -63,7 +61,6 @@ def crop_ticket_regions(ticket_img):
 
 
 def get_filtered_bread_icon():
-    print("🎟️ Detecting ticket...")
     ticket_img = detect_ticket_from_template()
     if ticket_img is None:
         print("❌ Ticket detection failed.")
@@ -81,16 +78,12 @@ def get_filtered_bread_icon():
 
     os.makedirs(os.path.dirname(bread_img_path), exist_ok=True)
     cv2.imwrite(bread_img_path, bread_img_bgr)
-
-    # ✅ Remove background and crop
-    print("🔍 Removing background from bread icon...")
     remove_background_and_crop(bread_img_path, bread_out_path)
-    print(f"✅ Bread icon saved to: {bread_out_path}")
+
     return bread_out_path
 
 
 def get_filtered_pasta_icon():
-    print("🎟️ Detecting ticket...")
     ticket_img = detect_ticket_from_template()
     if ticket_img is None:
         print("❌ Ticket detection failed.")
@@ -109,10 +102,7 @@ def get_filtered_pasta_icon():
     os.makedirs(os.path.dirname(pasta_img_path), exist_ok=True)
     cv2.imwrite(pasta_img_path, pasta_img_bgr)
 
-    # ✅ Remove background and crop
-    print("🔍 Removing background from pasta icon...")
     remove_background_and_crop(pasta_img_path, pasta_out_path)
-    print(f"✅ Pasta icon saved to: {pasta_out_path}")
 
 def get_filtered_pasta_icon2():
     pasta_out_path = os.path.join(ROOT_DIR, "debug", "pasta.png")
@@ -140,7 +130,6 @@ def get_filtered_pasta_icon2():
 
 
 def get_filtered_sauce_icon():
-    print("🎟️ Detecting ticket...")
     ticket_img = detect_ticket_from_template()
     if ticket_img is None:
         print("❌ Ticket detection failed.")
@@ -149,7 +138,6 @@ def get_filtered_sauce_icon():
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
-    print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
 
     sauce_img_bgr = regions["sauce"]
@@ -159,17 +147,13 @@ def get_filtered_sauce_icon():
     os.makedirs(os.path.dirname(sauce_img_path), exist_ok=True)
     cv2.imwrite(sauce_img_path, sauce_img_bgr)
 
-    # ✅ Remove background and crop
-    print("🔍 Removing background from sauce icon...")
     crop(sauce_img_path, sauce_out_path)
-    print(f"✅ Sauce icon saved to: {sauce_out_path}")
 
 
 def get_filtered_topping_icon(topping_number: int):
     region_key = f"topping{topping_number}"
     raw_filename = f"topping{topping_number}.png"
 
-    print("🎟️ Detecting ticket...")
     ticket_img = detect_ticket_from_template()
     if ticket_img is None:
         print("❌ Ticket detection failed.")

@@ -107,7 +107,6 @@ def drag_image_to_ratio(
         stderr=subprocess.DEVNULL,
     )
 
-    print(f"✅ ADB drag from ({start_x}, {start_y}) to ({end_x}, {end_y})")
     return True
 
 

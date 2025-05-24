@@ -29,7 +29,6 @@ def detect_ticket_from_template():
 
     if max_val >= CONFIDENCE_THRESHOLD:
         cropped = screen[top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]]
-        print(f"✅ Ticket detected at {top_left} with confidence {max_val:.2f}")
         return cropped
     else:
         print(f"❌ Ticket not found (confidence: {max_val:.2f})")
