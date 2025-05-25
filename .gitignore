@@ -17,6 +17,7 @@ venv/
 
 # Screenshots / debug outputs (auto-generated)
 *.png
+debug/
 # But keep template assets
 !assets/**/*.png
 
