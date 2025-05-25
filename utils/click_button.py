@@ -255,51 +255,45 @@ import cv2
 import numpy as np
 
 def click_button(template_path, threshold=0.7):
-    template_orig = cv2.imread(template_path, 0)
-    if template_orig is None:
+    # Load grayscale template (at correct size)
+    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+    if template is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")
+    tW, tH = template.shape[::-1]
 
+    # Capture screen and convert
     screenshot = grab_screen_region()
     if screenshot is None:
         return False
-    cv2.imwrite("img.png", cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR))
 
+    # Save raw screenshot for debug
+    cv2.imwrite("img.png", cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR))
     gray = cv2.cvtColor(screenshot, cv2.COLOR_RGB2GRAY)
+
+    # Get emulator window and screen dimensions
     left, top, width, height = get_memu_bounds()
     memu_width, memu_height = get_memu_resolution()
 
-    best_val = -1
-    best_loc = None
-    best_w, best_h = 0, 0
+    # Match once at original scale
+    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+    _, max_val, _, max_loc = cv2.minMaxLoc(result)
 
-    for scale in np.arange(0.5, 2.5, 0.1):
-        scaled_template = cv2.resize(template_orig, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
-        tw, th = scaled_template.shape[::-1]
+    if max_val >= threshold:
+        match_x, match_y = max_loc
+        center_x = match_x + tW // 2
+        center_y = match_y + tH // 2
 
-        if gray.shape[0] < th or gray.shape[1] < tw:
-            continue
-
-        result = cv2.matchTemplate(gray, scaled_template, cv2.TM_CCOEFF_NORMED)
-        _, max_val, _, max_loc = cv2.minMaxLoc(result)
-
-        if max_val > best_val:
-            best_val = max_val
-            best_loc = max_loc
-            best_w, best_h = tw, th
-
-    if best_val >= threshold:
-        center_x = best_loc[0] + best_w // 2
-        center_y = best_loc[1] + best_h // 2
-
+        # Convert to emulator-relative screen coordinates
         screen_x = int(center_x * memu_width / width)
         screen_y = int(center_y * memu_height / height)
 
         adb_tap(screen_x, screen_y)
-        print(f"✅ Clicked button at ({screen_x}, {screen_y}) with confidence {best_val:.2f}")
+        print(f"✅ Clicked button at ({screen_x}, {screen_y}) with confidence {max_val:.2f}")
         return True
     else:
-        print(f"❌ Button '{template_path}' not found. Best confidence: {best_val:.2f}")
+        print(f"❌ Button '{template_path}' not found. Best confidence: {max_val:.2f}")
         return False
+
 
 def click_and_hold(template_path, hold_duration=1.0, threshold=0.85):
     template = cv2.imread(template_path, 0)
