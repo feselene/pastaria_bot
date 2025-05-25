@@ -85,8 +85,29 @@ def get_filtered_bread_icon():
 
     return bread_out_path
 
+def read_pasta_on_ticket():
+    ticket_img = detect_ticket_from_template()
+    if ticket_img is None:
+        print("❌ Ticket detection failed.")
+        return
+
+    debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
+    cv2.imwrite(debug_ticket_path, ticket_img)
+
+    print("✂️ Cropping ticket regions...")
+    regions = crop_ticket_regions(ticket_img)
+
+    pasta_img_bgr = regions["pasta"]
+    pasta_img_path = os.path.join(ROOT_DIR, "debug", "debug_pasta_raw.png")
+    pasta_out_path = os.path.join(ROOT_DIR, "debug", "pasta.png")
+
+    os.makedirs(os.path.dirname(pasta_img_path), exist_ok=True)
+    cv2.imwrite(pasta_img_path, pasta_img_bgr)
+
+    remove_background_and_crop(pasta_img_path, pasta_out_path)
 
 def get_filtered_pasta_icon():
+    read_pasta_on_ticket()
     pasta_out_path = os.path.join(ROOT_DIR, "debug", "pasta.png")
     circle_path = os.path.join(ROOT_DIR, "assets", "circle.png")
     output_path = os.path.join(ROOT_DIR, "debug", "pasta_logo.png")
