@@ -1,0 +1,3 @@
+No.
+
+The first image is a dark-orange, round meatball.  The second image is a grey fish.  They are clearly different food items and therefore different icons.

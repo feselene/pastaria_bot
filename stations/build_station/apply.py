@@ -285,7 +285,7 @@ def sanitize_filename_component(text, max_length=50):
     return safe[:max_length]
 
 
-def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0):
+def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
     for attempt in range(max_attempts):
         current_path, small_square_path = capture_center_picker_square()
 

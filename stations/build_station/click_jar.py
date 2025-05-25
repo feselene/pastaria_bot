@@ -57,7 +57,6 @@ def click_best_template_match(template_path, threshold=0.6):
     # Template matching loop
     best_val = -1
     best_loc = None
-    best_scale = None
     best_template = None
 
     for scale in [1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.3, 2.4, 2.5]:
@@ -92,9 +91,6 @@ def click_best_template_match(template_path, threshold=0.6):
         screen_y = int(center_y * memu_height / height)
 
         adb_tap(screen_x, screen_y)
-        print(
-            f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}"
-        )
         return True
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")

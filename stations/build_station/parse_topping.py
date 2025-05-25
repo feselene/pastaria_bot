@@ -101,19 +101,16 @@ def process_topping_boxes():
         img = cv2.imread(image_path)
 
         if is_box_empty(img):
-            print(image_path + " is an empty box.")
+            print(f"Topping {i} is empty.")
             continue
         elif center_contains_x(img):
-            print(image_path + " is an ingredient.")
+            print(f"Topping {i} is an ingredient.")
             time.sleep(2)
             apply_ingredient(image_path)
         else:
-            print(image_path + " is a sauce.")
+            print(f"Topping {i} is a sauce.")
             time.sleep(2)
             apply_shaker(image_path)
-
-
-import cv2
 
 
 def extract_digit(image_path):

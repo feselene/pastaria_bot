@@ -33,7 +33,6 @@ def adb_tap_relative(x_ratio: float, y_ratio: float):
 
     # Perform the tap
     subprocess.run(["adb", "shell", "input", "tap", str(x), str(y)])
-    print(f"👆 Tapped at ({x}, {y}) on a screen of size {screen_width}x{screen_height}")
 
 
 def adb_tap_and_hold_relative(x_ratio: float, y_ratio: float, duration_seconds: float = 1.0):
