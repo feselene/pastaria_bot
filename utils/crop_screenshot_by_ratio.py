@@ -82,7 +82,7 @@ def crop_screenshot_as_numpy(xratio1, yratio1, xratio2, yratio2):
     return cropped_np
 
 def main():
-    cropped_image = crop_screenshot_by_ratio(0.845, 0.132, 1, 0.8185)
+    cropped_image = crop_screenshot_by_ratio(0.04, 0.35, 0.182, 0.6)
     cropped_image.save("output.png")
 
 if __name__ == "__main__":
