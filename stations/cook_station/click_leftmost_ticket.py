@@ -2,23 +2,25 @@ import os
 import sys
 import time
 from time import sleep
+from dotenv import load_dotenv
 
 import cv2
 import mss
 import numpy as np
 
+from stations.build_station.click_jar import ADB_PATH
+from utils.crop_screenshot_by_ratio import adb_tap_relative
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+
+load_dotenv()
+
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
+
 TEMPLATE_PATH = os.path.join(ROOT_DIR, "assets", "ticket_full.png")
-
-THRESHOLD = 0.5
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
-
-
-from utils.crop_screenshot_by_ratio import adb_tap_relative
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+ADB_PATH = os.getenv(ADB_PATH)
 
 
 def adb_tap(x, y):
@@ -46,7 +48,7 @@ def click_leftmost_ticket():
     h, w = template.shape
     result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
 
-    matches = np.where(result >= THRESHOLD)
+    matches = np.where(result >= 0.5)
     match_points = list(zip(*matches[::-1]))  # (x, y)
 
     if not match_points:

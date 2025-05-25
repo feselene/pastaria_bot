@@ -10,13 +10,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 ADB_PATH = os.getenv("ADB_PATH")
-
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
+ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
+
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-
-ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 
 
 def click_from_assets(filename, threshold=0.6):

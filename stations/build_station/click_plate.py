@@ -3,8 +3,13 @@ import os
 import subprocess
 import sys
 import time
+from dotenv import load_dotenv
 
-# Add root to sys.path so we can import project utilities
+from stations.build_station.click_jar import ADB_PATH
+from utils.click_button import adb_tap
+from utils.get_memu_resolution import get_memu_resolution
+
+ADB_PATH = os.getenv(ADB_PATH)
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
@@ -12,14 +17,7 @@ FLAG_PATH = os.path.join(DEBUG_DIR, "flag.txt")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-import math
-import subprocess
-
-from utils.click_button import adb_tap
-from utils.get_memu_resolution import get_memu_resolution
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update path if needed
-
+load_dotenv()
 
 def adb_swipe(x1, y1, x2, y2, duration_ms):
     subprocess.run(
@@ -55,9 +53,6 @@ def adb_swipe(x1, y1, x2, y2, duration_ms=300):
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=300):

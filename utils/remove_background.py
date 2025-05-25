@@ -3,14 +3,6 @@ from rembg import remove
 
 
 def remove_background_and_crop(input_path: str, output_path: str) -> None:
-    """
-    Removes the background from an image and tightly crops it to the content.
-
-    Parameters:
-        input_path (str): Path to the input image file.
-        output_path (str): Path to save the output cropped image.
-    """
-
     def crop_to_content(img: Image.Image) -> Image.Image:
         """Crop to non-transparent pixels in an RGBA image."""
         if img.mode != "RGBA":

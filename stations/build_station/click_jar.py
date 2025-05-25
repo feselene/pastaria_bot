@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
+DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
@@ -101,7 +102,7 @@ def click_best_template_match(template_path, threshold=0.6):
 
 
 def click_jar():
-    template_path = r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\sauce_icon.png"
+    template_path = os.path.join(DEBUG_DIR, "sauce_icon.png")
     click_best_template_match(template_path)
 
 

@@ -5,16 +5,17 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
+from utils.remove_background import crop, remove_background_and_crop
+
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
+DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
+
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
-
-from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
-from utils.remove_background import crop, remove_background_and_crop
 
 
 def detect_ticket_from_template():

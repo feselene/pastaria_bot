@@ -17,8 +17,6 @@ from stations.bread_station.bread_station import (
 )
 from stations.build_station import build_station
 from stations.cook_station import cook_station
-
-# Import station modules
 from stations.order_station import order_station
 from utils.button_visible import button_visible
 from utils.click_button import click_from_assets, click_ratios
@@ -27,7 +25,7 @@ from utils.click_cook_button import click_cook_button
 from dotenv import load_dotenv
 load_dotenv()
 ADB_PATH = os.getenv("ADB_PATH")
-ADB_PORT = 21503
+ADB_PORT = os.getenv("ADB_PORT")
 
 
 def try_adb_connect(port=ADB_PORT):
