@@ -24,10 +24,6 @@ def detect_ticket_from_template():
 
 def is_bar_orange(threshold=0.1):
     ticket_img = detect_ticket_from_template()
-    if ticket_img is None:
-        print("❌ Ticket detection failed.")
-        return
-
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 
@@ -65,14 +61,8 @@ def crop_ticket_regions(ticket_img):
 
 def get_filtered_bread_icon():
     ticket_img = detect_ticket_from_template()
-    if ticket_img is None:
-        print("❌ Ticket detection failed.")
-        return
-
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
-
-    print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
 
     bread_img_bgr = regions["bread"]
@@ -87,14 +77,8 @@ def get_filtered_bread_icon():
 
 def read_pasta_on_ticket():
     ticket_img = detect_ticket_from_template()
-    if ticket_img is None:
-        print("❌ Ticket detection failed.")
-        return
-
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
-
-    print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
 
     pasta_img_bgr = regions["pasta"]
@@ -134,13 +118,8 @@ def get_filtered_pasta_icon():
 
 def get_filtered_sauce_icon():
     ticket_img = detect_ticket_from_template()
-    if ticket_img is None:
-        print("❌ Ticket detection failed.")
-        return
-
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
-
     regions = crop_ticket_regions(ticket_img)
 
     sauce_img_bgr = regions["sauce"]
@@ -160,8 +139,6 @@ def get_filtered_topping_icon(topping_number: int):
     ticket_img = detect_ticket_from_template()
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
-
-    print("✂️ Cropping ticket regions...")
     regions = crop_ticket_regions(ticket_img)
 
     if region_key not in regions:
