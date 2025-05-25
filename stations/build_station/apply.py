@@ -286,7 +286,7 @@ def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
         current_path, small_square_path = capture_center_picker_square()
 
         if contains_metal(small_square_path):
-            print("calling half_swipe_left because image is mostly_black or grey")
+            print("Calling half_swipe_left because ingredient picture looking at metal.")
             half_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
 
@@ -296,32 +296,16 @@ def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
             current_path, small_square_path = capture_center_picker_square()
 
         if contains_metal(small_square_path):
-            print("calling half_swipe_left because image is mostly_black or grey")
+            print("Calling half_swipe_left because ingredient picture looking at metal.")
             half_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
 
         match_response = is_matching(current_path, cropped_path)
 
         if "yes" in match_response:
-            print(f"✅ Match found on attempt {attempt}: {current_path}")
-
-            safe_match_response = sanitize_filename_component(match_response)
-
-            current_dest = os.path.join(
-                MATCHES_DIR, f"{safe_match_response}_current.png"
-            )
-            target_dest = os.path.join(MATCHES_DIR, f"{safe_match_response}_target.png")
-
-            shutil.copy(current_path, current_dest)
-            shutil.copy(cropped_path, target_dest)
-
-            print(f"📁 Current match saved to: {current_dest}")
-            print(f"📁 Target image saved to: {target_dest}")
             return True
         else:
-            print(
-                f"❌ No match on attempt {attempt}, swiping... (response: {match_response})"
-            )
+            print(f"❌ No match on attempt {attempt}, swiping... (response: {match_response})")
             swipe_topping_picker_left()
         time.sleep(delay_between_swipes)
 

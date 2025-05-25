@@ -5,11 +5,9 @@ import sys
 import time
 from dotenv import load_dotenv
 
-from stations.build_station.click_jar import ADB_PATH
-from utils.click_button import adb_tap
-from utils.get_memu_resolution import get_memu_resolution
+load_dotenv()
 
-ADB_PATH = os.getenv(ADB_PATH)
+ADB_PATH = os.getenv("ADB_PATH")
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
@@ -17,7 +15,7 @@ FLAG_PATH = os.path.join(DEBUG_DIR, "flag.txt")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-load_dotenv()
+from utils.get_memu_resolution import get_memu_resolution
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=300):
     subprocess.run(
@@ -42,7 +40,7 @@ def swipe_to_middle():
 
 
 def swipe_blended_upward_away_from_oclock(
-    n, distance_ratio=0.25, duration_ms=300, up_weight=0.6, oclock_weight=0.6
+    n, distance_ratio=0.25, duration_ms=300, up_weight=0.7, oclock_weight=0.6
 ):
     """
     Adds a raw upward vector and a raw reversed o'clock vector, scaled by respective weights.
@@ -55,10 +53,10 @@ def swipe_blended_upward_away_from_oclock(
     center_x = memu_width // 2
     center_y = int(memu_height * 0.65)
 
-    if abs(n - 12) < 1e-2:
-        print(f"🖱️ Tapping center of plate at ({center_x}, {center_y})")
-        adb_tap(center_x, center_y)
-        return
+    # if abs(n - 12) < 1e-2:
+    #     print(f"🖱️ Tapping center of plate at ({center_x}, {center_y})")
+    #     adb_tap(center_x, center_y)
+    #     return
 
     # Weighted upward vector
     v1_x = 0
@@ -154,4 +152,4 @@ def place_topping(num):
 
 
 if __name__ == "__main__":
-    place_topping(6)
+    place_topping(5)
