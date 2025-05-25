@@ -18,31 +18,36 @@ from utils.get_memu_resolution import get_memu_bounds
 
 
 def get_best_template_match_center(template_path, threshold=0.75):
-    # Load template in grayscale
+    # Load template
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
     if template is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")
     tH, tW = template.shape[:2]
 
-    # Get emulator bounds
-    left, top, width, height = get_memu_bounds()
-
-    # Capture emulator window
+    # Capture screen and prepare search space
     screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+    height, width = gray.shape[:2]
 
-    # Define vertical brown belt region (centered)
-    belt_left = int(width * 0.30)
-    belt_right = int(width * 0.62)
-    belt_top = int(height * 0.05)
-    belt_bottom = int(height * 0.95)
+    # Emulator window offset
+    left, top, _, _ = get_memu_bounds()
 
-    cropped = gray[belt_top:belt_bottom, belt_left:belt_right]
+    # Define ratio-based crop region
+    xratio1, yratio1 = 0.3, 0.0
+    xratio2, yratio2 = 0.6, 1.0
 
-    # Save debug image
+    x1 = int(width * xratio1)
+    y1 = int(height * yratio1)
+    x2 = int(width * xratio2)
+    y2 = int(height * yratio2)
+
+    cropped = gray[y1:y2, x1:x2]
+
+    # Debug image output
     debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
     cv2.imwrite(debug_output_path, cropped)
 
+    # Matching loop
     best_val = -1
     best_loc = None
     best_scale = None
@@ -51,6 +56,10 @@ def get_best_template_match_center(template_path, threshold=0.75):
     for scale in [1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]:
         resized_template = cv2.resize(template, (int(tW * scale), int(tH * scale)))
         rH, rW = resized_template.shape[:2]
+
+        if cropped.shape[0] < rH or cropped.shape[1] < rW:
+            continue
+
         result = cv2.matchTemplate(cropped, resized_template, cv2.TM_CCOEFF_NORMED)
         _, max_val, _, max_loc = cv2.minMaxLoc(result)
 
@@ -64,16 +73,21 @@ def get_best_template_match_center(template_path, threshold=0.75):
         match_x, match_y = best_loc
         match_h, match_w = best_template.shape[:2]
 
-        center_x = left + belt_left + match_x + match_w // 2
-        center_y = top + belt_top + match_y + match_h // 2
+        # Final center coordinates in full screenshot
+        center_x = x1 + match_x + match_w // 2
+        center_y = y1 + match_y + match_h // 2
 
-        print(
-            f"✅ Found match at ({center_x}, {center_y}) with scale {best_scale} and confidence {best_val:.3f}"
-        )
-        return center_x, center_y
+        # Offset by emulator window position to get absolute screen coords
+        screen_x = center_x + left
+        screen_y = center_y + top
+
+        print(f"✅ Found match at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        return screen_x, screen_y
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return None, None
+
+
 
 
 def get_bread_ratios():
