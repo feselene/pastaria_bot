@@ -27,22 +27,27 @@ def remove_background_and_crop(input_path: str, output_path: str) -> None:
     output_cropped.save(output_path)
 
 
-def crop(input_path: str, output_path: str) -> None:
-    """
-    Crops a specific rectangular region (e.g., a circle label) from the input image.
+def crop(input_path: str, output_path: str,
+         xratio1: float = 0.395, yratio1: float = 0.15,
+         xratio2: float = 0.595, yratio2: float = 0.9) -> None:
+    if not all(0 <= r <= 1 for r in [xratio1, yratio1, xratio2, yratio2]):
+        raise ValueError("All ratios must be between 0 and 1.")
 
-    Parameters:
-        input_path (str): Path to the input image file.
-        output_path (str): Path to save the cropped image.
-    """
+    if xratio1 > xratio2 or yratio1 > yratio2:
+        raise ValueError("Top-left ratios must be <= bottom-right ratios.")
+
     # Load image
     image = Image.open(input_path)
+    width, height = image.size
 
-    # Define bounding box (left, upper, right, lower)
-    # Adjust these values to tightly crop the circle
-    box = (115, 10, 175, 65)  # (x1, y1, x2, y2)
-    cropped_image = image.crop(box)
+    # Convert ratios to pixel coordinates
+    left = int(width * xratio1)
+    upper = int(height * yratio1)
+    right = int(width * xratio2)
+    lower = int(height * yratio2)
 
-    # Save cropped image
+    # Crop and save
+    cropped_image = image.crop((left, upper, right, lower))
     cropped_image.save(output_path)
-    print(f"✅ Saved cropped circle region to: {output_path}")
+    print(f"✅ Saved cropped region to: {output_path}")
+

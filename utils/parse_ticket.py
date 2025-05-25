@@ -5,9 +5,6 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
-from utils.remove_background import crop, remove_background_and_crop
-
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(
     os.path.join(CURRENT_DIR, "..")
@@ -17,6 +14,9 @@ if ROOT_DIR not in sys.path:
 
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
+
+from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
+from utils.remove_background import crop, remove_background_and_crop
 
 
 def detect_ticket_from_template():
@@ -179,3 +179,11 @@ def get_filtered_topping_icon(topping_number: int):
     cv2.imwrite(raw_path, topping_img_bgr)
 
     return raw_path
+
+
+def main():
+    get_filtered_sauce_icon()
+
+
+if __name__ == "__main__":
+    main()
