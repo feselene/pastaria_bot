@@ -6,9 +6,8 @@ import cv2
 
 from utils.crop_screenshot_by_ratio import adb_tap_relative
 from utils.get_memu_resolution import get_memu_bounds
-
-import os
 from dotenv import load_dotenv
+
 load_dotenv()
 ADB_PATH = os.getenv("ADB_PATH")
 
