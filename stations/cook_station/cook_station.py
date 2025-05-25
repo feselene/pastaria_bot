@@ -7,32 +7,32 @@ ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from stations.cook_station.click_leftmost_ticket import click_leftmost_ticket
-from utils.click_button import (
-    click_and_hold_ratios,
-    click_button,
-    click_ratios,
-    drag_ratios,
-)
-from utils.parse_ticket import (
-    get_filtered_pasta_icon,
-    get_filtered_pasta_icon2,
-    is_bar_orange,
-)
+from utils.click_button import click_button
+from utils.parse_ticket import get_filtered_pasta_icon, is_bar_orange
 
+
+from utils.crop_screenshot_by_ratio import adb_tap_relative, adb_tap_and_hold_relative, adb_drag_relative
 
 def stir():
-    drag_ratios(0.3, 0.8, 0.1, 0.5)
+    spoon_start_x = 0.31
+    spoon_start_y = 0.86
+    pot_x = 0.11
+    pot_y = 0.35
+    adb_drag_relative(spoon_start_x, spoon_start_y, pot_x, pot_y)
 
 
 def drag_pasta_to_plate():
-    drag_ratios(0.11, 0.28, 0.616, 0.86)
+    cooked_pasta_start_x = 0.11
+    cooked_pasta_start_y = 0.25
+    plate_x = 0.63
+    plate_y = 0.9
+    adb_drag_relative(cooked_pasta_start_x, cooked_pasta_start_y, plate_x, plate_y)
 
 
 def cook_boost(n):
     boost_button_x = 0.11
     boost_button_y = 0.736
-    click_and_hold_ratios(boost_button_x, boost_button_y, n)
+    adb_tap_and_hold_relative(boost_button_x, boost_button_y, n)
 
 
 def cook():
@@ -59,17 +59,15 @@ def cook_green():
 
 
 def run_cook_station():
-    click_leftmost_ticket()
-    # Click right cooker
-    click_ratios(0.1, 0.5)
+    pot_x = 0.11
+    pot_y = 0.48
+    adb_tap_relative(pot_x, pot_y)
     get_filtered_pasta_icon()
-    get_filtered_pasta_icon2()
     time.sleep(1)
     click_button(os.path.join(ROOT_DIR, "debug", "pasta_logo.png"))
     cook()
     time.sleep(2)
-    # Click pot
-    click_ratios(0.1, 0.5)
+    adb_tap_relative(pot_x, pot_y)
     time.sleep(13)
     drag_pasta_to_plate()
     time.sleep(1)

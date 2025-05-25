@@ -35,6 +35,43 @@ def adb_tap_relative(x_ratio: float, y_ratio: float):
     subprocess.run(["adb", "shell", "input", "tap", str(x), str(y)])
     print(f"👆 Tapped at ({x}, {y}) on a screen of size {screen_width}x{screen_height}")
 
+
+def adb_tap_and_hold_relative(x_ratio: float, y_ratio: float, duration_seconds: float = 1.0):
+    """
+    Performs a tap-and-hold gesture at a relative position on the Android screen using ADB.
+
+    Args:
+        x_ratio (float): Horizontal position (0.0 to 1.0).
+        y_ratio (float): Vertical position (0.0 to 1.0).
+        duration_seconds (float): Duration of the hold in seconds (default: 1.0).
+    """
+    if not (0 <= x_ratio <= 1 and 0 <= y_ratio <= 1):
+        raise ValueError("x_ratio and y_ratio must be between 0 and 1.")
+    if duration_seconds < 0:
+        raise ValueError("duration_seconds must be non-negative.")
+
+    # Get screen resolution
+    result = subprocess.run(["adb", "shell", "wm", "size"], capture_output=True, text=True)
+    output = result.stdout.strip()
+
+    if "Physical size" not in output:
+        raise RuntimeError(f"Failed to get screen size: {output}")
+
+    resolution = output.split("Physical size: ")[1]
+    screen_width, screen_height = map(int, resolution.split("x"))
+
+    # Convert ratios to pixel coordinates
+    x = int(screen_width * x_ratio)
+    y = int(screen_height * y_ratio)
+
+    # Convert seconds to milliseconds
+    duration_ms = int(duration_seconds * 1000)
+
+    # Perform swipe with identical start and end coordinates for hold
+    subprocess.run(["adb", "shell", "input", "swipe", str(x), str(y), str(x), str(y), str(duration_ms)])
+    print(f"🕒 Tap-and-hold at ({x}, {y}) for {duration_seconds:.2f}s on screen {screen_width}x{screen_height}")
+
+
 def adb_drag_relative(x1_ratio: float, y1_ratio: float, x2_ratio: float, y2_ratio: float, duration_ms: int = 500):
     """
     Drags (swipes) from one relative screen coordinate to another on an Android device via ADB.

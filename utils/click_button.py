@@ -108,11 +108,6 @@ def drag_image_to_ratio(
     return True
 
 
-import subprocess
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
-
-
 def drag_ratios(
     start_x_ratio=0.72,
     start_y_ratio=0.46,
