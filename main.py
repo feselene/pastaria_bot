@@ -24,7 +24,9 @@ from utils.button_visible import button_visible
 from utils.click_button import click_from_assets, click_ratios
 from utils.click_cook_button import click_cook_button
 
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+from dotenv import load_dotenv
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 ADB_PORT = 21503
 
 

@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from dotenv import load_dotenv
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -10,7 +11,8 @@ if ROOT_DIR not in sys.path:
 from stations.build_station.click_jar import click_jar
 from utils.get_memu_resolution import get_memu_resolution
 
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 
 
 def apply_sauce():

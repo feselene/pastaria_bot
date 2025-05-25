@@ -5,8 +5,6 @@ import time
 import pyautogui
 import pygetwindow as gw
 
-from utils.click_button import click_ratios, drag_ratios, print_pixel_color_ratio
-
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = CURRENT_DIR
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
@@ -17,10 +15,9 @@ os.makedirs(MATCHES_DIR, exist_ok=True)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from stations.build_station.apply import half_swipe
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+from dotenv import load_dotenv
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 
 
 def print_pointer_ratio_in_memu():
@@ -65,5 +62,3 @@ def main():
 
 if __name__ == "__main__":
     print_pointer_ratio_in_memu()
-    # drag_ratios(0.3, 0.8, 0.1, 0.5)
-    # print_pixel_color_ratio(0.5, 0.5)

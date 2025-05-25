@@ -2,8 +2,10 @@
 import os
 import shutil
 import sys
+import time
 
 import google.generativeai as genai
+import google.api_core.exceptions
 from dotenv import load_dotenv
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -12,10 +14,6 @@ DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-
-import time
-
-import google.api_core.exceptions
 
 load_dotenv()
 

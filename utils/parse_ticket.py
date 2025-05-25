@@ -75,8 +75,8 @@ def get_filtered_bread_icon():
     regions = crop_ticket_regions(ticket_img)
 
     bread_img_bgr = regions["bread"]
-    bread_img_path = os.path.join(ROOT_DIR, "debug", "debug_bread_raw.png")
-    bread_out_path = os.path.join(ROOT_DIR, "debug", "debug_bread_cropped.png")
+    bread_img_path = os.path.join(ROOT_DIR, "debug", "bread.png")
+    bread_out_path = os.path.join(ROOT_DIR, "debug", "bread_icon.png")
 
     os.makedirs(os.path.dirname(bread_img_path), exist_ok=True)
     cv2.imwrite(bread_img_path, bread_img_bgr)

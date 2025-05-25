@@ -8,7 +8,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from utils.button_visible import button_visible
-from utils.click_button import click_button, click_from_assets
+from utils.click_button import click_from_assets
 
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 COOK_BUTTON_TEMPLATE = os.path.join(ASSETS_DIR, "cook_button_right.png")

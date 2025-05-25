@@ -7,9 +7,11 @@ import cv2
 from utils.crop_screenshot_by_ratio import adb_tap_relative
 from utils.get_memu_resolution import get_memu_bounds
 
-ADB_PATH = (
-    r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Replace with your ADB path if needed
-)
+import os
+from dotenv import load_dotenv
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
+
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
 if ROOT_DIR not in sys.path:
@@ -268,7 +270,6 @@ def click_button(template_path, threshold=0.7):
         return False
 
     # Save raw screenshot for debug
-    cv2.imwrite("img.png", cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR))
     gray = cv2.cvtColor(screenshot, cv2.COLOR_RGB2GRAY)
 
     # Get image dimensions from screenshot

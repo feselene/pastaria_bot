@@ -1,24 +1,21 @@
 import os
 import subprocess
 import sys
-import time
 
 import cv2
-import mss
-import numpy as np
+from dotenv import load_dotenv
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
+ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
-
 from utils.click_button import grab_screen_region
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+from utils.get_memu_resolution import get_memu_resolution
 
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 
 def adb_tap(x, y):
     subprocess.run(

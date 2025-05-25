@@ -1,9 +1,12 @@
 import re
 import subprocess
 import pygetwindow as gw
+import os
 
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update this path as needed
+from dotenv import load_dotenv
 
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 
 def get_memu_bounds():
     windows = gw.getWindowsWithTitle("MEmu")

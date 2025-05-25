@@ -3,18 +3,18 @@ import sys
 
 import cv2
 
-from utils.click_button import drag_ratios, grab_screen_region
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
+DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_resolution import get_memu_bounds
+from utils.click_button import grab_screen_region
+from utils.crop_screenshot_by_ratio import adb_drag_relative
 
-
-def get_best_template_match_center(template_path, threshold=0.75):
-    # Load template
+def get_bread_ratio(threshold=0.75):
+    template_path = os.path.join(DEBUG_DIR, "bread_icon.png")
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
     if template is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")
@@ -24,9 +24,6 @@ def get_best_template_match_center(template_path, threshold=0.75):
     screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
     height, width = gray.shape[:2]
-
-    # Emulator window offset
-    left, top, _, _ = get_memu_bounds()
 
     # Define ratio-based crop region
     xratio1, yratio1 = 0.3, 0.0
@@ -38,10 +35,6 @@ def get_best_template_match_center(template_path, threshold=0.75):
     y2 = int(height * yratio2)
 
     cropped = gray[y1:y2, x1:x2]
-
-    # Debug image output
-    debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
-    cv2.imwrite(debug_output_path, cropped)
 
     # Matching loop
     best_val = -1
@@ -73,49 +66,22 @@ def get_best_template_match_center(template_path, threshold=0.75):
         center_x = x1 + match_x + match_w // 2
         center_y = y1 + match_y + match_h // 2
 
-        # Offset by emulator window position to get absolute screen coords
-        screen_x = center_x + left
-        screen_y = center_y + top
+        # Convert to relative ratios
+        x_ratio = center_x / width
+        y_ratio = center_y / height
 
         print(
-            f"✅ Found match at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}"
+            f"✅ Found match at ({x_ratio:.3f}, {y_ratio:.3f}) relative with scale {best_scale} and confidence {best_val:.3f}"
         )
-        return screen_x, screen_y
+        return x_ratio, y_ratio
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return None, None
 
 
-def get_bread_ratios():
-    """
-    Matches the bread image and returns its (x, y) position as ratios
-    relative to the emulator window.
-
-    :return: (x_ratio, y_ratio) if match is found, otherwise (None, None)
-    """
-    template_path = (
-        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
-    )
-    match_x, match_y = get_best_template_match_center(template_path)
-
-    if match_x is None or match_y is None:
-        print("❌ Could not find bread image.")
-        return None, None
-
-    memu_left, memu_top, memu_width, memu_height = get_memu_bounds()
-    x_ratio = (match_x - memu_left) / memu_width
-    y_ratio = (match_y - memu_top) / memu_height
-
-    return x_ratio, y_ratio
-
-
 def click_bread():
-    template_path = (
-        r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\debug_bread_cropped.png"
-    )
-    x, y = get_bread_ratios()
-
-    drag_ratios(x, y, 0.15, 0.46)
+    x, y = get_bread_ratio()
+    adb_drag_relative(x, y, 0.152, 0.44)
 
 
 def main():
@@ -123,4 +89,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    click_bread()

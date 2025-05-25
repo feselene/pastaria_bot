@@ -9,11 +9,11 @@ import time
 import cv2
 import mss
 import numpy as np
-from dotenv import load_dotenv
 from PIL import Image
 from rembg import remove
-
-load_dotenv()
+from dotenv import load_dotenv
+from utils.gemini_matcher import is_matching
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -25,10 +25,8 @@ os.makedirs(MATCHES_DIR, exist_ok=True)  # Ensure the directory exists
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.gemini_matcher import is_matching
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
-
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=300):

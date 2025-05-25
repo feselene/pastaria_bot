@@ -7,13 +7,18 @@ from PIL import Image
 
 
 def adb_tap_relative(x_ratio: float, y_ratio: float):
+    """
+    Performs a tap on the Android screen at the specified relative position using ADB.
+
+    Args:
+        x_ratio (float): Horizontal position (0.0 to 1.0).
+        y_ratio (float): Vertical position (0.0 to 1.0).
+    """
     if not (0 <= x_ratio <= 1 and 0 <= y_ratio <= 1):
         raise ValueError("x_ratio and y_ratio must be between 0 and 1.")
 
-    # Get screen resolution
-    result = subprocess.run(
-        ["adb", "shell", "wm", "size"], capture_output=True, text=True
-    )
+    # Get screen resolution via ADB
+    result = subprocess.run(["adb", "shell", "wm", "size"], capture_output=True, text=True)
     output = result.stdout.strip()
 
     if "Physical size" not in output:
@@ -22,13 +27,47 @@ def adb_tap_relative(x_ratio: float, y_ratio: float):
     resolution = output.split("Physical size: ")[1]
     screen_width, screen_height = map(int, resolution.split("x"))
 
-    # Calculate absolute coordinates
+    # Convert ratios to pixel coordinates
     x = int(screen_width * x_ratio)
     y = int(screen_height * y_ratio)
 
     # Perform the tap
     subprocess.run(["adb", "shell", "input", "tap", str(x), str(y)])
-    print(f"Tapped at ({x}, {y}) on a screen of size {screen_width}x{screen_height}")
+    print(f"👆 Tapped at ({x}, {y}) on a screen of size {screen_width}x{screen_height}")
+
+def adb_drag_relative(x1_ratio: float, y1_ratio: float, x2_ratio: float, y2_ratio: float, duration_ms: int = 500):
+    """
+    Drags (swipes) from one relative screen coordinate to another on an Android device via ADB.
+
+    Args:
+        x1_ratio, y1_ratio (float): Start position (0.0–1.0)
+        x2_ratio, y2_ratio (float): End position (0.0–1.0)
+        duration_ms (int): Duration of the swipe in milliseconds
+    """
+    for r in [x1_ratio, y1_ratio, x2_ratio, y2_ratio]:
+        if not (0 <= r <= 1):
+            raise ValueError("All ratios must be between 0 and 1.")
+
+    # Get screen resolution
+    result = subprocess.run(["adb", "shell", "wm", "size"], capture_output=True, text=True)
+    output = result.stdout.strip()
+
+    if "Physical size" not in output:
+        raise RuntimeError(f"Failed to get screen size: {output}")
+
+    resolution = output.split("Physical size: ")[1]
+    screen_width, screen_height = map(int, resolution.split("x"))
+
+    # Convert ratios to absolute coordinates
+    x1 = int(screen_width * x1_ratio)
+    y1 = int(screen_height * y1_ratio)
+    x2 = int(screen_width * x2_ratio)
+    y2 = int(screen_height * y2_ratio)
+
+    # Perform the swipe
+    subprocess.run(["adb", "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(duration_ms)])
+    print(f"Swiped from ({x1}, {y1}) to ({x2}, {y2}) over {duration_ms}ms on screen {screen_width}x{screen_height}")
+
 
 
 def crop_screenshot_by_ratio(xratio1, yratio1, xratio2, yratio2):

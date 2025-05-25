@@ -1,12 +1,13 @@
-import subprocess
-
 import cv2
+import os
+import subprocess
 
 from utils.click_button import grab_screen_region
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+from dotenv import load_dotenv
 
-ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
-
+load_dotenv()
+ADB_PATH = os.getenv("ADB_PATH")
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=200):
     subprocess.run(

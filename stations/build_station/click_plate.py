@@ -146,7 +146,6 @@ def check_flag():
         bool: True if flag.txt exists, False otherwise.
     """
     exists = os.path.isfile(FLAG_PATH)
-    print(f"✅ Flag exists: {exists}" if exists else "❌ Flag not found.")
     return exists
 
 
