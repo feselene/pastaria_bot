@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from utils.detect_ticket_from_template import detect_ticket_from_template
+from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
 from utils.remove_background import crop, remove_background_and_crop
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -18,6 +18,9 @@ if ROOT_DIR not in sys.path:
 DEBUG_DIR = os.path.join(ROOT_DIR, "debug")
 os.makedirs(DEBUG_DIR, exist_ok=True)
 
+
+def detect_ticket_from_template():
+    return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
 
 def is_bar_orange(threshold=0.1):
     ticket_img = detect_ticket_from_template()
