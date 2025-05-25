@@ -78,7 +78,7 @@ def is_mostly_black(image_path, threshold=0.65, tolerance=10):
     return match_ratio > threshold
 
 
-def contains_metal(image_path, threshold=0.3):
+def contains_metal(image_path, threshold=0.2):
     image = cv2.imread(image_path)
     if image is None:
         raise ValueError(f"Could not load image from: {image_path}")
