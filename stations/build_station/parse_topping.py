@@ -130,7 +130,7 @@ def extract_digit2(image_path):
     cleaned = "".join(filter(str.isdigit, raw_result))
 
     # print(f"OCR Raw: {repr(raw_result)} | Cleaned: {cleaned}")
-    return int(cleaned) if cleaned else None
+    return int(cleaned) if cleaned else 1
 
 def extract_digit(image_path):
     image = cv2.imread(image_path)
