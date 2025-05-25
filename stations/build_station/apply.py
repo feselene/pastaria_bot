@@ -78,18 +78,7 @@ def is_mostly_black(image_path, threshold=0.65, tolerance=10):
     return match_ratio > threshold
 
 
-def is_mostly_black_or_gray(image_path, threshold=0.2):
-    """
-    Checks if more than `threshold` of the image is exactly #989898.
-
-    Args:
-        image_path (str): Path to the image file.
-        threshold (float): Proportion threshold to exceed (default is 0.3 for 30%).
-
-    Returns:
-        bool: True if the proportion exceeds the threshold, False otherwise.
-        float: The actual proportion of #989898 pixels.
-    """
+def contains_metal(image_path, threshold=0.3):
     image = cv2.imread(image_path)
     if image is None:
         raise ValueError(f"Could not load image from: {image_path}")
@@ -302,7 +291,7 @@ def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0):
     for attempt in range(max_attempts):
         current_path, small_square_path = capture_center_picker_square()
 
-        if is_mostly_black_or_gray(small_square_path):
+        if contains_metal(small_square_path):
             print("calling half_swipe_left because image is mostly_black or grey")
             half_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
@@ -312,7 +301,7 @@ def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0):
             third_swipe_left()
             current_path, small_square_path = capture_center_picker_square()
 
-        if is_mostly_black_or_gray(small_square_path):
+        if contains_metal(small_square_path):
             print("calling half_swipe_left because image is mostly_black or grey")
             half_swipe_left()
             current_path, small_square_path = capture_center_picker_square()

@@ -1,8 +1,5 @@
 import re
 import subprocess
-
-import mss
-import numpy as np
 import pygetwindow as gw
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update this path as needed

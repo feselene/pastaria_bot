@@ -2,8 +2,6 @@ import os
 import sys
 
 import cv2
-import mss
-import numpy as np
 
 from utils.click_button import drag_ratios, grab_screen_region
 
