@@ -18,7 +18,7 @@ ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
-from utils.click_button import click_ratios
+from utils.crop_screenshot_by_ratio import adb_tap_relative
 
 
 def adb_tap(x, y):
@@ -32,11 +32,9 @@ def grab_emulator_region():
         img = np.array(sct.grab(monitor))
     return img, left, top, width, height
 
-def click_tickets():
-    click_ratios(0.5, 0.1)
 
 def click_leftmost_ticket():
-    click_tickets()
+    adb_tap_relative(0.5, 0.03)
     time.sleep(1)
     screenshot, offset_x, offset_y, width, height = grab_emulator_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)

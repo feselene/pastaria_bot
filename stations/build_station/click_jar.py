@@ -13,7 +13,6 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
-OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 

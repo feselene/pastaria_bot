@@ -11,8 +11,6 @@ CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
-ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
-OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 from utils.get_memu_resolution import get_memu_bounds
 
