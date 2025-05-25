@@ -41,7 +41,7 @@ def use_shaker():
     center_y = int(memu_height * 0.65)
 
     # Offset ratios relative to screen width
-    offset_ratios = [0.02, 0.04, 0.08, 0.12, 0.12, 0.12, 0.12, 0.12, 0.08, 0.06]
+    offset_ratios = [0.02, 0.04, 0.08, 0.12, 0.12, 0.12, 0.12, 0.12]
 
     for i, ratio in enumerate(offset_ratios):
         offset = int(memu_width * ratio)
