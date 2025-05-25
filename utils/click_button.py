@@ -282,9 +282,6 @@ def click_button(template_path, threshold=0.7):
         y_ratio = center_y / height
 
         adb_tap_relative(x_ratio, y_ratio)
-        print(
-            f"✅ Clicked button at ({x_ratio:.3f}, {y_ratio:.3f}) relative with confidence {max_val:.2f}"
-        )
         return True
     else:
         print(f"❌ Button '{template_path}' not found. Best confidence: {max_val:.2f}")
