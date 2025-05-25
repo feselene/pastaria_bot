@@ -47,7 +47,7 @@ def cook_orange():
     cook_boost(19)
     stir()
     time.sleep(2)
-    cook_boost(2)
+    cook_boost(15)
 
 
 def cook_green():
