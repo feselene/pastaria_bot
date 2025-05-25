@@ -46,4 +46,3 @@ def crop(
     # Crop and save
     cropped_image = image.crop((left, upper, right, lower))
     cropped_image.save(output_path)
-    print(f"✅ Saved cropped region to: {output_path}")

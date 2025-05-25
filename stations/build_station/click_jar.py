@@ -49,11 +49,6 @@ def click_best_template_match(template_path, threshold=0.6):
     # Crop search region
     cropped = gray[y1:y2, x1:x2]
 
-    # Debug save
-    debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
-    cv2.imwrite(debug_output_path, cropped)
-    print(f"📸 Saved vertical belt search region to: {debug_output_path}")
-
     # Template matching loop
     best_val = -1
     best_loc = None

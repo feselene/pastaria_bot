@@ -288,7 +288,6 @@ def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
         if "yes" in match_response:
             return True
         else:
-            print(f"❌ No match on attempt {attempt}.")
             swipe_topping_picker_left()
         time.sleep(delay_between_swipes)
 
