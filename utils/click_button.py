@@ -1,14 +1,10 @@
+import cv2
 import os
 import re
 import sys
-import io
-from PIL import Image
-
-import cv2
-import mss
-import numpy as np
 
 from utils.get_memu_resolution import get_memu_bounds
+from utils.crop_screenshot_by_ratio import adb_tap_relative
 
 ADB_PATH = (
     r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Replace with your ADB path if needed
@@ -251,9 +247,6 @@ def print_pixel_color_ratio(x_ratio, y_ratio):
         print(f"❌ Failed to get pixel color: {e}")
 
 
-import cv2
-import numpy as np
-
 def click_button(template_path, threshold=0.7):
     # Load grayscale template (at correct size)
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
@@ -270,9 +263,8 @@ def click_button(template_path, threshold=0.7):
     cv2.imwrite("img.png", cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR))
     gray = cv2.cvtColor(screenshot, cv2.COLOR_RGB2GRAY)
 
-    # Get emulator window and screen dimensions
-    left, top, width, height = get_memu_bounds()
-    memu_width, memu_height = get_memu_resolution()
+    # Get image dimensions from screenshot
+    height, width = gray.shape[:2]
 
     # Match once at original scale
     result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
@@ -283,12 +275,12 @@ def click_button(template_path, threshold=0.7):
         center_x = match_x + tW // 2
         center_y = match_y + tH // 2
 
-        # Convert to emulator-relative screen coordinates
-        screen_x = int(center_x * memu_width / width)
-        screen_y = int(center_y * memu_height / height)
+        # Convert to ratios within the full screenshot
+        x_ratio = center_x / width
+        y_ratio = center_y / height
 
-        adb_tap(screen_x, screen_y)
-        print(f"✅ Clicked button at ({screen_x}, {screen_y}) with confidence {max_val:.2f}")
+        adb_tap_relative(x_ratio, y_ratio)
+        print(f"✅ Clicked button at ({x_ratio:.3f}, {y_ratio:.3f}) relative with confidence {max_val:.2f}")
         return True
     else:
         print(f"❌ Button '{template_path}' not found. Best confidence: {max_val:.2f}")
