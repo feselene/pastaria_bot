@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-from operator import truediv
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
