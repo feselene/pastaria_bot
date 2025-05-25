@@ -101,7 +101,6 @@ def process_topping_boxes():
         img = cv2.imread(image_path)
 
         if is_box_empty(img):
-            print(f"Topping {i} is empty.")
             continue
         elif center_contains_x(img):
             print(f"Topping {i} is an ingredient.")

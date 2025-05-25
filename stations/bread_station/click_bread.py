@@ -69,10 +69,6 @@ def get_bread_ratio(threshold=0.75):
         # Convert to relative ratios
         x_ratio = center_x / width
         y_ratio = center_y / height
-
-        print(
-            f"✅ Found match at ({x_ratio:.3f}, {y_ratio:.3f}) relative with scale {best_scale} and confidence {best_val:.3f}"
-        )
         return x_ratio, y_ratio
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")

@@ -68,7 +68,6 @@ def adb_tap_and_hold_relative(x_ratio: float, y_ratio: float, duration_seconds: 
 
     # Perform swipe with identical start and end coordinates for hold
     subprocess.run(["adb", "shell", "input", "swipe", str(x), str(y), str(x), str(y), str(duration_ms)])
-    print(f"🕒 Tap-and-hold at ({x}, {y}) for {duration_seconds:.2f}s on screen {screen_width}x{screen_height}")
 
 
 def adb_drag_relative(x1_ratio: float, y1_ratio: float, x2_ratio: float, y2_ratio: float, duration_ms: int = 500):
@@ -102,7 +101,6 @@ def adb_drag_relative(x1_ratio: float, y1_ratio: float, x2_ratio: float, y2_rati
 
     # Perform the swipe
     subprocess.run(["adb", "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(duration_ms)])
-    print(f"Swiped from ({x1}, {y1}) to ({x2}, {y2}) over {duration_ms}ms on screen {screen_width}x{screen_height}")
 
 
 

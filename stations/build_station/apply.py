@@ -182,13 +182,9 @@ def capture_center_picker_square():
     small_square_path = os.path.join(DEBUG_DIR, f"{timestamp}_small_square.png")
 
     cv2.imwrite(overlay_path, full_screen)
-    print(f"📸 Overlay with capture box saved to: {overlay_path}")
-
     cv2.imwrite(cropped_path, cropped)
     cv2.imwrite(square_path, cropped_square)
     cv2.imwrite(small_square_path, cropped_small_square)
-    print(f"📸 Square crop saved to: {square_path}")
-    print(f"📸 Small square crop saved to: {small_square_path}")
 
     return cropped_path, small_square_path
 
