@@ -1,6 +1,5 @@
 # gemini_matcher.py
 import os
-import shutil
 import sys
 import time
 
@@ -47,23 +46,10 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
         {"mime_type": "image/png", "data": image2},
     ]
 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
     for attempt in range(max_retries):
         try:
             response = model.generate_content(request_content, stream=False)
             answer = response.text.strip()
-
-            # Save debug outputs with timestamp at the front
-            img_a_debug = os.path.join(DEBUG_DIR, f"{timestamp}_compared_a.png")
-            img_b_debug = os.path.join(DEBUG_DIR, f"{timestamp}_compared_b.png")
-            explanation_debug = os.path.join(DEBUG_DIR, f"{timestamp}_comparison.txt")
-
-            shutil.copy(imgpath1, img_a_debug)
-            shutil.copy(imgpath2, img_b_debug)
-            with open(explanation_debug, "w", encoding="utf-8") as f:
-                f.write(answer)
-
             print(f"Gemini response: {answer}")
             return answer.lower()
 
