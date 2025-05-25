@@ -74,7 +74,7 @@ def drag_image_to_ratio(
 
     # Get resolution and capture screenshot at 1:1 resolution
     memu_width, memu_height = get_memu_resolution()
-    screenshot = grab_screen_region(0, 0, memu_width, memu_height)
+    screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
 
     # Match template
@@ -163,10 +163,26 @@ def click_and_hold_ratios(x_ratio, y_ratio, hold_duration=1.0):
     return True
 
 
-def grab_screen_region(x, y, width, height):
-    with mss.mss() as sct:
-        monitor = {"top": y, "left": x, "width": width, "height": height}
-        return np.array(sct.grab(monitor))
+import subprocess
+import io
+from PIL import Image
+import numpy as np
+
+def grab_screen_region():
+    """
+    Captures a screenshot from the Android emulator/device using ADB
+    and returns it as a NumPy RGB image array.
+
+    :return: NumPy array of shape (H, W, 3) in RGB format
+    """
+    try:
+        result = subprocess.check_output(["adb", "exec-out", "screencap", "-p"])
+        image = Image.open(io.BytesIO(result)).convert("RGB")
+        img_np = np.array(image)
+        return img_np
+    except Exception as e:
+        print(f"❌ Failed to capture or convert ADB screenshot: {e}")
+        return None
 
 
 def get_memu_resolution():
@@ -235,31 +251,55 @@ def print_pixel_color_ratio(x_ratio, y_ratio):
         print(f"❌ Failed to get pixel color: {e}")
 
 
+import cv2
+import numpy as np
+
 def click_button(template_path, threshold=0.7):
-    template = cv2.imread(template_path, 0)
-    if template is None:
+    template_orig = cv2.imread(template_path, 0)
+    if template_orig is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")
 
-    w, h = template.shape[::-1]
+    screenshot = grab_screen_region()
+    if screenshot is None:
+        return False
+    cv2.imwrite("img.png", cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR))
+
+    gray = cv2.cvtColor(screenshot, cv2.COLOR_RGB2GRAY)
     left, top, width, height = get_memu_bounds()
+    memu_width, memu_height = get_memu_resolution()
 
-    screenshot = grab_screen_region(left, top, width, height)
-    gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+    best_val = -1
+    best_loc = None
+    best_w, best_h = 0, 0
 
-    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
-    _, max_val, _, max_loc = cv2.minMaxLoc(result)
+    for scale in np.arange(0.5, 2.5, 0.1):
+        scaled_template = cv2.resize(template_orig, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+        tw, th = scaled_template.shape[::-1]
 
-    if max_val >= threshold:
-        memu_width, memu_height = get_memu_resolution()
-        screen_x = int((max_loc[0] + w // 2) * memu_width / width)
-        screen_y = int((max_loc[1] + h // 2) * memu_height / height)
+        if gray.shape[0] < th or gray.shape[1] < tw:
+            continue
+
+        result = cv2.matchTemplate(gray, scaled_template, cv2.TM_CCOEFF_NORMED)
+        _, max_val, _, max_loc = cv2.minMaxLoc(result)
+
+        if max_val > best_val:
+            best_val = max_val
+            best_loc = max_loc
+            best_w, best_h = tw, th
+
+    if best_val >= threshold:
+        center_x = best_loc[0] + best_w // 2
+        center_y = best_loc[1] + best_h // 2
+
+        screen_x = int(center_x * memu_width / width)
+        screen_y = int(center_y * memu_height / height)
 
         adb_tap(screen_x, screen_y)
+        print(f"✅ Clicked button at ({screen_x}, {screen_y}) with confidence {best_val:.2f}")
         return True
     else:
-        print(f"❌ Button '{template_path}' not found. Confidence: {max_val:.2f}")
+        print(f"❌ Button '{template_path}' not found. Best confidence: {best_val:.2f}")
         return False
-
 
 def click_and_hold(template_path, hold_duration=1.0, threshold=0.85):
     template = cv2.imread(template_path, 0)
@@ -269,7 +309,7 @@ def click_and_hold(template_path, hold_duration=1.0, threshold=0.85):
     w, h = template.shape[::-1]
     left, top, width, height = get_memu_bounds()
 
-    screenshot = grab_screen_region(left, top, width, height)
+    screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
 
     result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)

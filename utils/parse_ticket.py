@@ -158,10 +158,6 @@ def get_filtered_topping_icon(topping_number: int):
     raw_filename = f"topping{topping_number}.png"
 
     ticket_img = detect_ticket_from_template()
-    if ticket_img is None:
-        print("❌ Ticket detection failed.")
-        return
-
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
 

@@ -3,6 +3,7 @@ import subprocess
 from PIL import Image
 import io
 import numpy as np
+import cv2
 
 
 def adb_tap_relative(x_ratio: float, y_ratio: float):
@@ -56,27 +57,28 @@ def crop_screenshot_as_numpy(xratio1, yratio1, xratio2, yratio2):
         raise ValueError("All ratios must be between 0 and 1.")
 
     if xratio1 > xratio2 or yratio1 > yratio2:
-        raise ValueError("Top-left ratios must be less than or equal to bottom-right ratios.")
+        raise ValueError("Top-left ratios must be <= bottom-right ratios.")
 
     # Capture screenshot using ADB
     result = subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True)
     if result.returncode != 0:
         raise RuntimeError("Failed to take screenshot.")
 
+    # Open as RGB
     image = Image.open(io.BytesIO(result.stdout)).convert("RGB")
     width, height = image.size
 
-    # Convert to numpy array
-    img_np = np.array(image)  # shape: (H, W, 3), RGB
+    # Convert to numpy array and then to BGR (for OpenCV)
+    img_rgb = np.array(image)
+    img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
 
-    # Compute crop box in pixels
+    # Crop region
     x1 = int(width * xratio1)
     y1 = int(height * yratio1)
     x2 = int(width * xratio2)
     y2 = int(height * yratio2)
 
-    # Perform cropping on the numpy array
-    cropped_np = img_np[y1:y2, x1:x2, :]  # shape: (y2 - y1, x2 - x1, 3)
+    cropped_np = img_bgr[y1:y2, x1:x2, :]
     return cropped_np
 
 def main():

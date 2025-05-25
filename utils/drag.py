@@ -5,14 +5,9 @@ import mss
 import numpy as np
 
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+from utils.click_button import grab_screen_region
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
-
-
-def grab_screen_region(x, y, width, height):
-    with mss.mss() as sct:
-        monitor = {"top": y, "left": x, "width": width, "height": height}
-        return np.array(sct.grab(monitor))
 
 
 def adb_swipe(x1, y1, x2, y2, duration_ms=200):
@@ -47,7 +42,7 @@ def drag_between_templates(start_template_path, end_template_path, threshold=0.8
     left, top, width, height = get_memu_bounds()
     memu_width, memu_height = get_memu_resolution()
 
-    screenshot = grab_screen_region(left, top, width, height)
+    screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
 
     result_start = cv2.matchTemplate(gray, start_template, cv2.TM_CCOEFF_NORMED)

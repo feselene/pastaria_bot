@@ -18,6 +18,7 @@ OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 
 from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
+from utils.click_button import grab_screen_region
 
 
 def adb_tap(x, y):
@@ -28,35 +29,35 @@ def adb_tap(x, y):
     )
 
 
-def grab_screen_region(x, y, width, height):
-    with mss.mss() as sct:
-        monitor = {"top": y, "left": x, "width": width, "height": height}
-        return np.array(sct.grab(monitor))
-
-
 def click_best_template_match(template_path, threshold=0.6):
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
     if template is None:
         raise FileNotFoundError(f"Missing template image: {template_path}")
     tH, tW = template.shape[:2]
 
-    left, top, width, height = get_memu_bounds()
-    memu_width, memu_height = get_memu_resolution()
-
-    screenshot = grab_screen_region(left, top, width, height)
+    screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+    height, width = gray.shape[:2]
 
-    belt_left = int(width * 0)
-    belt_right = int(width * 0.8)
-    belt_top = int(height * 0.25)
-    belt_bottom = int(height * 0.8)
+    # Define search region by ratios
+    xratio1, yratio1 = 0.0, 0.0   # top-left
+    xratio2, yratio2 = 0.8, 0.5   # bottom-right
 
-    cropped = gray[belt_top:belt_bottom, belt_left:belt_right]
+    # Convert ratios to absolute pixel bounds
+    x1 = int(width * xratio1)
+    y1 = int(height * yratio1)
+    x2 = int(width * xratio2)
+    y2 = int(height * yratio2)
 
+    # Crop search region
+    cropped = gray[y1:y2, x1:x2]
+
+    # Debug save
     debug_output_path = os.path.join(ROOT_DIR, "debug", "search_region.png")
     cv2.imwrite(debug_output_path, cropped)
     print(f"📸 Saved vertical belt search region to: {debug_output_path}")
 
+    # Template matching loop
     best_val = -1
     best_loc = None
     best_scale = None
@@ -64,6 +65,9 @@ def click_best_template_match(template_path, threshold=0.6):
 
     for scale in [1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.3, 2.4, 2.5]:
         resized_template = cv2.resize(template, (int(tW * scale), int(tH * scale)))
+        if resized_template.shape[0] > cropped.shape[0] or resized_template.shape[1] > cropped.shape[1]:
+            continue  # Skip templates larger than search region
+
         result = cv2.matchTemplate(cropped, resized_template, cv2.TM_CCOEFF_NORMED)
         _, max_val, _, max_loc = cv2.minMaxLoc(result)
 
@@ -77,17 +81,23 @@ def click_best_template_match(template_path, threshold=0.6):
         match_x, match_y = best_loc
         match_h, match_w = best_template.shape[:2]
 
-        screen_x = (match_x + match_w // 2 + belt_left) * memu_width // width
-        screen_y = (match_y + match_h // 2 + belt_top) * memu_height // height
+        # Compute final screen coordinates using ratios
+        memu_width, memu_height = get_memu_resolution()
+
+        # Offset within the cropped region → back to screen space
+        center_x = x1 + match_x + match_w // 2
+        center_y = y1 + match_y + match_h // 2
+
+        screen_x = int(center_x * memu_width / width)
+        screen_y = int(center_y * memu_height / height)
 
         adb_tap(screen_x, screen_y)
-        print(
-            f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}"
-        )
+        print(f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}")
         return True
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return False
+
 
 
 def click_jar():

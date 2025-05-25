@@ -5,7 +5,7 @@ import cv2
 import mss
 import numpy as np
 
-from utils.click_button import drag_ratios
+from utils.click_button import drag_ratios, grab_screen_region
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -15,12 +15,6 @@ ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 OVEN_PATH = os.path.join(ASSETS_DIR, "oven.png")
 
 from utils.get_memu_resolution import get_memu_bounds
-
-
-def grab_screen_region(x, y, width, height):
-    with mss.mss() as sct:
-        monitor = {"top": y, "left": x, "width": width, "height": height}
-        return np.array(sct.grab(monitor))
 
 
 def get_best_template_match_center(template_path, threshold=0.75):
@@ -34,7 +28,7 @@ def get_best_template_match_center(template_path, threshold=0.75):
     left, top, width, height = get_memu_bounds()
 
     # Capture emulator window
-    screenshot = grab_screen_region(left, top, width, height)
+    screenshot = grab_screen_region()
     gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
 
     # Define vertical brown belt region (centered)

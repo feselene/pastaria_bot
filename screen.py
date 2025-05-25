@@ -9,7 +9,6 @@ def save_adb_screenshot(output_path="adb_capture.png"):
     :param output_path: Path to save the captured image (default: 'adb_capture.png')
     """
     try:
-        print("📸 Capturing screen using ADB...")
         result = subprocess.check_output(["adb", "exec-out", "screencap", "-p"])
         image = Image.open(io.BytesIO(result)).convert("RGB")
         image.save(output_path)
