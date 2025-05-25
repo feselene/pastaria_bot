@@ -1,10 +1,11 @@
-import cv2
 import os
 import re
 import sys
 
-from utils.get_memu_resolution import get_memu_bounds
+import cv2
+
 from utils.crop_screenshot_by_ratio import adb_tap_relative
+from utils.get_memu_resolution import get_memu_bounds
 
 ADB_PATH = (
     r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Replace with your ADB path if needed
@@ -15,6 +16,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
+
 
 def click_from_assets(filename, threshold=0.6):
     template_path = os.path.join(ASSETS_DIR, filename)
@@ -159,10 +161,12 @@ def click_and_hold_ratios(x_ratio, y_ratio, hold_duration=1.0):
     return True
 
 
-import subprocess
 import io
-from PIL import Image
+import subprocess
+
 import numpy as np
+from PIL import Image
+
 
 def grab_screen_region():
     """
@@ -210,6 +214,7 @@ def adb_touch_and_hold(x, y, hold_duration=1.0):
         stderr=subprocess.DEVNULL,
     )
 
+
 def click_ratios(x_ratio, y_ratio):
     """
     ADB taps the screen at a given (x_ratio, y_ratio).
@@ -223,6 +228,7 @@ def click_ratios(x_ratio, y_ratio):
     y = int(y_ratio * memu_height)
     adb_tap(x, y)
     return True
+
 
 def print_pixel_color_ratio(x_ratio, y_ratio):
     """
@@ -240,8 +246,10 @@ def print_pixel_color_ratio(x_ratio, y_ratio):
         image = Image.open(io.BytesIO(result)).convert("RGB")
 
         r, g, b = image.getpixel((x, y))
-        print(f"🎨 Pixel at ratio ({x_ratio:.3f}, {y_ratio:.3f}) → ({x}, {y}): "
-              f"RGB = ({r}, {g}, {b}) | BGR = ({b}, {g}, {r})")
+        print(
+            f"🎨 Pixel at ratio ({x_ratio:.3f}, {y_ratio:.3f}) → ({x}, {y}): "
+            f"RGB = ({r}, {g}, {b}) | BGR = ({b}, {g}, {r})"
+        )
 
     except Exception as e:
         print(f"❌ Failed to get pixel color: {e}")
@@ -280,7 +288,9 @@ def click_button(template_path, threshold=0.7):
         y_ratio = center_y / height
 
         adb_tap_relative(x_ratio, y_ratio)
-        print(f"✅ Clicked button at ({x_ratio:.3f}, {y_ratio:.3f}) relative with confidence {max_val:.2f}")
+        print(
+            f"✅ Clicked button at ({x_ratio:.3f}, {y_ratio:.3f}) relative with confidence {max_val:.2f}"
+        )
         return True
     else:
         print(f"❌ Button '{template_path}' not found. Best confidence: {max_val:.2f}")

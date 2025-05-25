@@ -1,6 +1,8 @@
-import subprocess
 import io
+import subprocess
+
 from PIL import Image
+
 
 def save_adb_screenshot(output_path="adb_capture.png"):
     """

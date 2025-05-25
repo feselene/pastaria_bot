@@ -79,13 +79,13 @@ def get_best_template_match_center(template_path, threshold=0.75):
         screen_x = center_x + left
         screen_y = center_y + top
 
-        print(f"✅ Found match at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(
+            f"✅ Found match at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}"
+        )
         return screen_x, screen_y
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return None, None
-
-
 
 
 def get_bread_ratios():

@@ -11,14 +11,17 @@ ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from stations.bread_station.bread_station import drag_bread_to_oven, submit_bread_and_ticket
+from stations.bread_station.bread_station import (
+    drag_bread_to_oven,
+    submit_bread_and_ticket,
+)
 from stations.build_station import build_station
 from stations.cook_station import cook_station
 
 # Import station modules
 from stations.order_station import order_station
-from utils.click_button import click_from_assets, click_ratios
 from utils.button_visible import button_visible
+from utils.click_button import click_from_assets, click_ratios
 from utils.click_cook_button import click_cook_button
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
@@ -43,9 +46,11 @@ def click_lower_right_button():
     # Click build station button in lower right.
     click_ratios(0.9, 0.9)
 
+
 def click_lower_left_button():
     # Click build station button in lower right.
     click_ratios(0.07, 0.9)
+
 
 def main():
     try_adb_connect()
@@ -63,7 +68,9 @@ def main():
             clean_files()
             print("▶️ Running Order Station...")
             order_station.run_order_station()
-            if button_visible(os.path.join(ASSETS_DIR, "skip_button_left.png"), threshold=0.8):
+            if button_visible(
+                os.path.join(ASSETS_DIR, "skip_button_left.png"), threshold=0.8
+            ):
                 return
             click_cook_button()
             print("🔥 Running Cook Station...")

@@ -1,11 +1,11 @@
 import os
+import sys
+import time
 from time import sleep
 
 import cv2
 import mss
 import numpy as np
-import sys
-import time
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../"))
@@ -17,8 +17,8 @@ THRESHOLD = 0.5
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
 
 
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 from utils.crop_screenshot_by_ratio import adb_tap_relative
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 
 def adb_tap(x, y):

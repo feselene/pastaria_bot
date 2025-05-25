@@ -4,8 +4,8 @@ import cv2
 import mss
 import numpy as np
 
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 from utils.click_button import grab_screen_region
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 

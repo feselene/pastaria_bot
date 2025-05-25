@@ -6,9 +6,7 @@ import numpy as np
 from PIL import Image
 
 CURRENT_DIR = os.path.dirname(__file__)
-ROOT_DIR = os.path.abspath(
-    os.path.join(CURRENT_DIR, "..")
-)
+ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
@@ -21,6 +19,7 @@ from utils.remove_background import crop, remove_background_and_crop
 
 def detect_ticket_from_template():
     return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
+
 
 def is_bar_orange(threshold=0.1):
     ticket_img = detect_ticket_from_template()
@@ -106,6 +105,7 @@ def get_filtered_pasta_icon():
     cv2.imwrite(pasta_img_path, pasta_img_bgr)
 
     remove_background_and_crop(pasta_img_path, pasta_out_path)
+
 
 def get_filtered_pasta_icon2():
     pasta_out_path = os.path.join(ROOT_DIR, "debug", "pasta.png")

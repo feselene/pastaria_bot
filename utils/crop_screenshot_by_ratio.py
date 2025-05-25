@@ -1,9 +1,9 @@
+import io
 import subprocess
 
-from PIL import Image
-import io
-import numpy as np
 import cv2
+import numpy as np
+from PIL import Image
 
 
 def adb_tap_relative(x_ratio: float, y_ratio: float):
@@ -11,7 +11,9 @@ def adb_tap_relative(x_ratio: float, y_ratio: float):
         raise ValueError("x_ratio and y_ratio must be between 0 and 1.")
 
     # Get screen resolution
-    result = subprocess.run(["adb", "shell", "wm", "size"], capture_output=True, text=True)
+    result = subprocess.run(
+        ["adb", "shell", "wm", "size"], capture_output=True, text=True
+    )
     output = result.stdout.strip()
 
     if "Physical size" not in output:
@@ -28,12 +30,15 @@ def adb_tap_relative(x_ratio: float, y_ratio: float):
     subprocess.run(["adb", "shell", "input", "tap", str(x), str(y)])
     print(f"Tapped at ({x}, {y}) on a screen of size {screen_width}x{screen_height}")
 
+
 def crop_screenshot_by_ratio(xratio1, yratio1, xratio2, yratio2):
     if not all(0 <= r <= 1 for r in [xratio1, yratio1, xratio2, yratio2]):
         raise ValueError("All ratios must be between 0 and 1.")
 
     if xratio1 > xratio2 or yratio1 > yratio2:
-        raise ValueError("Top-left ratios must be less than or equal to bottom-right ratios.")
+        raise ValueError(
+            "Top-left ratios must be less than or equal to bottom-right ratios."
+        )
 
     # Capture full screenshot via ADB
     result = subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True)
@@ -51,6 +56,7 @@ def crop_screenshot_by_ratio(xratio1, yratio1, xratio2, yratio2):
 
     cropped = image.crop((x1, y1, x2, y2))
     return cropped
+
 
 def crop_screenshot_as_numpy(xratio1, yratio1, xratio2, yratio2):
     if not all(0 <= r <= 1 for r in [xratio1, yratio1, xratio2, yratio2]):
@@ -81,10 +87,11 @@ def crop_screenshot_as_numpy(xratio1, yratio1, xratio2, yratio2):
     cropped_np = img_bgr[y1:y2, x1:x2, :]
     return cropped_np
 
+
 def main():
     cropped_image = crop_screenshot_by_ratio(0.88, 0.84, 1, 1)
     cropped_image.save("output.png")
 
+
 if __name__ == "__main__":
     main()
-

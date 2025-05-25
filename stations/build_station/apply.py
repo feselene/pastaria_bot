@@ -1,16 +1,17 @@
 import datetime
 import os
 import re
+import shutil
+import subprocess
 import sys
 import time
-import shutil
+
 import cv2
 import mss
 import numpy as np
 from dotenv import load_dotenv
 from PIL import Image
 from rembg import remove
-import subprocess
 
 load_dotenv()
 
@@ -29,11 +30,24 @@ from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 
+
 def adb_swipe(x1, y1, x2, y2, duration_ms=300):
-    subprocess.run([
-        ADB_PATH, "shell", "input", "swipe",
-        str(x1), str(y1), str(x2), str(y2), str(duration_ms)
-    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(
+        [
+            ADB_PATH,
+            "shell",
+            "input",
+            "swipe",
+            str(x1),
+            str(y1),
+            str(x2),
+            str(y2),
+            str(duration_ms),
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
 
 def is_mostly_black(image_path, threshold=0.65, tolerance=10):
     """
@@ -62,6 +76,7 @@ def is_mostly_black(image_path, threshold=0.65, tolerance=10):
 
     match_ratio = np.sum(matches) / len(pixels)
     return match_ratio > threshold
+
 
 def is_mostly_black_or_gray(image_path, threshold=0.2):
     """
@@ -139,7 +154,9 @@ def capture_center_picker_square():
     }
 
     with mss.mss() as sct:
-        full_screen = np.array(sct.grab({"left": left, "top": top, "width": width, "height": height}))
+        full_screen = np.array(
+            sct.grab({"left": left, "top": top, "width": width, "height": height})
+        )
         cropped = np.array(sct.grab(region))
         cropped_square = np.array(sct.grab(square_region))
         cropped_small_square = np.array(sct.grab(small_square_region))
@@ -150,21 +167,24 @@ def capture_center_picker_square():
         (box_left - left, box_top - top),
         (box_left - left + width_px, box_top - top + height_px),
         (255, 0, 0),
-        2
+        2,
     )
     cv2.rectangle(
         full_screen,
         (square_left - left, square_top - top),
         (square_left - left + square_size, square_top - top + square_size),
         (0, 255, 0),
-        2
+        2,
     )
     cv2.rectangle(
         full_screen,
         (small_square_left - left, small_square_top - top),
-        (small_square_left - left + small_square_size, small_square_top - top + small_square_size),
+        (
+            small_square_left - left + small_square_size,
+            small_square_top - top + small_square_size,
+        ),
         (0, 0, 255),
-        2
+        2,
     )
 
     # Save screenshots
@@ -198,7 +218,10 @@ def half_swipe():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
-    print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+    print(
+        f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
+    )
+
 
 def third_swipe_left():
     x_ratio = 0.422
@@ -212,7 +235,9 @@ def third_swipe_left():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
-    print(f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+    print(
+        f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
+    )
 
 
 def half_swipe_left():
@@ -227,7 +252,9 @@ def half_swipe_left():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
-    print(f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+    print(
+        f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
+    )
 
 
 def swipe_topping_picker_left():
@@ -242,7 +269,10 @@ def swipe_topping_picker_left():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
-    print(f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})")
+    print(
+        f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
+    )
+
 
 def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     if cv_image.shape[2] == 3:
@@ -262,9 +292,11 @@ def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     result = cv2.cvtColor(np.array(cropped), cv2.COLOR_RGBA2BGRA)
     return result
 
+
 def sanitize_filename_component(text, max_length=50):
     safe = re.sub(r"\W+", "_", text)
     return safe[:max_length]
+
 
 def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0):
     for attempt in range(max_attempts):
@@ -313,6 +345,7 @@ def select_ingredient(cropped_path, max_attempts=10, delay_between_swipes=0):
     print("⚠️ Maximum attempts reached without finding a match.")
     return False
 
+
 def main():
     print(os.getenv("GEMINI_API_KEY"))
     target_topping = os.path.join(TOPPINGS_DIR, "topping4.png")
@@ -322,6 +355,7 @@ def main():
         print("🎯 Ingredient successfully selected!")
     else:
         print("❌ Ingredient not found.")
+
 
 if __name__ == "__main__":
     main()

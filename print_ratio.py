@@ -1,9 +1,11 @@
-import pyautogui
-import pygetwindow as gw
-import time
 import os
 import sys
-from utils.click_button import click_ratios, print_pixel_color_ratio, drag_ratios
+import time
+
+import pyautogui
+import pygetwindow as gw
+
+from utils.click_button import click_ratios, drag_ratios, print_pixel_color_ratio
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = CURRENT_DIR
@@ -15,10 +17,11 @@ os.makedirs(MATCHES_DIR, exist_ok=True)
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 from stations.build_station.apply import half_swipe
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"
+
 
 def print_pointer_ratio_in_memu():
     try:
@@ -31,7 +34,12 @@ def print_pointer_ratio_in_memu():
         if not memu_window:
             raise RuntimeError("❌ No visible MEmu window found.")
 
-        left, top, width, height = memu_window.left, memu_window.top, memu_window.width, memu_window.height
+        left, top, width, height = (
+            memu_window.left,
+            memu_window.top,
+            memu_window.width,
+            memu_window.height,
+        )
 
         print("🎯 Move your mouse over the MEmu window. Press Ctrl+C to stop.\n")
         while True:
@@ -41,7 +49,9 @@ def print_pointer_ratio_in_memu():
                 rel_y = (y - top) / height
                 print(f"📍 Mouse Ratio: x={rel_x:.3f}, y={rel_y:.3f}", end="\r")
             else:
-                print("⛔ Mouse outside MEmu window.                         ", end="\r")
+                print(
+                    "⛔ Mouse outside MEmu window.                         ", end="\r"
+                )
 
             time.sleep(0.05)
 

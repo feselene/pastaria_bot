@@ -10,13 +10,16 @@ BOTTOM_RIGHT_Y = 1141
 RENDERED_WIDTH = BOTTOM_RIGHT_X - TOP_LEFT_X
 RENDERED_HEIGHT = BOTTOM_RIGHT_Y - TOP_LEFT_Y
 
+
 class POINT(ctypes.Structure):
     _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
 
 def get_mouse_position():
     pt = POINT()
     ctypes.windll.user32.GetCursorPos(ctypes.byref(pt))
     return pt.x, pt.y
+
 
 def main():
     print("Tracking mouse ratios (always shown)... (Ctrl+C to stop)\n")
@@ -34,6 +37,7 @@ def main():
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("👋 Exiting.")
+
 
 if __name__ == "__main__":
     main()

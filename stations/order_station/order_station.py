@@ -12,13 +12,16 @@ if ROOT_DIR not in sys.path:
 from stations.order_station.click_take_order import click_take_order
 from utils.button_visible import button_visible
 
+
 def run_order_station():
     while not button_visible(TEMPLATE_DIR):
         time.sleep(1)
         if button_visible(os.path.join(ASSETS_DIR, "closed.png"), threshold=0.8):
             print("seen closed, returning. ")
             return
-        if button_visible(os.path.join(ASSETS_DIR, "skip_button_left.png"), threshold=0.8):
+        if button_visible(
+            os.path.join(ASSETS_DIR, "skip_button_left.png"), threshold=0.8
+        ):
             print("seen skip_button_left, returning.")
             return
 

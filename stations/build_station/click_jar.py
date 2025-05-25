@@ -16,8 +16,8 @@ ASSETS_DIR = os.path.join(ROOT_DIR, "assets")
 
 ADB_PATH = r"D:\Program Files\Microvirt\MEmu\adb.exe"  # Update if needed
 
-from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 from utils.click_button import grab_screen_region
+from utils.get_memu_resolution import get_memu_bounds, get_memu_resolution
 
 
 def adb_tap(x, y):
@@ -39,8 +39,8 @@ def click_best_template_match(template_path, threshold=0.6):
     height, width = gray.shape[:2]
 
     # Define search region by ratios
-    xratio1, yratio1 = 0.0, 0.0   # top-left
-    xratio2, yratio2 = 0.8, 0.5   # bottom-right
+    xratio1, yratio1 = 0.0, 0.0  # top-left
+    xratio2, yratio2 = 0.8, 0.5  # bottom-right
 
     # Convert ratios to absolute pixel bounds
     x1 = int(width * xratio1)
@@ -64,7 +64,10 @@ def click_best_template_match(template_path, threshold=0.6):
 
     for scale in [1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.3, 2.4, 2.5]:
         resized_template = cv2.resize(template, (int(tW * scale), int(tH * scale)))
-        if resized_template.shape[0] > cropped.shape[0] or resized_template.shape[1] > cropped.shape[1]:
+        if (
+            resized_template.shape[0] > cropped.shape[0]
+            or resized_template.shape[1] > cropped.shape[1]
+        ):
             continue  # Skip templates larger than search region
 
         result = cv2.matchTemplate(cropped, resized_template, cv2.TM_CCOEFF_NORMED)
@@ -91,12 +94,13 @@ def click_best_template_match(template_path, threshold=0.6):
         screen_y = int(center_y * memu_height / height)
 
         adb_tap(screen_x, screen_y)
-        print(f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}")
+        print(
+            f"✅ ADB tapped at ({screen_x}, {screen_y}) with scale {best_scale} and confidence {best_val:.3f}"
+        )
         return True
     else:
         print(f"❌ No match found. Highest confidence: {best_val:.3f}")
         return False
-
 
 
 def click_jar():

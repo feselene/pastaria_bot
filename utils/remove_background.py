@@ -27,9 +27,14 @@ def remove_background_and_crop(input_path: str, output_path: str) -> None:
     output_cropped.save(output_path)
 
 
-def crop(input_path: str, output_path: str,
-         xratio1: float = 0.395, yratio1: float = 0.15,
-         xratio2: float = 0.595, yratio2: float = 0.9) -> None:
+def crop(
+    input_path: str,
+    output_path: str,
+    xratio1: float = 0.395,
+    yratio1: float = 0.15,
+    xratio2: float = 0.595,
+    yratio2: float = 0.9,
+) -> None:
     if not all(0 <= r <= 1 for r in [xratio1, yratio1, xratio2, yratio2]):
         raise ValueError("All ratios must be between 0 and 1.")
 
@@ -50,4 +55,3 @@ def crop(input_path: str, output_path: str,
     cropped_image = image.crop((left, upper, right, lower))
     cropped_image.save(output_path)
     print(f"✅ Saved cropped region to: {output_path}")
-

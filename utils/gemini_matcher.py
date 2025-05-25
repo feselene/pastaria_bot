@@ -1,10 +1,10 @@
 # gemini_matcher.py
 import os
+import shutil
 import sys
 
 import google.generativeai as genai
 from dotenv import load_dotenv
-import shutil
 
 CURRENT_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../"))
@@ -30,6 +30,7 @@ def encode_image(path):
 
 
 import datetime
+
 
 def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
     image1 = encode_image(imgpath1)
@@ -82,9 +83,6 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
 
     print("❌ Failed to get a valid response after retries.")
     return "no"
-
-
-
 
 
 def is_matching2(imgpath1, imgpath2) -> bool:

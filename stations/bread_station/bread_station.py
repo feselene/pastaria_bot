@@ -8,12 +8,9 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from stations.bread_station.click_bread import click_bread
-from utils.click_button import (
-    click_and_hold_ratios,
-    click_ratios,
-    drag_ratios
-)
+from utils.click_button import click_and_hold_ratios, click_ratios, drag_ratios
 from utils.parse_ticket import get_filtered_bread_icon
+
 
 def drag_bread_to_oven():
     click_ratios(0.434, 0.258)

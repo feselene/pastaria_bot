@@ -25,8 +25,10 @@ from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
 from utils.parse_ticket import get_filtered_topping_icon
 from utils.remove_background import remove_background_and_crop
 
+
 def detect_ticket_from_template():
     return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
+
 
 def is_box_empty(img, tolerance=10, match_ratio=0.6):
     """
