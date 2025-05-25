@@ -64,7 +64,7 @@ def run_cook_station():
     adb_tap_relative(pot_x, pot_y)
     get_filtered_pasta_icon()
     time.sleep(1)
-    click_button(os.path.join(ROOT_DIR, "debug", "pasta_logo.png"))
+    click_button(os.path.join(ROOT_DIR, "debug", "pasta_logo.png"), threshold=0.7)
     cook()
     time.sleep(2)
     adb_tap_relative(pot_x, pot_y)
