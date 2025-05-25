@@ -21,10 +21,12 @@ from skimage.metrics import structural_similarity as ssim
 from stations.build_station.apply import select_ingredient
 from stations.build_station.apply_sauce import use_shaker
 from stations.build_station.click_plate import place_topping
-from utils.detect_ticket_from_template import detect_ticket_from_template
+from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
 from utils.parse_ticket import get_filtered_topping_icon
 from utils.remove_background import remove_background_and_crop
 
+def detect_ticket_from_template():
+    return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
 
 def is_box_empty(img, tolerance=10, match_ratio=0.6):
     """
