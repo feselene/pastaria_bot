@@ -17,7 +17,6 @@ def get_memu_bounds():
 
     raise RuntimeError("❌ No visible MEmu window found.")
 
-
 def get_memu_resolution():
     """
     Returns the screen resolution (width, height) of the MEmu emulator via ADB.
@@ -42,3 +41,13 @@ def get_memu_resolution():
             )
     except Exception as e:
         raise RuntimeError(f"❌ Failed to get MEmu resolution: {e}")
+
+def main():
+    try:
+        resolution = get_memu_resolution()
+        print(f"✅ MEmu resolution: {resolution[0]}x{resolution[1]}")
+    except RuntimeError as e:
+        print(str(e))
+
+if __name__ == "__main__":
+    main()
