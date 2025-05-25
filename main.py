@@ -53,17 +53,19 @@ def click_lower_left_button():
     # Click build station button in lower right.
     click_ratios(0.07, 0.9)
 
+def click_middle_button():
+    click_ratios(0.5, 0.6)
 
 def main():
     try_adb_connect()
     while True:
         # Click play button.
-        click_ratios(0.5, 0.6)
+        click_middle_button()
         time.sleep(1)
         # Select save slot.
-        click_ratios(0.5, 0.6)
+        click_middle_button()
         time.sleep(1)
-        click_ratios(0.9, 0.9)
+        click_lower_right_button()
         time.sleep(1)
 
         for i in range(7):
@@ -98,9 +100,7 @@ def main():
             submit_bread_and_ticket()
             time.sleep(12)
 
-        time.sleep(10)
-        click_from_assets("skip_button_right.png")
-        time.sleep(5)
+        time.sleep(15)
         click_from_assets("skip_button_left.png")
         time.sleep(1)
 
