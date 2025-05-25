@@ -178,12 +178,11 @@ def capture_center_picker_square():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     overlay_path = os.path.join(DEBUG_DIR, f"{timestamp}_picker_overlay.png")
     cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
-    square_path = os.path.join(DEBUG_DIR, f"{timestamp}_cropped_square.png")
     small_square_path = os.path.join(DEBUG_DIR, f"{timestamp}_small_square.png")
 
     cv2.imwrite(overlay_path, full_screen)
     cv2.imwrite(cropped_path, cropped)
-    cv2.imwrite(square_path, cropped_square)
+    # cv2.imwrite(square_path, cropped_square)
     cv2.imwrite(small_square_path, cropped_small_square)
 
     return cropped_path, small_square_path
