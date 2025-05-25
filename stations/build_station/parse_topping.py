@@ -112,7 +112,7 @@ def process_topping_boxes():
             apply_shaker(image_path)
 
 
-def extract_digit(image_path):
+def extract_digit2(image_path):
     image = cv2.imread(image_path)
 
     # Resize for better OCR accuracy
@@ -130,6 +130,29 @@ def extract_digit(image_path):
     cleaned = "".join(filter(str.isdigit, raw_result))
 
     # print(f"OCR Raw: {repr(raw_result)} | Cleaned: {cleaned}")
+    return int(cleaned) if cleaned else None
+
+def extract_digit(image_path):
+    image = cv2.imread(image_path)
+
+    # Resize for better OCR accuracy
+    image = cv2.resize(image, None, fx=4, fy=4, interpolation=cv2.INTER_LINEAR)
+
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Optional: slight blur to reduce compression artifacts
+    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+
+    # Threshold to isolate black digit on white background
+    _, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY)
+
+    # Tesseract config (no 0, single char)
+    config = r"--oem 3 --psm 10 -c tessedit_char_whitelist=123456789"
+
+    raw_result = pytesseract.image_to_string(thresh, config=config)
+    cleaned = "".join(filter(str.isdigit, raw_result))
+
     return int(cleaned) if cleaned else None
 
 
