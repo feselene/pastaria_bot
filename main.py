@@ -57,10 +57,8 @@ def click_middle_button():
 def main():
     try_adb_connect()
     while True:
-        # Click play button.
         click_middle_button()
         time.sleep(1)
-        # Select save slot.
         click_middle_button()
         time.sleep(1)
         click_lower_right_button()
@@ -70,10 +68,6 @@ def main():
             clean_files()
             print("▶️ Running Order Station...")
             order_station.run_order_station()
-            if button_visible(
-                os.path.join(ASSETS_DIR, "skip_button_left.png"), threshold=0.8
-            ):
-                return
             click_cook_button()
             print("🔥 Running Cook Station...")
             time.sleep(1)
@@ -98,7 +92,7 @@ def main():
             submit_bread_and_ticket()
             time.sleep(12)
 
-        time.sleep(15)
+        time.sleep(20)
         click_from_assets("skip_button_left.png")
         time.sleep(1)
 

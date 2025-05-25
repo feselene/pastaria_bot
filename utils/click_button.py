@@ -20,9 +20,6 @@ if ROOT_DIR not in sys.path:
 
 def click_from_assets(filename, threshold=0.6):
     template_path = os.path.join(ASSETS_DIR, filename)
-    if not os.path.exists(template_path):
-        raise FileNotFoundError(f"❌ Asset not found: {template_path}")
-
     return click_button(template_path, threshold=threshold)
 
 
@@ -253,8 +250,6 @@ def print_pixel_color_ratio(x_ratio, y_ratio):
 def click_button(template_path, threshold=0.7):
     # Load grayscale template (at correct size)
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
-    if template is None:
-        raise FileNotFoundError(f"Missing template image: {template_path}")
     tW, tH = template.shape[::-1]
 
     # Capture screen and convert
