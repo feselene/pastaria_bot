@@ -201,10 +201,6 @@ def half_swipe():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
-    print(
-        f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
-    )
-
 
 def third_swipe_left():
     x_ratio = 0.422
@@ -217,10 +213,6 @@ def third_swipe_left():
     swipe_x = int(center_x + memu_width * swipe_offset_ratio)  # Swiping right
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
-
-    print(
-        f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
-    )
 
 
 def half_swipe_left():
@@ -235,10 +227,6 @@ def half_swipe_left():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
-    print(
-        f"➡️ ADB swiped topping picker right from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
-    )
-
 
 def swipe_topping_picker_left():
     x_ratio = 0.422
@@ -251,10 +239,6 @@ def swipe_topping_picker_left():
     swipe_x = int(center_x - memu_width * swipe_offset_ratio)
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
-
-    print(
-        f"⬅️ ADB swiped topping picker left from ({center_x}, {center_y}) to ({swipe_x}, {center_y})"
-    )
 
 
 def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
