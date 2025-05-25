@@ -36,7 +36,7 @@ def is_matching(imgpath1, imgpath2, max_retries=5) -> str:
     prompt = (
         "You are comparing two food ingredient icons from a cooking game.\n"
         "Icons may include ingredients like mushroom, orange shrimp, light brown chicken strip, circle meatball, dark brown sausage, tomato slice, pink ham, starburst C icon, yellow M icon, cheese wheel icon.\n"
-        "Are these the same icon?\n"
+        "Are these the same icon? Ignore the background setting.\n"
         "Answer yes or no with explanation."
     )
 
