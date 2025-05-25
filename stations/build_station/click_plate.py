@@ -185,6 +185,7 @@ def place_topping(num):
         case 7:
             swipe_to_middle()
             place_in_positions([2, 4, 6, 8, 10, 12])
+            set_flag()
         case 8:
             place_in_positions([1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12])
         case 9:
