@@ -1,4 +1,5 @@
 import datetime
+import io
 import os
 import re
 import subprocess
@@ -6,7 +7,6 @@ import sys
 import time
 
 import cv2
-import mss
 import numpy as np
 from PIL import Image
 from rembg import remove
@@ -93,22 +93,48 @@ def contains_metal(image_path, threshold=0.2):
 
     return match_ratio > threshold
 
+def grab_screen_region():
+    """
+    Captures a screenshot from the Android emulator/device using ADB
+    and returns it as a NumPy RGB image array.
+    """
+    try:
+        result = subprocess.check_output(["adb", "exec-out", "screencap", "-p"])
+        image = Image.open(io.BytesIO(result)).convert("RGB")
+        img_np = np.array(image)
+        return img_np
+    except Exception as e:
+        print(f"❌ Failed to capture or convert ADB screenshot: {e}")
+        return None
+
+def crop_region(image, region):
+    left = region["left"]
+    top = region["top"]
+    right = left + region["width"]
+    bottom = top + region["height"]
+    return image[top:bottom, left:right]
 
 def capture_center_picker_square():
     x_ratio = 0.422
-    y_ratio = 0.32
-    width_px = 360
-    height_px = 180
-    square_size = 180
-    small_square_size = 90
+    y_ratio = 0.26
+
+    screen = grab_screen_region()
+    if screen is None:
+        return None, None
+
+    screen_height, screen_width, _ = screen.shape
+
+    small_square_size = int(screen_height / 12.5)
+    square_size = 2 * small_square_size
+    height_px = 2 * small_square_size
+    width_px = 4 * small_square_size
     half_w = width_px / 2
     half_h = height_px / 2
     half_sq = square_size / 2
     half_small_sq = small_square_size / 2
 
-    left, top, width, height = get_memu_bounds()
-    center_x = int(left + width * x_ratio)
-    center_y = int(top + height * y_ratio)
+    center_x = int(screen_width * x_ratio)
+    center_y = int(screen_height * y_ratio)
 
     box_left = int(center_x - half_w)
     box_top = int(center_y - half_h)
@@ -117,73 +143,32 @@ def capture_center_picker_square():
     square_top = int(center_y - half_sq)
 
     small_square_left = int(center_x - half_small_sq)
-    small_square_top = int(center_y - half_small_sq) - 25  # Shift upward by 25 pixels
+    small_square_top = int(center_y - half_small_sq) - int(screen_height / 40)  # Shift upward
 
-    region = {
-        "left": box_left,
-        "top": box_top,
-        "width": width_px,
-        "height": height_px,
-    }
+    region = {"left": box_left, "top": box_top, "width": width_px, "height": height_px}
+    square_region = {"left": square_left, "top": square_top, "width": square_size, "height": square_size}
+    small_square_region = {"left": small_square_left, "top": small_square_top, "width": small_square_size, "height": small_square_size}
 
-    square_region = {
-        "left": square_left,
-        "top": square_top,
-        "width": square_size,
-        "height": square_size,
-    }
+    cropped = crop_region(screen, region)
+    cropped_square = crop_region(screen, square_region)
+    cropped_small_square = crop_region(screen, small_square_region)
 
-    small_square_region = {
-        "left": small_square_left,
-        "top": small_square_top,
-        "width": small_square_size,
-        "height": small_square_size,
-    }
+    # Draw rectangles
+    overlay = screen.copy()
+    cv2.rectangle(overlay, (box_left, box_top), (box_left + width_px, box_top + height_px), (255, 0, 0), 2)
+    cv2.rectangle(overlay, (square_left, square_top), (square_left + square_size, square_top + square_size), (0, 255, 0), 2)
+    cv2.rectangle(overlay, (small_square_left, small_square_top), (small_square_left + small_square_size, small_square_top + small_square_size), (0, 0, 255), 2)
 
-    with mss.mss() as sct:
-        full_screen = np.array(
-            sct.grab({"left": left, "top": top, "width": width, "height": height})
-        )
-        cropped = np.array(sct.grab(region))
-        cropped_square = np.array(sct.grab(square_region))
-        cropped_small_square = np.array(sct.grab(small_square_region))
-
-    # Draw rectangles on full screen screenshot
-    cv2.rectangle(
-        full_screen,
-        (box_left - left, box_top - top),
-        (box_left - left + width_px, box_top - top + height_px),
-        (255, 0, 0),
-        2,
-    )
-    cv2.rectangle(
-        full_screen,
-        (square_left - left, square_top - top),
-        (square_left - left + square_size, square_top - top + square_size),
-        (0, 255, 0),
-        2,
-    )
-    cv2.rectangle(
-        full_screen,
-        (small_square_left - left, small_square_top - top),
-        (
-            small_square_left - left + small_square_size,
-            small_square_top - top + small_square_size,
-        ),
-        (0, 0, 255),
-        2,
-    )
-
-    # Save screenshots
+    # Save images
+    os.makedirs(DEBUG_DIR, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     overlay_path = os.path.join(DEBUG_DIR, f"{timestamp}_picker_overlay.png")
     cropped_path = os.path.join(DEBUG_DIR, "topping_active.png")
     small_square_path = os.path.join(DEBUG_DIR, f"{timestamp}_small_square.png")
 
-    cv2.imwrite(overlay_path, full_screen)
-    cv2.imwrite(cropped_path, cropped)
-    # cv2.imwrite(square_path, cropped_square)
-    cv2.imwrite(small_square_path, cropped_small_square)
+    cv2.imwrite(overlay_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+    cv2.imwrite(cropped_path, cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
+    cv2.imwrite(small_square_path, cv2.cvtColor(cropped_small_square, cv2.COLOR_RGB2BGR))
 
     return cropped_path, small_square_path
 
@@ -296,14 +281,9 @@ def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
 
 
 def main():
-    print(os.getenv("GEMINI_API_KEY"))
-    target_topping = os.path.join(TOPPINGS_DIR, "topping4.png")
-    success = select_ingredient(target_topping)
-
-    if success:
-        print("🎯 Ingredient successfully selected!")
-    else:
-        print("❌ Ingredient not found.")
+    capture_center_picker_square()
+    print(is_mostly_black(r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\20250525_195938_small_square.png"))
+    print(is_mostly_black(r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\20250525_200008_small_square.png"))
 
 
 if __name__ == "__main__":

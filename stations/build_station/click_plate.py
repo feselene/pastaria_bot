@@ -134,14 +134,13 @@ def place_topping(num):
             place_in_positions([3, 6, 9, 12])
         case 6:
             if not check_flag():
-                place_in_positions([2, 4, 6, 8, 10, 12])
+                place_in_positions([1, 3, 5, 7, 9, 11])
                 set_flag()
             else:
-                place_in_positions([1, 3, 5, 7, 9, 11])
+                place_in_positions([2, 4, 6, 8, 10, 12])
         case 7:
             swipe_to_middle()
             place_in_positions([2, 4, 6, 8, 10, 12])
-            set_flag()
         case 8:
             place_in_positions([1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12])
         case 9:
