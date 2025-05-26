@@ -93,7 +93,7 @@ def main():
             submit_bread_and_ticket()
             time.sleep(12)
 
-        time.sleep(20)
+        time.sleep(30)
         click_from_assets("skip_button_left.png")
         time.sleep(1)
 
