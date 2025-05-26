@@ -44,12 +44,12 @@ def try_adb_connect(port=ADB_PORT):
 
 def click_lower_right_button():
     # Click build station button in lower right.
-    click_ratios(0.9, 0.9)
+    click_ratios(0.95, 0.95)
 
 
 def click_lower_left_button():
     # Click build station button in lower right.
-    click_ratios(0.07, 0.9)
+    click_ratios(0.05, 0.95)
 
 def click_middle_button():
     click_ratios(0.5, 0.6)
@@ -94,7 +94,7 @@ def main():
             time.sleep(12)
 
         time.sleep(30)
-        click_from_assets("skip_button_left.png")
+        click_lower_left_button()
         time.sleep(1)
 
 
