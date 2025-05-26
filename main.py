@@ -57,6 +57,7 @@ def click_middle_button():
 def main():
     try_adb_connect()
     while True:
+        print("Starting a new day.")
         click_middle_button()
         time.sleep(1)
         click_middle_button()
