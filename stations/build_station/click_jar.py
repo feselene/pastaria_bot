@@ -94,7 +94,7 @@ def click_best_template_match(template_path, threshold=0.6):
 
 def click_jar():
     template_path = os.path.join(DEBUG_DIR, "sauce_icon.png")
-    click_best_template_match(template_path)
+    click_best_template_match(template_path, threshold=0.4)
 
 
 def main():
