@@ -18,7 +18,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 
 from skimage.metrics import structural_similarity as ssim
 
-from stations.build_station.apply import select_ingredient
+from stations.build_station.apply import select_ingredient, jump_backwards
 from stations.build_station.apply_sauce import use_shaker
 from stations.build_station.click_plate import place_topping
 from utils.crop_screenshot_by_ratio import crop_screenshot_as_numpy
@@ -97,6 +97,8 @@ def center_contains_x(img):
 
 def process_topping_boxes():
     for i in range(4, 0, -1):
+        if i == 2 and "special.txt" in os.listdir(DEBUG_DIR):
+            jump_backwards()
         image_path = os.path.join(DEBUG_DIR, f"topping{i}.png")
         img = cv2.imread(image_path)
 

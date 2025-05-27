@@ -45,6 +45,11 @@ def is_box_empty(img, tolerance=10, match_ratio=0.6):
 
 def detect_ticket_from_template():
     if is_box_empty(crop_screenshot_as_numpy(0.851, 0.6975, 0.9931, 0.7647)):
+        os.makedirs(DEBUG_DIR, exist_ok=True)
+        FLAG_PATH = os.path.join(DEBUG_DIR, "special.txt")
+        with open(FLAG_PATH, "w") as f:
+            f.write("1")
+        print(f"🚩 Special flag set at: {FLAG_PATH}")
         return load_special_asset_as_numpy()
     return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
 
