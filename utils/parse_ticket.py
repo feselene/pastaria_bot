@@ -17,10 +17,51 @@ if ROOT_DIR not in sys.path:
 
 os.makedirs(DEBUG_DIR, exist_ok=True)
 
+def is_box_empty(img, tolerance=10, match_ratio=0.6):
+    """
+    Determines if a UI ingredient box is empty based on uniform color coverage.
+
+    Parameters:
+        img (np.ndarray): Input image (BGR).
+        tolerance (int): Max per-channel difference from center pixel.
+        match_ratio (float): Required fraction of pixels matching center pixel.
+
+    Returns:
+        bool: True if at least `match_ratio` of pixels match center pixel within `tolerance`.
+    """
+    if img is None:
+        return True
+
+    h, w = img.shape[:2]
+    center_pixel = img[h // 2, w // 2]
+
+    # Compute absolute channel-wise difference from center pixel
+    diff = np.abs(img.astype(np.int16) - center_pixel.astype(np.int16))
+    mask = np.all(diff <= tolerance, axis=2)
+
+    # Calculate match ratio
+    ratio = np.sum(mask) / (h * w)
+    return ratio >= match_ratio
 
 def detect_ticket_from_template():
+    if is_box_empty(crop_screenshot_as_numpy(0.851, 0.6975, 0.9931, 0.7647)):
+        return load_special_asset_as_numpy()
     return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
 
+def detect_bread_from_template():
+    return crop_screenshot_as_numpy(0.845, 0.132, 1, 0.8185)
+
+def load_special_asset_as_numpy():
+    path = os.path.join("assets", "special.png")
+
+    # Load with PIL and convert to RGB
+    image = Image.open(path).convert("RGB")
+
+    # Convert to NumPy array and then to BGR for OpenCV
+    img_rgb = np.array(image)
+    img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
+
+    return img_bgr
 
 def is_bar_orange(threshold=0.1):
     ticket_img = detect_ticket_from_template()
@@ -60,7 +101,7 @@ def crop_ticket_regions(ticket_img):
 
 
 def get_filtered_bread_icon():
-    ticket_img = detect_ticket_from_template()
+    ticket_img = detect_bread_from_template()
     debug_ticket_path = os.path.join(DEBUG_DIR, "ticket.png")
     cv2.imwrite(debug_ticket_path, ticket_img)
     regions = crop_ticket_regions(ticket_img)
