@@ -224,6 +224,19 @@ def swipe_topping_picker_left():
 
     adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=2000)
 
+def jump_backwards():
+    # Quickly jump from tomato to chicken.
+    x_ratio = 0.422
+    y_ratio = 0.32
+    swipe_offset_ratio = -0.4
+    memu_width, memu_height = get_memu_resolution()
+
+    center_x = int(memu_width * x_ratio)
+    center_y = int(memu_height * y_ratio)
+    swipe_x = int(center_x - memu_width * swipe_offset_ratio)
+    for i in range(2):
+        adb_swipe(center_x, center_y, swipe_x, center_y, duration_ms=500)
+
 
 def remove_background_and_crop_image(cv_image: np.ndarray) -> np.ndarray:
     if cv_image.shape[2] == 3:
@@ -249,7 +262,10 @@ def sanitize_filename_component(text, max_length=50):
     return safe[:max_length]
 
 
-def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
+def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0, jump = False):
+    if jump:
+        jump_backwards()
+
     for attempt in range(max_attempts):
         current_path, small_square_path = capture_center_picker_square()
 
@@ -281,9 +297,7 @@ def select_ingredient(cropped_path, max_attempts=20, delay_between_swipes=0):
 
 
 def main():
-    capture_center_picker_square()
-    print(is_mostly_black(r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\20250525_195938_small_square.png"))
-    print(is_mostly_black(r"C:\Users\ceo\IdeaProjects\pastaria_bot\debug\20250525_200008_small_square.png"))
+    jump_backwards()
 
 
 if __name__ == "__main__":
