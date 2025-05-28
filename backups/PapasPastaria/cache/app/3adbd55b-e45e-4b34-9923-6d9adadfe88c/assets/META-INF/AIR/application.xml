@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<application xmlns="http://ns.adobe.com/air/application/51.1">
+
+<id>com.flipline.papaspastariatogo</id>
+
+
+<versionNumber>64.0.6</versionNumber>
+<versionLabel>1.0.6</versionLabel>
+
+
+<filename>Papa's Pastaria To Go</filename>
+<description/>
+<name>Papa's Pastaria To Go</name>
+
+
+<copyright>Copyright (C) 2020 Flipline IDS LLC. All Rights Reserved.</copyright>
+
+<initialWindow> 
+<content>PapasPastariaToGo.swf</content>
+<systemChrome>standard</systemChrome>
+<transparent>false</transparent>
+<visible>true</visible>
+<fullScreen>true</fullScreen>
+<aspectRatio>landscape</aspectRatio>
+<renderMode>gpu</renderMode>
+<autoOrients>true</autoOrients>
+</initialWindow>
+
+<supportedLanguages>en</supportedLanguages>
+
+<icon>
+	<image16x16>AppIconsForPublish/TG_android_16.png</image16x16>
+	<image32x32>AppIconsForPublish/TG_android_32.png</image32x32>
+	<image36x36>AppIconsForPublish/TG_android_36.png</image36x36>
+	<image48x48>AppIconsForPublish/TG_android_48.png</image48x48>
+	<image72x72>AppIconsForPublish/TG_android_72.png</image72x72>
+	<image96x96>AppIconsForPublish/TG_android_96.png</image96x96>
+	<image114x114>AppIconsForPublish/TG_android_114.png</image114x114>
+	<image128x128>AppIconsForPublish/TG_android_128.png</image128x128>
+	<image512x512>AppIconsForPublish/TG_android_512.png</image512x512>
+</icon>
+
+  
+
+
+<!-- Specify Android specific tags that get passed to AndroidManifest.xml file. -->
+
+<android>
+	
+
+	<containsVideo>true</containsVideo>
+	<colorDepth>16bit</colorDepth>
+	<manifestAdditions>
+		<![CDATA[
+			<manifest android:installLocation="auto">
+
+
+				<!-- SDK Versions, 21+ required for InAppBilling, 34+ required by Google Play -->
+				<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
+
+				<!-- Screen Sizes Supported -->
+				<supports-screens
+					android:smallScreens="true"
+					android:normalScreens="true"
+					android:largeScreens="true"
+					android:xlargeScreens="true" />
+
+                		
+				<!-- IN-APP BILLING -->
+				<uses-permission android:name="android.permission.INTERNET"/>
+				<!-- END -->
+
+
+				<application android:hardwareAccelerated="true" android:enabled="true" android:allowClearUserData="true" android:allowBackup="true" android:roundIcon="@mipmap/ic_launcher_round" android:appCategory="game">
+ 
+					<!-- Added for super widescreen devices -->
+					<meta-data android:name="android.max_aspect" android:value="2.4" />
+
+					<!-- Distriqt ANE Billing -->
+					<activity 
+						android:name="com.distriqt.extension.inappbilling.activities.ProductViewActivity" 
+						android:exported="false" 
+						android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+					<activity 
+						android:name="com.distriqt.core.auth.AuthorisationActivity" 
+						android:theme="@android:style/Theme.Translucent.NoTitleBar" 
+						android:exported="false" />
+
+
+
+				</application>
+		
+			</manifest>
+		]]>
+	</manifestAdditions>
+
+	<!-- Prevent new font rendering API (new API not needed for our games) -->
+	<newFontRenderingFromAPI>99999</newFontRenderingFromAPI>
+
+	<!-- Allow for Display Cutouts (notches/camera holes) without needing an ANE -->
+	<displayCutoutMode>shortEdges</displayCutoutMode>
+
+</android>
+
+<!-- End of the schema for adding the android specific tags in AndroidManifest.xml file -->				
+
+<customUpdateUI>false</customUpdateUI>
+<allowBrowserInvocation>false</allowBrowserInvocation>
+
+
+<extensions>
+	<extensionID>com.distriqt.InAppBilling</extensionID>
+	<extensionID>com.distriqt.Core</extensionID>
+	<extensionID>com.distriqt.playservices.Base</extensionID>
+    	<extensionID>com.jetbrains.kotlin</extensionID>
+</extensions>
+
+
+</application>
